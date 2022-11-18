@@ -1,11 +1,15 @@
 package routes
 
 import (
-	"golang/app/middlewares"
-	"golang/controllers/userController"
+	middlewareCostumer "golang/app/middlewares/costumer"
+	middlewareInstructor "golang/app/middlewares/instructor"
+	CostumerController "golang/controllers/costumerController"
+	instructorController "golang/controllers/instructorController"
 	"golang/helper"
 	"golang/repository/customerRepository"
-	"golang/service/userService"
+	instructorrepository "golang/repository/instructorRepository"
+	"golang/service/costumerService"
+	instructorservice "golang/service/instructorService"
 	"golang/util"
 
 	"github.com/go-playground/validator/v10"
@@ -18,13 +22,18 @@ import (
 func New(db *gorm.DB) *echo.Echo {
 	// Repositories
 	customerRepository := customerRepository.NewCustomerRepository(db)
+	instructorRepository := instructorrepository.Newinstructorrepository(db)
 
 	// Services
-	userService := userService.NewUserService(customerRepository)
-
+	costumerService := costumerService.NewcostumerService(customerRepository)
+	instructorService := instructorservice.NewinstructorService(instructorRepository)
 	// Controllers
-	userController := userController.UserController{
-		UserService: userService,
+	costumerController := CostumerController.CostumerController{
+		CostumerService: costumerService,
+	}
+
+	instructorController := instructorController.InstructorController{
+		InstructorService: instructorService,
 	}
 
 	app := echo.New()
@@ -32,27 +41,38 @@ func New(db *gorm.DB) *echo.Echo {
 	app.Validator = &helper.CustomValidator{
 		Validator: validator.New(),
 	}
-	
-	
-	/* 
-	API Routes
+
+	/*
+		API Routes
 	*/
-	configLogger := middlewares.ConfigLogger{
+	configLogger := middlewareCostumer.ConfigLogger{
 		Format: "[${time_rfc3339}] ${status} ${method} ${host} ${path} ${latency_human}" + "\n",
 	}
-	config := middleware.JWTConfig{
-		Claims:     &middlewares.JwtCustomClaims{},
+	configCostumer := middleware.JWTConfig{
+		Claims:     &middlewareCostumer.JwtCostumerClaims{},
+		SigningKey: []byte(util.GetConfig("TOKEN_SECRET")),
+	}
+	configInstructor := middleware.JWTConfig{
+		Claims:     &middlewareInstructor.JwtInstructorClaims{},
 		SigningKey: []byte(util.GetConfig("TOKEN_SECRET")),
 	}
 
 	app.Use(configLogger.Init())
+	costumer := app.Group("/costumer")
+	costumer.POST("/register", costumerController.Register)
+	costumer.POST("/login", costumerController.Login)
 
-	app.POST("/register", userController.Register)
-	app.POST("/login", userController.Login)
+	privateCostumer := app.Group("/costumer", middleware.JWTWithConfig(configCostumer))
+	// private costumer access
+	privateCostumer.POST("/logout", costumerController.Logout)
 
-	auth := app.Group("/user", middleware.JWTWithConfig(config))
+	instructor := app.Group("/instructor")
 
-	auth.POST("/logout", userController.Logout)
+	instructor.POST("/register", instructorController.Register)
+	instructor.POST("/login", instructorController.Login)
 
+	privateInstructor := app.Group("/instructor", middleware.JWTWithConfig(configInstructor))
+	// private instructor access
+	privateInstructor.POST("/logout", instructorController.Logout)
 	return app
 }

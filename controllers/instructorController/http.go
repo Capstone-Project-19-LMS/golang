@@ -1,20 +1,21 @@
-package userController
+package instructorcontroller
 
 import (
-	"golang/app/middlewares"
+	middlewares "golang/app/middlewares/instructor"
 	"golang/models/dto"
-	"golang/service/userService"
+	instructorService "golang/service/instructorService"
 	"net/http"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
-type UserController struct {
-	UserService userService.UserService
+type InstructorController struct {
+	InstructorService instructorService.InstructorService
 }
 
-func (u *UserController) Register(c echo.Context) error {
-	var user dto.UserRegister
+func (u *InstructorController) Register(c echo.Context) error {
+	var user dto.InstructorRegister
 	err := c.Bind(&user)
 	if err != nil {
 		return c.JSON(500, echo.Map{
@@ -32,7 +33,7 @@ func (u *UserController) Register(c echo.Context) error {
 		})
 	}
 
-	err = u.UserService.CreateUser(user)
+	err = u.InstructorService.CreateInstructor(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail create user",
@@ -45,17 +46,17 @@ func (u *UserController) Register(c echo.Context) error {
 	})
 }
 
-func (u *UserController) Login(c echo.Context) error {
-	var userLogin dto.UserLogin
-	err := c.Bind(&userLogin)
+func (u *InstructorController) Login(c echo.Context) error {
+	var instructorLogin dto.InstructorLogin
+	err := c.Bind(&instructorLogin)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail bind data",
 			"error":   err.Error(),
 		})
 	}
-	var user dto.UserResponseGet
-	user, err = u.UserService.LoginUser(userLogin)
+	var user dto.InstructorResponseGet
+	user, err = u.InstructorService.LoginInstructor(instructorLogin)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail login",
@@ -63,7 +64,7 @@ func (u *UserController) Login(c echo.Context) error {
 		})
 	}
 
-	token, errToken := middlewares.GenerateToken(user.ID, user.Role)
+	token, errToken := middlewares.GenerateToken(user.ID)
 
 	if errToken != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
@@ -72,7 +73,7 @@ func (u *UserController) Login(c echo.Context) error {
 		})
 	}
 
-	userResponse := dto.UserResponse{
+	instructorResponse := dto.InstructorResponse{
 		Name:  user.Name,
 		Email: user.Email,
 		Token: token,
@@ -80,10 +81,24 @@ func (u *UserController) Login(c echo.Context) error {
 
 	return c.JSON(200, echo.Map{
 		"message": "success login",
-		"user":    userResponse,
+		"user":    instructorResponse,
 	})
 }
 
-func (u *UserController) Logout(c echo.Context) error {
-	return nil
+func (u *InstructorController) Logout(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+
+	isListed := middlewares.CheckToken(user.Raw)
+
+	if !isListed {
+		return c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "invalid token",
+		})
+	}
+
+	middlewares.Logout(user.Raw)
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "logout success",
+	})
 }

@@ -13,7 +13,7 @@ import (
 type ConfigDB struct {
 	DB_USERNAME string
 	DB_PASSWORD string
-	DB_ADDRESS string
+	DB_ADDRESS  string
 	DB_NAME     string
 }
 
@@ -39,5 +39,5 @@ func (config *ConfigDB) InitDB() *gorm.DB {
 }
 
 func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate(model.Customer{})
+	db.AutoMigrate(model.Customer{}, model.Instructor{})
 }

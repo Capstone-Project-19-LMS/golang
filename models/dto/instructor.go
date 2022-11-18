@@ -1,6 +1,6 @@
 package dto
 
-type User struct {
+type Instructor struct {
 	ID             uint   `json:"id"`
 	Name           string `json:"name"`
 	Email          string `json:"email"`
@@ -8,7 +8,7 @@ type User struct {
 	ProfilePicture string `json:"profile_picture"`
 }
 
-type UserResponseGet struct {
+type InstructorResponseGet struct {
 	ID             uint   `json:"id"`
 	Name           string `json:"name"`
 	Email          string `json:"email"`
@@ -17,20 +17,20 @@ type UserResponseGet struct {
 	Role           string `json:"role"`
 }
 
-type UserRegister struct {
+type InstructorRegister struct {
 	Name           string `json:"name" validate:"required"`
 	Email          string `json:"email" validate:"required,email"`
 	Password       string `json:"password" validate:"required"`
 	ProfilePicture string `json:"profile_picture"`
 }
 
-type UserLogin struct {
+type InstructorLogin struct {
 	ID       uint   `json:"id"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
 
-type UserResponse struct {
+type InstructorResponse struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Token string `json:"token"`
