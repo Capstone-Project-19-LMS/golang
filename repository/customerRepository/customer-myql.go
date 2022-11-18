@@ -17,9 +17,9 @@ type customerRepository struct {
 // CreateCustomer implements CustomerRepository
 func (u *customerRepository) CreateCustomer(customer dto.UserRegister) error {
 	customerModel := model.Customer{
-		Name:    customer.Name,
-		Email:   customer.Email,
-		Password:   customer.Password,
+		Name:     customer.Name,
+		Email:    customer.Email,
+		Password: customer.Password,
 	}
 	err := u.db.Create(&customerModel).Error
 	if err != nil {

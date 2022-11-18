@@ -62,7 +62,7 @@ func (u *UserController) Login(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
-	
+
 	token, errToken := middlewares.GenerateToken(user.ID, user.Role)
 
 	if errToken != nil {
@@ -73,14 +73,14 @@ func (u *UserController) Login(c echo.Context) error {
 	}
 
 	userResponse := dto.UserResponse{
-		Name: user.Name,
+		Name:  user.Name,
 		Email: user.Email,
 		Token: token,
 	}
 
 	return c.JSON(200, echo.Map{
 		"message": "success login",
-		"user":   userResponse,
+		"user":    userResponse,
 	})
 }
 

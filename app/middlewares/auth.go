@@ -8,11 +8,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var whitelist []string = make([]string, 5)
+var whitelistCostumer []string = make([]string, 5)
 
 type JwtCustomClaims struct {
-	ID uint `json:"id"`
-	Role           string `json:"role"`
+	ID   uint   `json:"id"`
+	Role string `json:"role"`
 	jwt.StandardClaims
 }
 
@@ -31,7 +31,7 @@ func GenerateToken(userID uint, role string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	whitelist = append(whitelist, token)
+	whitelistCostumer = append(whitelistCostumer, token)
 
 	return token, nil
 }
@@ -50,7 +50,7 @@ func GetUser(c echo.Context) *JwtCustomClaims {
 }
 
 func CheckToken(token string) bool {
-	for _, tkn := range whitelist {
+	for _, tkn := range whitelistCostumer {
 		if tkn == token {
 			return true
 		}
@@ -60,9 +60,9 @@ func CheckToken(token string) bool {
 }
 
 func Logout(token string) bool {
-	for idx, tkn := range whitelist {
+	for idx, tkn := range whitelistCostumer {
 		if tkn == token {
-			whitelist = append(whitelist[:idx], whitelist[idx+1:]...)
+			whitelistCostumer = append(whitelistCostumer[:idx], whitelistCostumer[idx+1:]...)
 		}
 	}
 
