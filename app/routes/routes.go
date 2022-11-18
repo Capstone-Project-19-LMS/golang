@@ -1,6 +1,7 @@
 package routes
 
 import (
+	middlewares "golang/app/middlewares"
 	middlewareCostumer "golang/app/middlewares/costumer"
 	middlewareInstructor "golang/app/middlewares/instructor"
 	CostumerController "golang/controllers/costumerController"
@@ -45,7 +46,7 @@ func New(db *gorm.DB) *echo.Echo {
 	/*
 		API Routes
 	*/
-	configLogger := middlewareCostumer.ConfigLogger{
+	configLogger := middlewares.ConfigLogger{
 		Format: "[${time_rfc3339}] ${status} ${method} ${host} ${path} ${latency_human}" + "\n",
 	}
 	configCostumer := middleware.JWTConfig{
@@ -58,21 +59,30 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 
 	app.Use(configLogger.Init())
+
+	// costumer
 	costumer := app.Group("/costumer")
 	costumer.POST("/register", costumerController.Register)
 	costumer.POST("/login", costumerController.Login)
 
 	privateCostumer := app.Group("/costumer", middleware.JWTWithConfig(configCostumer))
+
 	// private costumer access
 	privateCostumer.POST("/logout", costumerController.Logout)
 
-	instructor := app.Group("/instructor")
+	// -->
 
+	// instructor
+	instructor := app.Group("/instructor")
 	instructor.POST("/register", instructorController.Register)
 	instructor.POST("/login", instructorController.Login)
 
 	privateInstructor := app.Group("/instructor", middleware.JWTWithConfig(configInstructor))
+
 	// private instructor access
 	privateInstructor.POST("/logout", instructorController.Logout)
+
+	// -->
+
 	return app
 }
