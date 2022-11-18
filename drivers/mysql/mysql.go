@@ -2,8 +2,8 @@ package mysql_driver
 
 import (
 	"fmt"
+	"golang/models/model"
 
-	"golang/drivers/mysql/users"
 	"log"
 
 	"gorm.io/driver/mysql"
@@ -13,15 +13,17 @@ import (
 type ConfigDB struct {
 	DB_USERNAME string
 	DB_PASSWORD string
+	DB_ADDRESS string
 	DB_NAME     string
 }
 
 func (config *ConfigDB) InitDB() *gorm.DB {
 	var err error
 
-	var dsn string = fmt.Sprintf("%s:%s@/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	var dsn string = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		config.DB_USERNAME,
 		config.DB_PASSWORD,
+		config.DB_ADDRESS,
 		config.DB_NAME,
 	)
 
@@ -37,5 +39,5 @@ func (config *ConfigDB) InitDB() *gorm.DB {
 }
 
 func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate(&users.User{})
+	db.AutoMigrate(model.Customer{})
 }

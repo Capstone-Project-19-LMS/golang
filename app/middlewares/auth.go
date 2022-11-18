@@ -1,47 +1,39 @@
 package middlewares
 
 import (
+	"golang/util"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 var whitelist []string = make([]string, 5)
 
 type JwtCustomClaims struct {
-	ID int `json:"id"`
+	ID uint `json:"id"`
+	Role           string `json:"role"`
 	jwt.StandardClaims
 }
 
-type ConfigJWT struct {
-	SecretJWT       string
-	ExpiresDuration int
-}
-
-func (jwtConf *ConfigJWT) Init() middleware.JWTConfig {
-	return middleware.JWTConfig{
-		Claims:     &JwtCustomClaims{},
-		SigningKey: []byte(jwtConf.SecretJWT),
-	}
-}
-
-func (jwtConf *ConfigJWT) GenerateToken(userID int) string {
+func GenerateToken(userID uint, role string) (string, error) {
 	claims := JwtCustomClaims{
 		userID,
+		role,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(int64(jwtConf.ExpiresDuration))).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Hour * 2).Unix(),
 		},
 	}
 
 	// Create token with claims
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, _ := t.SignedString([]byte(jwtConf.SecretJWT))
-
+	token, err := t.SignedString([]byte(util.GetConfig("TOKEN_SECRET")))
+	if err != nil {
+		return "", err
+	}
 	whitelist = append(whitelist, token)
 
-	return token
+	return token, nil
 }
 
 func GetUser(c echo.Context) *JwtCustomClaims {

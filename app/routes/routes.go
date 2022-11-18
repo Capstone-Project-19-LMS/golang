@@ -1,28 +1,58 @@
 package routes
 
 import (
-	"golang/controllers/users"
+	"golang/app/middlewares"
+	"golang/controllers/userController"
+	"golang/helper"
+	"golang/repository/customerRepository"
+	"golang/service/userService"
+	"golang/util"
+
+	"github.com/go-playground/validator/v10"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"gorm.io/gorm"
 )
 
-type ControllerList struct {
-	LoggerMiddleware echo.MiddlewareFunc
-	JWTMiddleware    middleware.JWTConfig
-	AuthController   users.AuthController
-}
+func New(db *gorm.DB) *echo.Echo {
+	// Repositories
+	customerRepository := customerRepository.NewCustomerRepository(db)
 
-func (cl *ControllerList) RouteRegister(e *echo.Echo) {
-	e.Use(cl.LoggerMiddleware)
+	// Services
+	userService := userService.NewUserService(customerRepository)
 
-	users := e.Group("/user")
+	// Controllers
+	userController := userController.UserController{
+		UserService: userService,
+	}
 
-	users.POST("/register", cl.AuthController.Register)
-	users.POST("/login", cl.AuthController.Login)
+	app := echo.New()
 
-	auth := e.Group("/user", middleware.JWTWithConfig(cl.JWTMiddleware))
+	app.Validator = &helper.CustomValidator{
+		Validator: validator.New(),
+	}
+	
+	
+	/* 
+	API Routes
+	*/
+	configLogger := middlewares.ConfigLogger{
+		Format: "[${time_rfc3339}] ${status} ${method} ${host} ${path} ${latency_human}" + "\n",
+	}
+	config := middleware.JWTConfig{
+		Claims:     &middlewares.JwtCustomClaims{},
+		SigningKey: []byte(util.GetConfig("TOKEN_SECRET")),
+	}
 
-	auth.POST("/logout", cl.AuthController.Logout)
+	app.Use(configLogger.Init())
 
+	app.POST("/register", userController.Register)
+	app.POST("/login", userController.Login)
+
+	auth := app.Group("/user", middleware.JWTWithConfig(config))
+
+	auth.POST("/logout", userController.Logout)
+
+	return app
 }
