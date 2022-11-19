@@ -4,7 +4,7 @@ import (
 	middlewares "golang/app/middlewares"
 	middlewareCostumer "golang/app/middlewares/costumer"
 	middlewareInstructor "golang/app/middlewares/instructor"
-	CostumerController "golang/controllers/costumerController"
+	"golang/controllers/costumerController"
 	instructorController "golang/controllers/instructorController"
 	"golang/helper"
 	"golang/repository/customerRepository"
@@ -41,7 +41,7 @@ func New(db *gorm.DB) *echo.Echo {
 	Controllers
 	*/ 
 	// customer
-	costumerController := CostumerController.CostumerController{
+	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
 	}
 	// instructor

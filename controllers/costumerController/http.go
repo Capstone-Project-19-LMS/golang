@@ -1,4 +1,4 @@
-package CostumerController
+package costumerController
 
 import (
 	middlewares "golang/app/middlewares/costumer"
