@@ -21,18 +21,30 @@ import (
 )
 
 func New(db *gorm.DB) *echo.Echo {
-	// Repositories
+	/*
+		Repositories
+	*/ 
+	// customer
 	customerRepository := customerRepository.NewCustomerRepository(db)
+	// instructor
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
-
-	// Services
+	
+	/*
+		Services
+	*/ 
+	// customer
 	costumerService := costumerService.NewcostumerService(customerRepository)
+	// instructor
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
-	// Controllers
+	
+	/*
+	Controllers
+	*/ 
+	// customer
 	costumerController := CostumerController.CostumerController{
 		CostumerService: costumerService,
 	}
-
+	// instructor
 	instructorController := instructorController.InstructorController{
 		InstructorService: instructorService,
 	}
