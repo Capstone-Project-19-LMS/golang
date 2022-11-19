@@ -73,11 +73,11 @@ func New(db *gorm.DB) *echo.Echo {
 	app.Use(configLogger.Init())
 
 	// costumer
-	costumer := app.Group("/costumer")
+	costumer := app.Group("/custumer")
 	costumer.POST("/register", costumerController.Register)
 	costumer.POST("/login", costumerController.Login)
 
-	privateCostumer := app.Group("/costumer", middleware.JWTWithConfig(configCostumer))
+	privateCostumer := app.Group("/custumer", middleware.JWTWithConfig(configCostumer))
 
 	// private costumer access
 	privateCostumer.POST("/logout", costumerController.Logout)
