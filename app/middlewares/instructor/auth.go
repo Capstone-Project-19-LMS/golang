@@ -11,11 +11,11 @@ import (
 var whitelistInstructor []string = make([]string, 5)
 
 type JwtInstructorClaims struct {
-	ID uint `json:"id"`
+	ID string `json:"id"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(userID uint) (string, error) {
+func GenerateToken(userID string) (string, error) {
 	claims := JwtInstructorClaims{
 		userID,
 		jwt.StandardClaims{

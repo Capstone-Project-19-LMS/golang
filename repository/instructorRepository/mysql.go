@@ -45,7 +45,7 @@ func (u *instructorrepository) LoginInstructor(instructor dto.InstructorLogin) (
 		Name:           instructorLogin.Name,
 		Email:          instructorLogin.Email,
 		Password:       instructorLogin.Password,
-		ProfilePicture: instructorLogin.ProfilePicture,
+		ProfileImage: instructorLogin.ProfileImage,
 	}
 	return instructorLoginResponse, nil
 }
