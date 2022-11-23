@@ -11,7 +11,7 @@ type Category struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name           string `json:"name" gorm:"notNull;size:255"`
+	Name           string `json:"name" gorm:"notNull;size:255;uniqueIndex"`
 	Description    string `json:"description"`
 	Courses 	  []Course
 }
