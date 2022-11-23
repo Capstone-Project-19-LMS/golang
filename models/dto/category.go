@@ -4,7 +4,7 @@ import "golang/models/model"
 
 type Category struct {
 	ID          string `json:"id"`
-	Name        string `json:"name" validate:"required,unique"`
+	Name        string `json:"name" validate:"required"`
 	Description string `json:"description" `
 }
 

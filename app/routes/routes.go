@@ -109,7 +109,7 @@ func New(db *gorm.DB) *echo.Echo {
 	
 	// category
 	category := privateInstructor.Group("/category")
-	category.POST("/create", categoryController.CreateCategory)
+	category.POST("", categoryController.CreateCategory)
 	
 	// -->
 
