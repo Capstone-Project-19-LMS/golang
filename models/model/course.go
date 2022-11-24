@@ -11,8 +11,9 @@ type Course struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name		string `json:"name" gorm:"notNull;size:255"`
+	Name		string `json:"name" gorm:"notNull;size:255;uniqueIndex"`
 	Description string `json:"description"`
+	Objective string `json:"objective"`
 	Price		float64 `json:"price" gorm:"notNull;default:0"`
 	Discount	float64 `json:"discount" gorm:"notNull;default:0"`
 	Thumbnail	string `json:"thumbnail" gorm:"size:255"`
