@@ -12,7 +12,7 @@ import (
 type CourseService interface {
 	CreateCourse(dto.CourseTransaction) error
 	DeleteCourse(id, instructorId string) error
-	GetAllCourse(instructorId string) ([]dto.CourseTransaction, error)
+	GetAllCourse(instructorId string) ([]dto.Course, error)
 	GetCourseByID(id, instructorId string) (dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
@@ -68,8 +68,12 @@ func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 }
 
 // GetAllCourse implements CourseService
-func (*courseService) GetAllCourse(instructorId string) ([]dto.CourseTransaction, error) {
-	panic("unimplemented")
+func (cs *courseService) GetAllCourse(instructorId string) ([]dto.Course, error) {
+	courses, err := cs.courseRepo.GetAllCourse(instructorId)
+	if err != nil {
+		return nil, err
+	}
+	return courses, nil
 }
 
 // GetCourseByID implements CourseService

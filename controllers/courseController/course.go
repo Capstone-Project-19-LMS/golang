@@ -89,6 +89,27 @@ func (cc *CourseController) DeleteCourse(c echo.Context) error {
 	})
 }
 
+// GetAllCourse is a function to get all course
+func (cc *CourseController) GetAllCourse(c echo.Context) error {
+	// Get user id from jwt
+	claims := middlewares.GetUserInstructor(c)
+	instructorId := claims.ID
+
+	// Call service to get all category
+	categories, err := cc.CourseService.GetAllCourse(instructorId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get all category",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get all category",
+		"categories": categories,
+	})
+}
 
 // GetCourseByID is a function to get course by id
 func (cc *CourseController) GetCourseByID(c echo.Context) error {

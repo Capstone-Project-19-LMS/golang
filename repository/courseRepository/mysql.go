@@ -40,8 +40,14 @@ func (cr *courseRepository) DeleteCourse(id string) error {
 }
 
 // GetAllCourse implements CourseRepository
-func (*courseRepository) GetAllCourse(instructorId string) ([]dto.CourseTransaction, error) {
-	panic("unimplemented")
+func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, error) {
+	var courses []dto.Course
+	// get data sub category from database by user
+	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", instructorId).Find(&courses).Error
+	if err != nil {
+		return nil, err
+	}
+	return courses, nil
 }
 
 // GetCourseByID implements CourseRepository
