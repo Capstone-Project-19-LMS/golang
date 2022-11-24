@@ -12,7 +12,7 @@ type categoryRepository struct {
 }
 
 // CreateCategory implements CategoryRepository
-func (cr *categoryRepository) CreateCategory(category dto.Category) error {
+func (cr *categoryRepository) CreateCategory(category dto.CategoryTransaction) error {
 	err := cr.db.Model(&model.Category{}).Create(&model.Category{
 		ID: 		category.ID,
 		Name:        category.Name,
@@ -39,8 +39,8 @@ func (cr *categoryRepository) DeleteCategory(id string) error {
 }
 
 // GetAllCategory implements CategoryRepository
-func (cr *categoryRepository) GetAllCategory() ([]dto.Category, error) {
-	var categories []dto.Category
+func (cr *categoryRepository) GetAllCategory() ([]dto.CategoryTransaction, error) {
+	var categories []dto.CategoryTransaction
 	// get data sub category from database by user
 	err := cr.db.Model(&model.Category{}).Find(&categories).Error
 	if err != nil {
@@ -50,12 +50,20 @@ func (cr *categoryRepository) GetAllCategory() ([]dto.Category, error) {
 }
 
 // GetCategoryByID implements CategoryRepository
-func (*categoryRepository) GetCategoryByID(id string) (dto.Category, error) {
-	panic("unimplemented")
+func (cr *categoryRepository) GetCategoryByID(id string) (dto.Category, error) {
+	var category dto.Category
+	err := cr.db.Model(&model.Category{}).Preload("Courses").Where("id = ?", id).Find(&category)
+	if err.Error != nil {
+		return dto.Category{}, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return dto.Category{}, gorm.ErrRecordNotFound
+	}
+	return category, nil
 }
 
 // UpdateCategory implements CategoryRepository
-func (*categoryRepository) UpdateCategory(dto.Category) error {
+func (*categoryRepository) UpdateCategory(dto.CategoryTransaction) error {
 	panic("unimplemented")
 }
 

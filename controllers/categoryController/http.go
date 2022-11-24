@@ -15,7 +15,7 @@ type CategoryController struct {
 
 // CreateCategory is a function to create category
 func (cc *CategoryController) CreateCategory(c echo.Context) error {
-	var category dto.Category
+	var category dto.CategoryTransaction
 	// Binding request body to struct
 	err := c.Bind(&category)
 	if err != nil {
@@ -89,5 +89,32 @@ func (cc *CategoryController) GetAllCategory(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get all category",
 		"categories": categories,
+	})
+}
+
+// GetCategoryByID is a function to get category by id
+func (cc *CategoryController) GetCategoryByID(c echo.Context) error {
+	// Get id from url
+	id := c.Param("id")
+
+	// Call service to get category by id
+	category, err := cc.CategoryService.GetCategoryByID(id)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get category by id",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get category by id",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get category by id",
+		"category": category,
 	})
 }

@@ -7,11 +7,11 @@ import (
 )
 
 type CategoryService interface {
-	CreateCategory(dto.Category) error
+	CreateCategory(dto.CategoryTransaction) error
 	DeleteCategory(id string) error
 	GetCategoryByID(id string) (dto.Category, error)
-	GetAllCategory() ([]dto.Category, error)
-	UpdateCategory(dto.Category) error
+	GetAllCategory() ([]dto.CategoryTransaction, error)
+	UpdateCategory(dto.CategoryTransaction) error
 }
 
 type categoryService struct {
@@ -19,7 +19,7 @@ type categoryService struct {
 }
 
 // CreateCategory implements CategoryService
-func (cs *categoryService) CreateCategory(category dto.Category) error {
+func (cs *categoryService) CreateCategory(category dto.CategoryTransaction) error {
 	id := helper.GenerateUUID()
 	category.ID = id
 	err := cs.categoryRepo.CreateCategory(category)
@@ -40,7 +40,7 @@ func (cs *categoryService) DeleteCategory(id string) error {
 }
 
 // GetAllCategory implements CategoryService
-func (cs *categoryService) GetAllCategory() ([]dto.Category, error) {
+func (cs *categoryService) GetAllCategory() ([]dto.CategoryTransaction, error) {
 	categories, err := cs.categoryRepo.GetAllCategory()
 	if err != nil {
 		return nil, err
@@ -49,12 +49,16 @@ func (cs *categoryService) GetAllCategory() ([]dto.Category, error) {
 }
 
 // GetCategoryByID implements CategoryService
-func (*categoryService) GetCategoryByID(id string) (dto.Category, error) {
-	panic("unimplemented")
+func (cs *categoryService) GetCategoryByID(id string) (dto.Category, error) {
+	category, err := cs.categoryRepo.GetCategoryByID(id)
+	if err != nil {
+		return dto.Category{}, err
+	}
+	return category, nil
 }
 
 // UpdateCategory implements CategoryService
-func (*categoryService) UpdateCategory(dto.Category) error {
+func (*categoryService) UpdateCategory(dto.CategoryTransaction) error {
 	panic("unimplemented")
 }
 
