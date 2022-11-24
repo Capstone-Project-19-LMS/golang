@@ -20,10 +20,10 @@ type Course struct {
 	Capacity        int            `json:"capacity"`
 	InstructorID    string         `json:"instructor_id"`
 	CategoryID      string         `json:"category_id"`
-	// CustomerCourses []CustomerCourse
-	// Favorites       []Favorite
-	// Ratings         []Rating
-	// Modules         []Module
+	CustomerCourses []CustomerCourse
+	Favorites       []Favorite
+	Ratings         []Rating
+	Modules         []Module
 }
 
 type CourseTransaction struct {
