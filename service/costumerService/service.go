@@ -17,6 +17,8 @@ type costumerService struct {
 
 // CreateCustomer implements costumerService
 func (u *costumerService) CreateCustomer(user dto.CostumerRegister) error {
+	id := helper.GenerateUUID()
+	user.ID = id
 	// hash password
 	password, errPassword := helper.HashPassword(user.Password)
 	user.Password = password

@@ -17,9 +17,10 @@ type instructorrepository struct {
 // Createinstructor implements instructorrepository
 func (u *instructorrepository) CreateInstructor(instructor dto.InstructorRegister) error {
 	instructorModel := model.Instructor{
-		Name:           instructor.Name,
-		Email:          instructor.Email,
-		Password:       instructor.Password,
+		ID:           instructor.ID,
+		Name:         instructor.Name,
+		Email:        instructor.Email,
+		Password:     instructor.Password,
 		ProfileImage: "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
 	}
 	err := u.db.Create(&instructorModel).Error
@@ -41,10 +42,10 @@ func (u *instructorrepository) LoginInstructor(instructor dto.InstructorLogin) (
 		return dto.InstructorResponseGet{}, errors.New(constantError.ErrorEmailOrPasswordNotMatch)
 	}
 	var instructorLoginResponse dto.InstructorResponseGet = dto.InstructorResponseGet{
-		ID:             instructorLogin.ID,
-		Name:           instructorLogin.Name,
-		Email:          instructorLogin.Email,
-		Password:       instructorLogin.Password,
+		ID:           instructorLogin.ID,
+		Name:         instructorLogin.Name,
+		Email:        instructorLogin.Email,
+		Password:     instructorLogin.Password,
 		ProfileImage: instructorLogin.ProfileImage,
 	}
 	return instructorLoginResponse, nil

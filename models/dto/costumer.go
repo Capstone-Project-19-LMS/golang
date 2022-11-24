@@ -1,31 +1,32 @@
 package dto
 
 type Costumer struct {
-	ID             uint   `json:"id"`
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Password       string `json:"password"`
-	ProfilePicture string `json:"profile_picture"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Password     string `json:"password"`
+	ProfileImage string `json:"profile_image" gorm:"size:255;default:null"`
 }
 
 type CostumerResponseGet struct {
-	ID             uint   `json:"id"`
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Password       string `json:"password"`
-	ProfilePicture string `json:"profile_picture"`
-	Role           string `json:"role"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Password     string `json:"password"`
+	ProfileImage string `json:"profile_image" gorm:"size:255;default:null"`
+	Role         string `json:"role"`
 }
 
 type CostumerRegister struct {
-	Name           string `json:"name" validate:"required"`
-	Email          string `json:"email" validate:"required,email"`
-	Password       string `json:"password" validate:"required"`
-	ProfilePicture string `json:"profile_picture"`
+	ID           string `json:"id"`
+	Name         string `json:"name" validate:"required"`
+	Email        string `json:"email" validate:"required,email"`
+	Password     string `json:"password" validate:"required"`
+	ProfileImage string `json:"profile_image" gorm:"size:255;default:null"`
 }
 
 type CostumerLogin struct {
-	ID       uint   `json:"id"`
+	ID       string `json:"id"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }

@@ -11,11 +11,11 @@ import (
 var whitelistCostumer []string = make([]string, 5)
 
 type JwtCostumerClaims struct {
-	ID uint `json:"id"`
+	ID string `json:"id"`
 	jwt.StandardClaims
 }
 
-func GenerateTokenCustomer(userID uint) (string, error) {
+func GenerateTokenCustomer(userID string) (string, error) {
 	claims := JwtCostumerClaims{
 		userID,
 		jwt.StandardClaims{
