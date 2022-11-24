@@ -41,25 +41,34 @@ func (cr *courseRepository) DeleteCourse(id string) error {
 
 // GetAllCourse implements CourseRepository
 func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, error) {
-	var courses []dto.Course
+	var courseModels []model.Course
 	// get data sub category from database by user
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", instructorId).Find(&courses).Error
+	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", instructorId).Find(&courseModels).Error
 	if err != nil {
 		return nil, err
 	}
+	// copy data from model to dto
+	var courses []dto.Course
+	copier.Copy(&courses, &courseModels)
+
 	return courses, nil
 }
 
 // GetCourseByID implements CourseRepository
 func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, error) {
-	var course dto.Course
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? AND instructor_id = ?", id, instructorId).Find(&course)
+	var courseModel model.Course
+	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? AND instructor_id = ?", id, instructorId).Find(&courseModel)
 	if err.Error != nil {
 		return dto.Course{}, err.Error
 	}
 	if err.RowsAffected <= 0 {
 		return dto.Course{}, gorm.ErrRecordNotFound
 	}
+	
+	// copy data from model to dto
+	var course dto.Course
+	copier.Copy(&course, &courseModel)
+
 	return course, nil
 }
 
