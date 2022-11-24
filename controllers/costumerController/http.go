@@ -64,7 +64,7 @@ func (u *CostumerController) Login(c echo.Context) error {
 		})
 	}
 
-	token, errToken := middlewares.GenerateToken(user.ID)
+	token, errToken := middlewares.GenerateTokenCustomer(user.ID)
 
 	if errToken != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
@@ -88,7 +88,7 @@ func (u *CostumerController) Login(c echo.Context) error {
 func (u *CostumerController) Logout(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 
-	isListed := middlewares.CheckToken(user.Raw)
+	isListed := middlewares.CheckTokenCustomer(user.Raw)
 
 	if !isListed {
 		return c.JSON(http.StatusUnauthorized, map[string]string{
@@ -96,7 +96,7 @@ func (u *CostumerController) Logout(c echo.Context) error {
 		})
 	}
 
-	middlewares.Logout(user.Raw)
+	middlewares.LogoutCustomer(user.Raw)
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "logout success",
