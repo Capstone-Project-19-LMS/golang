@@ -30,8 +30,13 @@ func (cs *categoryService) CreateCategory(category dto.Category) error {
 }
 
 // DeleteCategory implements CategoryService
-func (*categoryService) DeleteCategory(id string) error {
-	panic("unimplemented")
+func (cs *categoryService) DeleteCategory(id string) error {
+	// call repository to delete account
+	err := cs.categoryRepo.DeleteCategory(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetAllCategory implements CategoryService

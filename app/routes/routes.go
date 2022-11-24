@@ -110,6 +110,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// category
 	category := privateInstructor.Group("/category")
 	category.POST("", categoryController.CreateCategory)
+	category.DELETE("/:id", categoryController.DeleteCategory)
 	
 	// -->
 

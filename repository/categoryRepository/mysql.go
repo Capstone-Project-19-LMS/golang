@@ -25,8 +25,17 @@ func (cr *categoryRepository) CreateCategory(category dto.Category) error {
 }
 
 // DeleteCategory implements CategoryRepository
-func (*categoryRepository) DeleteCategory(id string) error {
-	panic("unimplemented")
+func (cr *categoryRepository) DeleteCategory(id string) error {
+	// delete data category from database by id
+	err := cr.db.Select("courses").Where("id = ?", id).Delete(&model.Category{})
+	if err.Error != nil {
+		return err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
 }
 
 // GetAllCategory implements CategoryRepository

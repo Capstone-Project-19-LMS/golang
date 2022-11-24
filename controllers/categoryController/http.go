@@ -1,6 +1,7 @@
 package categoryController
 
 import (
+	"golang/constant/constantError"
 	"golang/models/dto"
 	"golang/service/categoryService"
 	"net/http"
@@ -44,5 +45,31 @@ func (cc *CategoryController) CreateCategory(c echo.Context) error {
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success create category",
+	})
+}
+
+// DeleteCategory is a function to delete account
+func (cc *CategoryController) DeleteCategory(c echo.Context) error {
+	// Get id from url
+	id := c.Param("id")
+
+	// Call service to delete account
+	err := cc.CategoryService.DeleteCategory(id)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete account",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete account",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success delete account",
 	})
 }
