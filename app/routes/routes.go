@@ -126,6 +126,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// course
 	course := privateInstructor.Group("/course")
 	course.POST("", courseController.CreateCourse)
+	course.GET("/:id", courseController.GetCourseByID)
 
 	// -->
 

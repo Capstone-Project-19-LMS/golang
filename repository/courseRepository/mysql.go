@@ -26,8 +26,17 @@ func (cr *courseRepository) CreateCourse(course dto.CourseTransaction) error {
 }
 
 // DeleteCourse implements CourseRepository
-func (*courseRepository) DeleteCourse(id string) error {
-	panic("unimplemented")
+func (cr *courseRepository) DeleteCourse(id string) error {
+	// delete data course from database by id
+	err := cr.db.Select("modules", "Favorites", "Ratings").Where("id = ?", id).Delete(&model.Course{})
+	if err.Error != nil {
+		return err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
 }
 
 // GetAllCourse implements CourseRepository
@@ -36,8 +45,16 @@ func (*courseRepository) GetAllCourse(instructorId string) ([]dto.CourseTransact
 }
 
 // GetCourseByID implements CourseRepository
-func (*courseRepository) GetCourseByID(id string) (dto.Course, error) {
-	panic("unimplemented")
+func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, error) {
+	var course dto.Course
+	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? AND instructor_id = ?", id, instructorId).Find(&course)
+	if err.Error != nil {
+		return dto.Course{}, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return dto.Course{}, gorm.ErrRecordNotFound
+	}
+	return course, nil
 }
 
 // UpdateCourse implements CourseRepository

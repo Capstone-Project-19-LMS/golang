@@ -37,7 +37,6 @@ func (cc *CourseController) CreateCourse(c echo.Context) error {
 	// Get user id from jwt
 	claims := middlewares.GetUserInstructor(c)
 	course.InstructorID = claims.ID
-	// fmt.Println("id = ",course.InstructorID)
 
 	// Call service to create course
 	err = cc.CourseService.CreateCourse(course)
@@ -57,5 +56,36 @@ func (cc *CourseController) CreateCourse(c echo.Context) error {
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success create course",
+	})
+}
+
+// GetCourseByID is a function to get course by id
+func (cc *CourseController) GetCourseByID(c echo.Context) error {
+	// get id from url param
+	id := c.Param("id")
+
+	// Get user id from jwt
+	claims := middlewares.GetUserInstructor(c)
+	instructorId := claims.ID
+
+	// get course by id from service
+	course, err := cc.CourseService.GetCourseByID(id, instructorId)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get course by id",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get course by id",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get course by id",
+		"course": course,
 	})
 }

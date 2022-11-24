@@ -13,7 +13,7 @@ type CourseService interface {
 	CreateCourse(dto.CourseTransaction) error
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(instructorId string) ([]dto.CourseTransaction, error)
-	GetCourseByID(id string) (dto.Course, error)
+	GetCourseByID(id, instructorId string) (dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
 
@@ -48,8 +48,16 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction) error {
 }
 
 // DeleteCourse implements CourseService
-func (*courseService) DeleteCourse(id string, instructorId string) error {
-	panic("unimplemented")
+func (cs *courseService) DeleteCourse(id string, instructorId string) error {
+	// check if instructor id is not same
+	// course, err := cs.courseRepo.GetCourseByID(id)
+
+	// call repository to delete account
+	err := cs.courseRepo.DeleteCourse(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetAllCourse implements CourseService
@@ -58,8 +66,12 @@ func (*courseService) GetAllCourse(instructorId string) ([]dto.CourseTransaction
 }
 
 // GetCourseByID implements CourseService
-func (*courseService) GetCourseByID(id string) (dto.Course, error) {
-	panic("unimplemented")
+func (cs *courseService) GetCourseByID(id, instructorId string) (dto.Course, error) {
+	course, err := cs.courseRepo.GetCourseByID(id, instructorId)
+	if err != nil {
+		return dto.Course{}, err
+	}
+	return course, nil
 }
 
 // UpdateCourse implements CourseService
