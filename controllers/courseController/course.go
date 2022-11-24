@@ -141,3 +141,44 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 		"course": course,
 	})
 }
+
+// UpdateCourse is a function to update course
+func (cc *CourseController) UpdateCourse(c echo.Context) error {
+	var course dto.CourseTransaction
+	// Binding request body to struct
+	err := c.Bind(&course)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
+
+	// get id from url
+	id := c.Param("id")
+	course.ID = id
+
+	// Get user id from jwt
+	claims := middlewares.GetUserInstructor(c)
+	course.InstructorID = claims.ID
+
+	// Call service to update course
+	err = cc.CourseService.UpdateCourse(course)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail update course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail update course",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success update course",
+	})
+}

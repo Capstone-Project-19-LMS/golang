@@ -86,8 +86,24 @@ func (cs *courseService) GetCourseByID(id, instructorId string) (dto.Course, err
 }
 
 // UpdateCourse implements CourseService
-func (*courseService) UpdateCourse(dto.CourseTransaction) error {
-	panic("unimplemented")
+func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
+	// check if instructor id is not same
+	oldCourse, err := cs.courseRepo.GetCourseByID(course.ID, course.InstructorID)
+	if err != nil {
+		return err
+	}
+
+	// check if instructor id in the course is the same as the instructor id in the token
+	if oldCourse.InstructorID != course.InstructorID {
+		return errors.New(constantError.ErrorNotAuthorized)
+	}
+
+	// call repository to update course
+	err = cs.courseRepo.UpdateCourse(course)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewCourseService(courseRepo courseRepository.CourseRepository, categoryRepo categoryRepository.CategoryRepository) CourseService {

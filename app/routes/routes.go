@@ -129,6 +129,7 @@ func New(db *gorm.DB) *echo.Echo {
 	course.DELETE("/:id", courseController.DeleteCourse)
 	course.GET("/:id", courseController.GetCourseByID)
 	course.GET("", courseController.GetAllCourse)
+	course.PUT("/:id", courseController.UpdateCourse)
 
 	// -->
 

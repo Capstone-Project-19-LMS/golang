@@ -64,8 +64,20 @@ func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, 
 }
 
 // UpdateCourse implements CourseRepository
-func (*courseRepository) UpdateCourse(dto.CourseTransaction) error {
-	panic("unimplemented")
+func (cr *courseRepository) UpdateCourse(course dto.CourseTransaction) error {
+	var courseModel model.Course
+	copier.Copy(&courseModel, &course)
+
+	// update account with new data
+	err := cr.db.Model(&model.Course{}).Where("id = ?", course.ID).Updates(&courseModel)
+	if err.Error != nil {
+		return err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
 }
 
 func NewCourseRepository(db *gorm.DB) CourseRepository {
