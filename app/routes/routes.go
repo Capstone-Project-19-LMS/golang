@@ -131,7 +131,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.DELETE("/category/delete/:id", categoryController.DeleteCategory)
 	privateInstructor.GET("/category/get_all", categoryController.GetAllCategory)
 	privateInstructor.GET("/category/get_by_id/:id", categoryController.GetCategoryByID)
-	privateInstructor.PUT("/category/:id", categoryController.UpdateCategory)
+	privateInstructor.PUT("/category/update/:id", categoryController.UpdateCategory)
 	//costumer access
 	privateCostumer.GET("/category/get_all", categoryController.GetAllCategory)
 	privateCostumer.GET("/category/get_by_id/:id", categoryController.GetCategoryByID)
@@ -143,7 +143,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.DELETE("/course/delete/:id", courseController.DeleteCourse)
 	privateInstructor.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateInstructor.GET("/course/get_all", courseController.GetAllCourse)
-	privateInstructor.PUT("/course/:id", courseController.UpdateCourse)
+	privateInstructor.PUT("/course/update/:id", courseController.UpdateCourse)
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
