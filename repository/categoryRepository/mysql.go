@@ -63,8 +63,20 @@ func (cr *categoryRepository) GetCategoryByID(id string) (dto.Category, error) {
 }
 
 // UpdateCategory implements CategoryRepository
-func (*categoryRepository) UpdateCategory(dto.CategoryTransaction) error {
-	panic("unimplemented")
+func (cr *categoryRepository) UpdateCategory(category dto.CategoryTransaction) error {
+	// update account with new data
+	err := cr.db.Model(&model.Category{}).Where("id = ?", category.ID).Updates(&model.Category{
+		Name: category.Name,
+		Description: category.Description,
+	})
+	if err.Error != nil {
+		return err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
 }
 
 func NewCategoryRepository(db *gorm.DB) CategoryRepository {

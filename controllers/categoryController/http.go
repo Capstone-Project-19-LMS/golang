@@ -118,3 +118,40 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error {
 		"category": category,
 	})
 }
+
+// UpdateCategory is a function to update category
+func (cc *CategoryController) UpdateCategory(c echo.Context) error {
+	var category dto.CategoryTransaction
+	// Binding request body to struct
+	err := c.Bind(&category)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get id from url
+	id := c.Param("id")
+	category.ID = id
+
+	// Call service to update category
+	err = cc.CategoryService.UpdateCategory(category)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail update category",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail update category",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success update category",
+	})
+}

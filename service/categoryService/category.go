@@ -58,8 +58,13 @@ func (cs *categoryService) GetCategoryByID(id string) (dto.Category, error) {
 }
 
 // UpdateCategory implements CategoryService
-func (*categoryService) UpdateCategory(dto.CategoryTransaction) error {
-	panic("unimplemented")
+func (cs *categoryService) UpdateCategory(category dto.CategoryTransaction) error {
+	// call repository to update category
+	err := cs.categoryRepo.UpdateCategory(category)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewCategoryService(categoryRepo categoryRepository.CategoryRepository) CategoryService {

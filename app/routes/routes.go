@@ -113,6 +113,7 @@ func New(db *gorm.DB) *echo.Echo {
 	category.DELETE("/:id", categoryController.DeleteCategory)
 	category.GET("", categoryController.GetAllCategory)
 	category.GET("/:id", categoryController.GetCategoryByID)
+	category.PUT("/:id", categoryController.UpdateCategory)
 	
 	// -->
 
