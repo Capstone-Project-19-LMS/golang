@@ -47,13 +47,20 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction) error {
 	return nil
 }
 
-// DeleteCourse implements CourseService
 func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 	// check if instructor id is not same
-	// course, err := cs.courseRepo.GetCourseByID(id)
+	course, err := cs.courseRepo.GetCourseByID(id, instructorId)
+	if err != nil {
+		return err
+	}
+
+	// check if instructor id in the course is the same as the instructor id in the token
+	if course.InstructorID != instructorId {
+		return errors.New(constantError.ErrorNotAuthorized)
+	}
 
 	// call repository to delete account
-	err := cs.courseRepo.DeleteCourse(id)
+	err = cs.courseRepo.DeleteCourse(id)
 	if err != nil {
 		return err
 	}

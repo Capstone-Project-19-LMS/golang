@@ -59,6 +59,37 @@ func (cc *CourseController) CreateCourse(c echo.Context) error {
 	})
 }
 
+// DeleteCourse is a function to delete course
+func (cc *CourseController) DeleteCourse(c echo.Context) error {
+	// Get id from url
+	id := c.Param("id")
+
+	// Get instructor id from jwt
+	claims := middlewares.GetUserInstructor(c)
+	instructorId := claims.ID
+
+	// Call service to delete course
+	err := cc.CourseService.DeleteCourse(id, instructorId)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete course",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success delete course",
+	})
+}
+
+
 // GetCourseByID is a function to get course by id
 func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	// get id from url param
