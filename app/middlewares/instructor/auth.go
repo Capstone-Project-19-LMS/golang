@@ -11,11 +11,11 @@ import (
 var whitelistInstructor []string = make([]string, 5)
 
 type JwtInstructorClaims struct {
-	ID uint `json:"id"`
+	ID string `json:"id"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(userID uint) (string, error) {
+func GenerateTokenInstructor(userID string) (string, error) {
 	claims := JwtInstructorClaims{
 		userID,
 		jwt.StandardClaims{
@@ -34,20 +34,20 @@ func GenerateToken(userID uint) (string, error) {
 	return token, nil
 }
 
-func GetUser(c echo.Context) *JwtInstructorClaims {
+func GetUserInstructor(c echo.Context) *JwtInstructorClaims {
 	user := c.Get("user").(*jwt.Token)
 
-	isListed := CheckToken(user.Raw)
+	isListed := CheckTokenInstructor(user.Raw)
 
 	if !isListed {
 		return nil
 	}
-
+	
 	claims := user.Claims.(*JwtInstructorClaims)
 	return claims
 }
 
-func CheckToken(token string) bool {
+func CheckTokenInstructor(token string) bool {
 	for _, tkn := range whitelistInstructor {
 		if tkn == token {
 			return true
@@ -57,7 +57,7 @@ func CheckToken(token string) bool {
 	return false
 }
 
-func Logout(token string) bool {
+func LogoutInstructor(token string) bool {
 	for idx, tkn := range whitelistInstructor {
 		if tkn == token {
 			whitelistInstructor = append(whitelistInstructor[:idx], whitelistInstructor[idx+1:]...)

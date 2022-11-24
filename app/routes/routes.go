@@ -4,12 +4,18 @@ import (
 	middlewares "golang/app/middlewares"
 	middlewareCostumer "golang/app/middlewares/costumer"
 	middlewareInstructor "golang/app/middlewares/instructor"
+	"golang/controllers/categoryController"
 	"golang/controllers/costumerController"
+	"golang/controllers/courseController"
 	instructorController "golang/controllers/instructorController"
 	"golang/helper"
+	"golang/repository/categoryRepository"
+	"golang/repository/courseRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
+	"golang/service/categoryService"
 	"golang/service/costumerService"
+	"golang/service/courseService"
 	instructorservice "golang/service/instructorService"
 	"golang/util"
 
@@ -26,16 +32,22 @@ func New(db *gorm.DB) *echo.Echo {
 	*/ 
 	// customer
 	customerRepository := customerRepository.NewCustomerRepository(db)
+
 	// instructor
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
+	categoryRepository := categoryRepository.NewCategoryRepository(db)
+	courseRepository := courseRepository.NewCourseRepository(db)
 	
 	/*
 		Services
 	*/ 
 	// customer
 	costumerService := costumerService.NewcostumerService(customerRepository)
+
 	// instructor
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
+	categoryService := categoryService.NewCategoryService(categoryRepository)
+	courseService := courseService.NewCourseService(courseRepository, categoryRepository)
 	
 	/*
 	Controllers
@@ -44,9 +56,16 @@ func New(db *gorm.DB) *echo.Echo {
 	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
 	}
+
 	// instructor
 	instructorController := instructorController.InstructorController{
 		InstructorService: instructorService,
+	}
+	categoryController := categoryController.CategoryController{
+		CategoryService: categoryService,
+	}
+	courseController := courseController.CourseController{
+		CourseService: courseService,
 	}
 
 	app := echo.New()
@@ -91,8 +110,26 @@ func New(db *gorm.DB) *echo.Echo {
 
 	privateInstructor := app.Group("/instructor", middleware.JWTWithConfig(configInstructor))
 
-	// private instructor access
+	/*
+		private instructor access
+	*/ 
 	privateInstructor.POST("/logout", instructorController.Logout)
+	
+	// category
+	category := privateInstructor.Group("/category")
+	category.POST("", categoryController.CreateCategory)
+	category.DELETE("/:id", categoryController.DeleteCategory)
+	category.GET("", categoryController.GetAllCategory)
+	category.GET("/:id", categoryController.GetCategoryByID)
+	category.PUT("/:id", categoryController.UpdateCategory)
+	
+	// course
+	course := privateInstructor.Group("/course")
+	course.POST("", courseController.CreateCourse)
+	course.DELETE("/:id", courseController.DeleteCourse)
+	course.GET("/:id", courseController.GetCourseByID)
+	course.GET("", courseController.GetAllCourse)
+	course.PUT("/:id", courseController.UpdateCourse)
 
 	// -->
 

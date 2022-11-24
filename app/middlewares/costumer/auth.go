@@ -15,7 +15,7 @@ type JwtCostumerClaims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(userID uint) (string, error) {
+func GenerateTokenCustomer(userID uint) (string, error) {
 	claims := JwtCostumerClaims{
 		userID,
 		jwt.StandardClaims{
@@ -34,10 +34,10 @@ func GenerateToken(userID uint) (string, error) {
 	return token, nil
 }
 
-func GetUser(c echo.Context) *JwtCostumerClaims {
+func GetUserCustomer(c echo.Context) *JwtCostumerClaims {
 	user := c.Get("user").(*jwt.Token)
 
-	isListed := CheckToken(user.Raw)
+	isListed := CheckTokenCustomer(user.Raw)
 
 	if !isListed {
 		return nil
@@ -47,7 +47,7 @@ func GetUser(c echo.Context) *JwtCostumerClaims {
 	return claims
 }
 
-func CheckToken(token string) bool {
+func CheckTokenCustomer(token string) bool {
 	for _, tkn := range whitelistCostumer {
 		if tkn == token {
 			return true
@@ -57,7 +57,7 @@ func CheckToken(token string) bool {
 	return false
 }
 
-func Logout(token string) bool {
+func LogoutCustomer(token string) bool {
 	for idx, tkn := range whitelistCostumer {
 		if tkn == token {
 			whitelistCostumer = append(whitelistCostumer[:idx], whitelistCostumer[idx+1:]...)
