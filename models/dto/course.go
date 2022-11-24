@@ -13,6 +13,7 @@ type Course struct {
 	DeletedAt       gorm.DeletedAt `json:"deleted_at"`
 	Name            string         `json:"name"`
 	Description     string         `json:"description"`
+	Objective       string         `json:"objective"`
 	Price           float64        `json:"price"`
 	Discount        float64        `json:"discount"`
 	Thumbnail       string         `json:"thumbnail"`
@@ -24,3 +25,17 @@ type Course struct {
 	// Ratings         []Rating
 	// Modules         []Module
 }
+
+type CourseTransaction struct {
+	ID              string `json:"id"`
+	Name            string         `json:"name" validate:"required"`
+	Description     string         `json:"description"`
+	Objective       string         `json:"objective"`
+	Price           float64        `json:"price"`
+	Discount        float64        `json:"discount"`
+	Thumbnail       string         `json:"thumbnail"`
+	Capacity        int            `json:"capacity" validate:"required,numeric"`
+	InstructorID    string         `json:"instructor_id"`
+	CategoryID      string         `json:"category_id" validate:"required,alphanum"`
+}
+
