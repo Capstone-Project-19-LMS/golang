@@ -4,11 +4,14 @@ import (
 	middlewares "golang/app/middlewares"
 	middlewareCostumer "golang/app/middlewares/costumer"
 	middlewareInstructor "golang/app/middlewares/instructor"
+	"golang/controllers/categoryController"
 	"golang/controllers/costumerController"
 	instructorController "golang/controllers/instructorController"
 	"golang/helper"
+	"golang/repository/categoryRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
+	"golang/service/categoryService"
 	"golang/service/costumerService"
 	instructorservice "golang/service/instructorService"
 	"golang/util"
@@ -26,16 +29,20 @@ func New(db *gorm.DB) *echo.Echo {
 	*/ 
 	// customer
 	customerRepository := customerRepository.NewCustomerRepository(db)
+
 	// instructor
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
+	categoryRepository := categoryRepository.NewCategoryRepository(db)
 	
 	/*
 		Services
 	*/ 
 	// customer
 	costumerService := costumerService.NewcostumerService(customerRepository)
+
 	// instructor
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
+	categoryService := categoryService.NewCategoryService(categoryRepository)
 	
 	/*
 	Controllers
@@ -44,9 +51,13 @@ func New(db *gorm.DB) *echo.Echo {
 	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
 	}
+
 	// instructor
 	instructorController := instructorController.InstructorController{
 		InstructorService: instructorService,
+	}
+	categoryController := categoryController.CategoryController{
+		CategoryService: categoryService,
 	}
 
 	app := echo.New()
@@ -91,9 +102,19 @@ func New(db *gorm.DB) *echo.Echo {
 
 	privateInstructor := app.Group("/instructor", middleware.JWTWithConfig(configInstructor))
 
-	// private instructor access
+	/*
+		private instructor access
+	*/ 
 	privateInstructor.POST("/logout", instructorController.Logout)
-
+	
+	// category
+	category := privateInstructor.Group("/category")
+	category.POST("", categoryController.CreateCategory)
+	category.DELETE("/:id", categoryController.DeleteCategory)
+	category.GET("", categoryController.GetAllCategory)
+	category.GET("/:id", categoryController.GetCategoryByID)
+	category.PUT("/:id", categoryController.UpdateCategory)
+	
 	// -->
 
 	return app
