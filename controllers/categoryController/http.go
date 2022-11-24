@@ -73,3 +73,21 @@ func (cc *CategoryController) DeleteCategory(c echo.Context) error {
 		"message": "success delete account",
 	})
 }
+
+// GetAllCategory is a function to get all category
+func (cc *CategoryController) GetAllCategory(c echo.Context) error {
+	// Call service to get all category
+	categories, err := cc.CategoryService.GetAllCategory()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get all category",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get all category",
+		"categories": categories,
+	})
+}

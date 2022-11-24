@@ -39,8 +39,14 @@ func (cr *categoryRepository) DeleteCategory(id string) error {
 }
 
 // GetAllCategory implements CategoryRepository
-func (*categoryRepository) GetAllCategory() ([]dto.Category, error) {
-	panic("unimplemented")
+func (cr *categoryRepository) GetAllCategory() ([]dto.Category, error) {
+	var categories []dto.Category
+	// get data sub category from database by user
+	err := cr.db.Model(&model.Category{}).Find(&categories).Error
+	if err != nil {
+		return nil, err
+	}
+	return categories, nil
 }
 
 // GetCategoryByID implements CategoryRepository

@@ -40,8 +40,12 @@ func (cs *categoryService) DeleteCategory(id string) error {
 }
 
 // GetAllCategory implements CategoryService
-func (*categoryService) GetAllCategory() ([]dto.Category, error) {
-	panic("unimplemented")
+func (cs *categoryService) GetAllCategory() ([]dto.Category, error) {
+	categories, err := cs.categoryRepo.GetAllCategory()
+	if err != nil {
+		return nil, err
+	}
+	return categories, nil
 }
 
 // GetCategoryByID implements CategoryService
