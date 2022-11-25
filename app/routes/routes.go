@@ -4,6 +4,7 @@ import (
 	middlewares "golang/app/middlewares"
 	middlewareCostumer "golang/app/middlewares/costumer"
 	middlewareInstructor "golang/app/middlewares/instructor"
+	assignmentcontroller "golang/controllers/assignmentController"
 	"golang/controllers/categoryController"
 	"golang/controllers/costumerController"
 	"golang/controllers/courseController"
@@ -11,12 +12,14 @@ import (
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
 	"golang/helper"
+	assignmentrepository "golang/repository/assignmentRepository"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
 	modulerepository "golang/repository/moduleRepository"
+	assignmentservice "golang/service/assignmentService"
 	"golang/service/categoryService"
 	"golang/service/costumerService"
 	"golang/service/courseService"
@@ -45,6 +48,7 @@ func New(db *gorm.DB) *echo.Echo {
 	courseRepository := courseRepository.NewCourseRepository(db)
 	moduleRepository := modulerepository.NewModuleRepository(db)
 	mediamodulerepository := mediamodulerepository.NewMediaModuleRepository(db)
+	assignmentRepository := assignmentrepository.NewAssignmentRepository(db)
 	/*
 		Services
 	*/
@@ -57,6 +61,8 @@ func New(db *gorm.DB) *echo.Echo {
 	courseService := courseService.NewCourseService(courseRepository, categoryRepository)
 	moduleService := moduleservice.NewModuleService(moduleRepository)
 	mediamoduleservice := mediamoduleservice.NewMediaModuleService(mediamodulerepository)
+	assignmentService := assignmentservice.NewAssignmentService(assignmentRepository)
+
 	/*
 		Controllers
 	*/
@@ -82,6 +88,10 @@ func New(db *gorm.DB) *echo.Echo {
 
 	mediaModuleController := mediamodulecontroller.MediaModuleController{
 		MediaModuleService: mediamoduleservice,
+	}
+
+	assignmentController := assignmentcontroller.AssignmentController{
+		AssignmentService: assignmentService,
 	}
 	app := echo.New()
 
@@ -112,7 +122,7 @@ func New(db *gorm.DB) *echo.Echo {
 	costumer.POST("/login", costumerController.Login)
 
 	privateCostumer := app.Group("/customer", middleware.JWTWithConfig(configCostumer))
-
+	privateCostumer.Use(middlewares.CheckTokenMiddlewareCustomer)
 	// private costumer access
 	privateCostumer.POST("/logout", costumerController.Logout)
 
@@ -124,7 +134,7 @@ func New(db *gorm.DB) *echo.Echo {
 	instructor.POST("/login", instructorController.Login)
 
 	privateInstructor := app.Group("/instructor", middleware.JWTWithConfig(configInstructor))
-
+	privateInstructor.Use(middlewares.CheckTokenMiddlewareInstructor)
 	/*
 		private instructor access
 	*/
@@ -177,6 +187,17 @@ func New(db *gorm.DB) *echo.Echo {
 	//costumer access
 	privateCostumer.GET("/media_module/get_all", mediaModuleController.GetAllMediaModule)
 	privateCostumer.GET("/media_module/get_by_id/:id", mediaModuleController.GetMediaModuleByID)
+
+	//assignment
+	//instructor access
+	privateInstructor.POST("/assignment/create", assignmentController.CreateAssignment)
+	privateInstructor.DELETE("/assignment/delete/:id", assignmentController.DeleteAssignment)
+	privateInstructor.GET("/assignment/get_all", assignmentController.GetAllAssignment)
+	privateInstructor.GET("/assignment/get_by_id/:id", assignmentController.GetAssignmentByID)
+	privateInstructor.PUT("/assignment/update/:id", assignmentController.UpdateAssignment)
+	//costumer access
+	privateCostumer.GET("/assignment/get_all", assignmentController.GetAllAssignment)
+	privateCostumer.GET("/assignment/get_by_id/:id", assignmentController.GetAssignmentByID)
 
 	// -->
 

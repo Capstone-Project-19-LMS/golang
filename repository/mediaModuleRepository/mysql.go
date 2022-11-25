@@ -13,7 +13,7 @@ type mediaModuleRepository struct {
 	db *gorm.DB
 }
 
-// CreateModule implements MediaModuleRepository
+// CreateMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) CreateMediaModule(mediaModule dto.MediaModuleTransaction) error {
 	var mediaModuleModel model.MediaModule
 	copier.Copy(&mediaModuleModel, &mediaModule)
@@ -25,7 +25,7 @@ func (mmr *mediaModuleRepository) CreateMediaModule(mediaModule dto.MediaModuleT
 	return nil
 }
 
-// DeleteModule implements MediaModuleRepository
+// DeleteMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) DeleteMediaModule(id string) error {
 	// delete data Module from database by id
 	err := mmr.db.Where("id = ?", id).Unscoped().Delete(&model.MediaModule{})
@@ -39,7 +39,7 @@ func (mmr *mediaModuleRepository) DeleteMediaModule(id string) error {
 	return nil
 }
 
-// GetAllModule implements MediaModuleRepository
+// GetAllMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) GetAllMediaModule() ([]dto.MediaModule, error) {
 	var mediaModuleModels []model.MediaModule
 	// get data sub category from database by user
@@ -54,7 +54,7 @@ func (mmr *mediaModuleRepository) GetAllMediaModule() ([]dto.MediaModule, error)
 	return mediaModules, nil
 }
 
-// GetModuleByID implements MediaModuleRepository
+// GetMediaModuleByID implements MediaModuleRepository
 func (mmr *mediaModuleRepository) GetMediaModuleByID(id string) (dto.MediaModule, error) {
 	var mediaModuleModel model.MediaModule
 	err := mmr.db.Model(&model.MediaModule{}).Where("id = ?", id).Find(&mediaModuleModel)
@@ -72,7 +72,7 @@ func (mmr *mediaModuleRepository) GetMediaModuleByID(id string) (dto.MediaModule
 	return Module, nil
 }
 
-// UpdateModule implements MediaModuleRepository
+// UpdateMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) UpdateMediaModule(mediaModule dto.MediaModuleTransaction) error {
 	var mediaModuleModel model.MediaModule
 	copier.Copy(&mediaModuleModel, &mediaModule)

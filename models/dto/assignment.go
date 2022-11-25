@@ -16,3 +16,10 @@ type Assignment struct {
 	ModuleID            string         `json:"module_id"`
 	CustomerAssignments []CustomerAssignment
 }
+
+type AssignmentTransaction struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ModuleID    string `json:"module_id"`
+}

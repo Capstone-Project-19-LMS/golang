@@ -42,7 +42,7 @@ func GetUserInstructor(c echo.Context) *JwtInstructorClaims {
 	if !isListed {
 		return nil
 	}
-	
+
 	claims := user.Claims.(*JwtInstructorClaims)
 	return claims
 }
