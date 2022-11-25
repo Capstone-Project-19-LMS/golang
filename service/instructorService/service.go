@@ -18,6 +18,9 @@ type instructorService struct {
 // CreateInstructor implements instructorService
 func (u *instructorService) CreateInstructor(user dto.InstructorRegister) error {
 	// hash password
+	id := helper.GenerateUUID()
+
+	user.ID = id
 	password, errPassword := helper.HashPassword(user.Password)
 	user.Password = password
 	if errPassword != nil {

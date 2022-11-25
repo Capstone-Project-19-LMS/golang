@@ -20,7 +20,7 @@ type Course struct {
 	Capacity        int              `json:"capacity"`
 	InstructorID    string           `json:"instructor_id"`
 	CategoryID      string           `json:"category_id"`
-	Rating float64 `json:"rating"`
+	Rating          float64          `json:"rating"`
 	CustomerCourses []CustomerCourse `json:"customer_courses"`
 	Favorites       []Favorite       `json:"favorites"`
 	Ratings         []Rating         `json:"ratings"`

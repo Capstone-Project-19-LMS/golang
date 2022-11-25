@@ -8,15 +8,18 @@ import (
 	"golang/controllers/costumerController"
 	"golang/controllers/courseController"
 	instructorController "golang/controllers/instructorController"
+	"golang/controllers/moduleController"
 	"golang/helper"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
+	modulerepository "golang/repository/moduleRepository"
 	"golang/service/categoryService"
 	"golang/service/costumerService"
 	"golang/service/courseService"
 	instructorservice "golang/service/instructorService"
+	moduleservice "golang/service/moduleService"
 	"golang/util"
 
 	"github.com/go-playground/validator/v10"
@@ -29,7 +32,7 @@ import (
 func New(db *gorm.DB) *echo.Echo {
 	/*
 		Repositories
-	*/ 
+	*/
 	// customer
 	customerRepository := customerRepository.NewCustomerRepository(db)
 
@@ -37,10 +40,11 @@ func New(db *gorm.DB) *echo.Echo {
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
 	courseRepository := courseRepository.NewCourseRepository(db)
-	
+	moduleRepository := modulerepository.NewModuleRepository(db)
+
 	/*
 		Services
-	*/ 
+	*/
 	// customer
 	costumerService := costumerService.NewcostumerService(customerRepository)
 
@@ -48,10 +52,11 @@ func New(db *gorm.DB) *echo.Echo {
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
 	categoryService := categoryService.NewCategoryService(categoryRepository)
 	courseService := courseService.NewCourseService(courseRepository, categoryRepository)
-	
+	moduleService := moduleservice.NewModuleService(moduleRepository)
+
 	/*
-	Controllers
-	*/ 
+		Controllers
+	*/
 	// customer
 	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
@@ -66,6 +71,10 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 	courseController := courseController.CourseController{
 		CourseService: courseService,
+	}
+
+	moduleController := moduleController.ModuleController{
+		ModuleService: moduleService,
 	}
 
 	app := echo.New()
@@ -112,25 +121,45 @@ func New(db *gorm.DB) *echo.Echo {
 
 	/*
 		private instructor access
-	*/ 
+	*/
 	privateInstructor.POST("/logout", instructorController.Logout)
-	
-	// category
-	category := privateInstructor.Group("/category")
-	category.POST("", categoryController.CreateCategory)
-	category.DELETE("/:id", categoryController.DeleteCategory)
-	category.GET("", categoryController.GetAllCategory)
-	category.GET("/:id", categoryController.GetCategoryByID)
-	category.PUT("/:id", categoryController.UpdateCategory)
-	
-	// course
-	course := privateInstructor.Group("/course")
-	course.POST("", courseController.CreateCourse)
-	course.DELETE("/:id", courseController.DeleteCourse)
-	course.GET("/:id", courseController.GetCourseByID)
-	course.GET("", courseController.GetAllCourse)
-	course.PUT("/:id", courseController.UpdateCourse)
 
+	// category
+
+	//instructor access
+	privateInstructor.POST("/category/create", categoryController.CreateCategory)
+	privateInstructor.DELETE("/category/delete/:id", categoryController.DeleteCategory)
+	privateInstructor.GET("/category/get_all", categoryController.GetAllCategory)
+	privateInstructor.GET("/category/get_by_id/:id", categoryController.GetCategoryByID)
+	privateInstructor.PUT("/category/update/:id", categoryController.UpdateCategory)
+	//costumer access
+	privateCostumer.GET("/category/get_all", categoryController.GetAllCategory)
+	privateCostumer.GET("/category/get_by_id/:id", categoryController.GetCategoryByID)
+
+	// course
+
+	//instructor access
+	privateInstructor.POST("/course/create", courseController.CreateCourse)
+	privateInstructor.DELETE("/course/delete/:id", courseController.DeleteCourse)
+	privateInstructor.GET("/course/get_by_id/:id", courseController.GetCourseByID)
+	privateInstructor.GET("/course/get_all", courseController.GetAllCourse)
+	privateInstructor.PUT("/course/update/:id", courseController.UpdateCourse)
+	//costumer access
+	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
+	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
+
+	//module
+	//instructor access
+	privateInstructor.POST("/module/create", moduleController.CreateModule)
+	privateInstructor.DELETE("/module/delete/:id", moduleController.DeleteModule)
+	privateInstructor.GET("/module/get_all", moduleController.GetAllModule)
+	privateInstructor.GET("/module/get_by_id/:id", moduleController.GetModuleByID)
+	privateInstructor.GET("/module/get_by_course_id/:course_id", moduleController.GetModuleByCourseID)
+	privateInstructor.PUT("/module/update/:id", moduleController.UpdateModule)
+	//costumer access
+	privateCostumer.GET("/module/get_all", moduleController.GetAllModule)
+	privateCostumer.GET("/module/get_by_id/:id", moduleController.GetModuleByID)
+	privateCostumer.GET("/module/get_by_course_id/:course_id", moduleController.GetModuleByCourseID)
 	// -->
 
 	return app
