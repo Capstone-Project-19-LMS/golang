@@ -8,17 +8,20 @@ import (
 	"golang/controllers/costumerController"
 	"golang/controllers/courseController"
 	instructorController "golang/controllers/instructorController"
+	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
 	"golang/helper"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
+	mediamodulerepository "golang/repository/mediaModuleRepository"
 	modulerepository "golang/repository/moduleRepository"
 	"golang/service/categoryService"
 	"golang/service/costumerService"
 	"golang/service/courseService"
 	instructorservice "golang/service/instructorService"
+	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
 	"golang/util"
 
@@ -41,7 +44,7 @@ func New(db *gorm.DB) *echo.Echo {
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
 	courseRepository := courseRepository.NewCourseRepository(db)
 	moduleRepository := modulerepository.NewModuleRepository(db)
-
+	mediamodulerepository := mediamodulerepository.NewMediaModuleRepository(db)
 	/*
 		Services
 	*/
@@ -53,7 +56,7 @@ func New(db *gorm.DB) *echo.Echo {
 	categoryService := categoryService.NewCategoryService(categoryRepository)
 	courseService := courseService.NewCourseService(courseRepository, categoryRepository)
 	moduleService := moduleservice.NewModuleService(moduleRepository)
-
+	mediamoduleservice := mediamoduleservice.NewMediaModuleService(mediamodulerepository)
 	/*
 		Controllers
 	*/
@@ -77,6 +80,9 @@ func New(db *gorm.DB) *echo.Echo {
 		ModuleService: moduleService,
 	}
 
+	mediaModuleController := mediamodulecontroller.MediaModuleController{
+		MediaModuleService: mediamoduleservice,
+	}
 	app := echo.New()
 
 	app.Validator = &helper.CustomValidator{
@@ -160,6 +166,18 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/module/get_all", moduleController.GetAllModule)
 	privateCostumer.GET("/module/get_by_id/:id", moduleController.GetModuleByID)
 	privateCostumer.GET("/module/get_by_course_id/:course_id", moduleController.GetModuleByCourseID)
+
+	//media module
+	//instructor access
+	privateInstructor.POST("/media_module/create", mediaModuleController.CreateMediaModule)
+	privateInstructor.DELETE("/media_module/delete/:id", mediaModuleController.DeleteMediaModule)
+	privateInstructor.GET("/media_module/get_all", mediaModuleController.GetAllMediaModule)
+	privateInstructor.GET("/media_module/get_by_id/:id", mediaModuleController.GetMediaModuleByID)
+	privateInstructor.PUT("/media_module/update/:id", mediaModuleController.UpdateMediaModule)
+	//costumer access
+	privateCostumer.GET("/media_module/get_all", mediaModuleController.GetAllMediaModule)
+	privateCostumer.GET("/media_module/get_by_id/:id", mediaModuleController.GetMediaModuleByID)
+
 	// -->
 
 	return app
