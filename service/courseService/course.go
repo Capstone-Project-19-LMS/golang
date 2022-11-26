@@ -10,7 +10,7 @@ import (
 )
 
 type CourseService interface {
-	CreateCourse(dto.CourseTransaction) error
+	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(instructorId string) ([]dto.Course, error)
 	GetCourseByID(id, instructorId string) (dto.Course, error)
@@ -24,9 +24,9 @@ type courseService struct {
 }
 
 // CreateCourse implements CourseService
-func (cs *courseService) CreateCourse(course dto.CourseTransaction) error {
+func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.User) error {
 	// check if category is not found
-	_, err := cs.categoryRepo.GetCategoryByID(course.CategoryID)
+	_, err := cs.categoryRepo.GetCategoryByID(course.CategoryID, user)
 	if err != nil {
 		return errors.New(constantError.ErrorCategoryNotFound)
 	}

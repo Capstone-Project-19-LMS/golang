@@ -2,6 +2,7 @@ package categoryController
 
 import (
 	"golang/constant/constantError"
+	"golang/helper"
 	"golang/models/dto"
 	"golang/service/categoryService"
 	"net/http"
@@ -97,8 +98,11 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
 
+	// Get user id from jwt
+	user := helper.GetUser(c)
+	
 	// Call service to get category by id
-	category, err := cc.CategoryService.GetCategoryByID(id)
+	category, err := cc.CategoryService.GetCategoryByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{

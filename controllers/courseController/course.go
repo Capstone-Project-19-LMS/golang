@@ -3,6 +3,7 @@ package courseController
 import (
 	middlewares "golang/app/middlewares/instructor"
 	"golang/constant/constantError"
+	"golang/helper"
 	"golang/models/dto"
 	"golang/service/courseService"
 	"net/http"
@@ -35,11 +36,10 @@ func (cc *CourseController) CreateCourse(c echo.Context) error {
 	}
 
 	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	course.InstructorID = claims.ID
+	user := helper.GetUser(c)
 
 	// Call service to create course
-	err = cc.CourseService.CreateCourse(course)
+	err = cc.CourseService.CreateCourse(course, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
