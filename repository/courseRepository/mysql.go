@@ -55,9 +55,9 @@ func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, err
 }
 
 // GetCourseByID implements CourseRepository
-func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, error) {
+func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
 	var courseModel model.Course
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? AND instructor_id = ?", id, instructorId).Find(&courseModel)
+	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? ", id).Find(&courseModel)
 	if err.Error != nil {
 		return dto.Course{}, err.Error
 	}
