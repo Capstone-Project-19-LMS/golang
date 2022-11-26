@@ -17,7 +17,7 @@ type courseRepository struct {
 func (cr *courseRepository) CreateCourse(course dto.CourseTransaction) error {
 	var courseModel model.Course
 	copier.Copy(&courseModel, &course)
-	
+
 	err := cr.db.Model(&model.Course{}).Create(&courseModel).Error
 	if err != nil {
 		return err
@@ -40,10 +40,15 @@ func (cr *courseRepository) DeleteCourse(id string) error {
 }
 
 // GetAllCourse implements CourseRepository
-func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, error) {
+func (cr *courseRepository) GetAllCourse(user dto.User) ([]dto.Course, error) {
 	var courseModels []model.Course
 	// get data sub category from database by user
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", instructorId).Find(&courseModels).Error
+	var err error
+	if user.Role == "instructor" {
+		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
+	} else if user.Role == "customer" {
+		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Find(&courseModels).Error
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +69,7 @@ func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
 	if err.RowsAffected <= 0 {
 		return dto.Course{}, gorm.ErrRecordNotFound
 	}
-	
+
 	// copy data from model to dto
 	var course dto.Course
 	copier.Copy(&course, &courseModel)

@@ -92,11 +92,10 @@ func (cc *CourseController) DeleteCourse(c echo.Context) error {
 // GetAllCourse is a function to get all course
 func (cc *CourseController) GetAllCourse(c echo.Context) error {
 	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	instructorId := claims.ID
+	user := helper.GetUser(c)
 
 	// Call service to get all category
-	categories, err := cc.CourseService.GetAllCourse(instructorId)
+	categories, err := cc.CourseService.GetAllCourse(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get all category",

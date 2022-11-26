@@ -12,7 +12,7 @@ import (
 type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
-	GetAllCourse(instructorId string) ([]dto.Course, error)
+	GetAllCourse(dto.User) ([]dto.Course, error)
 	GetCourseByID(id string) (dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
 	GetRatingCourse(dto.Course) float64
@@ -69,8 +69,8 @@ func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 }
 
 // GetAllCourse implements CourseService
-func (cs *courseService) GetAllCourse(instructorId string) ([]dto.Course, error) {
-	courses, err := cs.courseRepo.GetAllCourse(instructorId)
+func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
+	courses, err := cs.courseRepo.GetAllCourse(user)
 	if err != nil {
 		return nil, err
 	}
