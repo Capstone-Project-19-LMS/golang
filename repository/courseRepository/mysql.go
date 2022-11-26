@@ -16,9 +16,12 @@ type courseRepository struct {
 // CreateCourse implements CourseRepository
 func (cr *courseRepository) CreateCourse(course dto.CourseTransaction) error {
 	var courseModel model.Course
-	copier.Copy(&courseModel, &course)
-	
-	err := cr.db.Model(&model.Course{}).Create(&courseModel).Error
+	err := copier.Copy(&courseModel, &course)
+	if err != nil {
+		return err
+	}
+
+	err = cr.db.Model(&model.Course{}).Create(&courseModel).Error
 	if err != nil {
 		return err
 	}
@@ -49,8 +52,10 @@ func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, err
 	}
 	// copy data from model to dto
 	var courses []dto.Course
-	copier.Copy(&courses, &courseModels)
-
+	err = copier.Copy(&courses, &courseModels)
+	if err != nil {
+		return nil, err
+	}
 	return courses, nil
 }
 
@@ -67,16 +72,20 @@ func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, 
 	
 	// copy data from model to dto
 	var course dto.Course
-	copier.Copy(&course, &courseModel)
-
+	errCopy := copier.Copy(&course, &courseModel)
+	if errCopy != nil {
+		return dto.Course{}, errCopy
+	}
 	return course, nil
 }
 
 // UpdateCourse implements CourseRepository
 func (cr *courseRepository) UpdateCourse(course dto.CourseTransaction) error {
 	var courseModel model.Course
-	copier.Copy(&courseModel, &course)
-
+	errCopy := copier.Copy(&courseModel, &course)
+	if errCopy != nil {
+		return errCopy
+	}
 	// update account with new data
 	err := cr.db.Model(&model.Course{}).Where("id = ?", course.ID).Updates(&courseModel)
 	if err.Error != nil {
