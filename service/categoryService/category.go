@@ -9,7 +9,7 @@ import (
 type CategoryService interface {
 	CreateCategory(dto.CategoryTransaction) error
 	DeleteCategory(id string) error
-	GetCategoryByID(id string) (dto.Category, error)
+	GetCategoryByID(id string, user dto.User) (dto.Category, error)
 	GetAllCategory() ([]dto.CategoryTransaction, error)
 	UpdateCategory(dto.CategoryTransaction) error
 }
@@ -49,8 +49,8 @@ func (cs *categoryService) GetAllCategory() ([]dto.CategoryTransaction, error) {
 }
 
 // GetCategoryByID implements CategoryService
-func (cs *categoryService) GetCategoryByID(id string) (dto.Category, error) {
-	category, err := cs.categoryRepo.GetCategoryByID(id)
+func (cs *categoryService) GetCategoryByID(id string, user dto.User) (dto.Category, error) {
+	category, err := cs.categoryRepo.GetCategoryByID(id, user)
 	if err != nil {
 		return dto.Category{}, err
 	}

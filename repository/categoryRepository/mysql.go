@@ -50,9 +50,14 @@ func (cr *categoryRepository) GetAllCategory() ([]dto.CategoryTransaction, error
 }
 
 // GetCategoryByID implements CategoryRepository
-func (cr *categoryRepository) GetCategoryByID(id string) (dto.Category, error) {
+func (cr *categoryRepository) GetCategoryByID(id string, user dto.User) (dto.Category, error) {
 	var category dto.Category
-	err := cr.db.Model(&model.Category{}).Preload("Courses").Where("id = ?", id).Find(&category)
+	var err *gorm.DB
+	if user.Role == "instructor" {
+		err = cr.db.Model(&model.Category{}).Preload("Courses", "instructor_id = ?", user.ID).Where("id = ?", id ).Find(&category)
+	} else if user.Role == "customer" {
+		err = cr.db.Model(&model.Category{}).Preload("Courses").Where("id = ?", id).Find(&category)
+	}
 	if err.Error != nil {
 		return dto.Category{}, err.Error
 	}
