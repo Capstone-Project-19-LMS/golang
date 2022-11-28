@@ -8,6 +8,7 @@ import (
 
 type CostumerService interface {
 	CreateCustomer(user dto.CostumerRegister) error
+	VerifikasiCustomer(input dto.CustomerVerif) error
 	LoginCostumer(user dto.CostumerLogin) (dto.CostumerResponseGet, error)
 }
 
@@ -18,7 +19,9 @@ type costumerService struct {
 // CreateCustomer implements costumerService
 func (u *costumerService) CreateCustomer(user dto.CostumerRegister) error {
 	id := helper.GenerateUUID()
+	codeId := helper.GenerateUUID()
 	user.ID = id
+	user.CustomerCodeID = codeId
 	// hash password
 	password, errPassword := helper.HashPassword(user.Password)
 	user.Password = password
@@ -28,6 +31,14 @@ func (u *costumerService) CreateCustomer(user dto.CostumerRegister) error {
 
 	// call repository to save user
 	err := u.customerRepo.CreateCustomer(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *costumerService) VerifikasiCustomer(input dto.CustomerVerif) error {
+	err := u.customerRepo.VerifikasiCustomer(input)
 	if err != nil {
 		return err
 	}
