@@ -16,9 +16,11 @@ type assignmentRepository struct {
 // CreateAssignment implements AssignmentRepository
 func (ar *assignmentRepository) CreateAssignment(assignment dto.AssignmentTransaction) error {
 	var assignmentModel model.Assignment
-	copier.Copy(&assignmentModel, &assignment)
-
-	err := ar.db.Model(&model.Assignment{}).Create(&assignmentModel).Error
+	err := copier.Copy(&assignmentModel, &assignment)
+	if err != nil {
+		return err
+	}
+	err = ar.db.Model(&model.Assignment{}).Create(&assignmentModel).Error
 	if err != nil {
 		return err
 	}
@@ -49,8 +51,10 @@ func (ar *assignmentRepository) GetAllAssignment() ([]dto.Assignment, error) {
 	}
 	// copy data from model to dto
 	var assignments []dto.Assignment
-	copier.Copy(&assignments, &assignmentModels)
-
+	err = copier.Copy(&assignments, &assignmentModels)
+	if err != nil {
+		return nil, err
+	}
 	return assignments, nil
 }
 
@@ -67,16 +71,20 @@ func (ar *assignmentRepository) GetAssignmentByID(id string) (dto.Assignment, er
 
 	// copy data from model to dto
 	var assignment dto.Assignment
-	copier.Copy(&assignment, &assignmentModel)
-
+	errCopy := copier.Copy(&assignment, &assignmentModel)
+	if errCopy != nil {
+		return dto.Assignment{}, errCopy
+	}
 	return assignment, nil
 }
 
 // UpdateAssignment implements AssignmentRepository
 func (ar *assignmentRepository) UpdateAssignment(assignment dto.AssignmentTransaction) error {
 	var assignmentModel model.Assignment
-	copier.Copy(&assignmentModel, &assignment)
-
+	errCopy := copier.Copy(&assignmentModel, &assignment)
+	if errCopy != nil {
+		return errCopy
+	}
 	// update account with new data
 	err := ar.db.Model(&model.Assignment{}).Where("id = ?", assignment.ID).Updates(&assignmentModel)
 	if err.Error != nil {
