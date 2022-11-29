@@ -12,8 +12,8 @@ import (
 type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
-	GetAllCourse(instructorId string) ([]dto.Course, error)
-	GetCourseByID(id, instructorId string) (dto.Course, error)
+	GetAllCourse(dto.User) ([]dto.Course, error)
+	GetCourseByID(id string) (dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
 	GetRatingCourse(dto.Course) float64
 }
@@ -50,7 +50,7 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.Use
 
 func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 	// check if instructor id is not same
-	course, err := cs.courseRepo.GetCourseByID(id, instructorId)
+	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
 		return err
 	}
@@ -69,8 +69,8 @@ func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 }
 
 // GetAllCourse implements CourseService
-func (cs *courseService) GetAllCourse(instructorId string) ([]dto.Course, error) {
-	courses, err := cs.courseRepo.GetAllCourse(instructorId)
+func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
+	courses, err := cs.courseRepo.GetAllCourse(user)
 	if err != nil {
 		return nil, err
 	}
@@ -83,8 +83,8 @@ func (cs *courseService) GetAllCourse(instructorId string) ([]dto.Course, error)
 }
 
 // GetCourseByID implements CourseService
-func (cs *courseService) GetCourseByID(id, instructorId string) (dto.Course, error) {
-	course, err := cs.courseRepo.GetCourseByID(id, instructorId)
+func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
+	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
 		return dto.Course{}, err
 	}
@@ -99,7 +99,7 @@ func (cs *courseService) GetCourseByID(id, instructorId string) (dto.Course, err
 // UpdateCourse implements CourseService
 func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
 	// check if instructor id is not same
-	oldCourse, err := cs.courseRepo.GetCourseByID(course.ID, course.InstructorID)
+	oldCourse, err := cs.courseRepo.GetCourseByID(course.ID)
 	if err != nil {
 		return err
 	}
