@@ -84,6 +84,13 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
 		favorite := helper.GetFavoriteCourse(course, user.ID)
 		courses[i].Favorite = favorite
 	}
+	
+	// get number of module
+	for i, course := range courses {
+		numberOfModule := len(course.Modules)
+		courses[i].NumberOfModules = numberOfModule
+	}
+
 	return courses, nil
 }
 
@@ -101,6 +108,10 @@ func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
 	// get favorites of course
 	favorite := helper.GetFavoriteCourse(course, id)
 	course.Favorite = favorite
+
+	// get number of module
+	numberOfModule := len(course.Modules)
+	course.NumberOfModules = numberOfModule
 
 	return course, nil
 }

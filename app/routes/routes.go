@@ -177,7 +177,7 @@ func New(db *gorm.DB) *echo.Echo {
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
-	privateCostumer.GET("/course/take/:courseId", customerCourseController.TakeCourse)
+	privateCostumer.GET("/course/enroll/:courseId", customerCourseController.TakeCourse)
 	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
 
 	//module

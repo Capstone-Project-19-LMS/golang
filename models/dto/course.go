@@ -22,6 +22,7 @@ type Course struct {
 	CategoryID      string           `json:"category_id"`
 	Rating          float64          `json:"rating"`
 	Favorite        bool             `json:"favorite"`
+	NumberOfModules int              `json:"number_of_modules"`
 	CustomerCourses []CustomerCourse `json:"customer_courses"`
 	Favorites       []Favorite       `json:"favorites"`
 	Ratings         []Rating         `json:"ratings"`
@@ -42,16 +43,17 @@ type CourseTransaction struct {
 }
 
 type GetCourse struct {
-	ID           string  `json:"id"`
-	Name         string  `json:"name"`
-	Description  string  `json:"description"`
-	Objective    string  `json:"objective"`
-	Price        float64 `json:"price"`
-	Discount     float64 `json:"discount"`
-	Thumbnail    string  `json:"thumbnail"`
-	Capacity     int     `json:"capacity"`
-	InstructorID string  `json:"instructor_id"`
-	CategoryID   string  `json:"category_id"`
-	Rating       float64 `json:"rating"`
-	Favorite     bool    `json:"favorite"`
+	ID              string  `json:"id"`
+	Name            string  `json:"name"`
+	Description     string  `json:"description"`
+	Objective       string  `json:"objective"`
+	Price           float64 `json:"price"`
+	Discount        float64 `json:"discount"`
+	Thumbnail       string  `json:"thumbnail"`
+	Capacity        int     `json:"capacity"`
+	InstructorID    string  `json:"instructor_id"`
+	CategoryID      string  `json:"category_id"`
+	Rating          float64 `json:"rating"`
+	Favorite        bool    `json:"favorite"`
+	NumberOfModules int     `json:"module"`
 }
