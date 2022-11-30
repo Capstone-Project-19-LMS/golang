@@ -9,6 +9,7 @@ import (
 	"golang/controllers/costumerController"
 	"golang/controllers/courseController"
 	customerassignmentcontroller "golang/controllers/customerAssignmentController"
+	"golang/controllers/customerCourseController"
 	instructorController "golang/controllers/instructorController"
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
@@ -17,6 +18,7 @@ import (
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
 	customerassignmentrepository "golang/repository/customerAssignmentRepository"
+	"golang/repository/customerCourseRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
@@ -26,6 +28,7 @@ import (
 	"golang/service/costumerService"
 	"golang/service/courseService"
 	"golang/service/customerAssignmentService"
+	"golang/service/customerCourseService"
 	instructorservice "golang/service/instructorService"
 	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
@@ -42,10 +45,7 @@ func New(db *gorm.DB) *echo.Echo {
 	/*
 		Repositories
 	*/
-	// customer
 	customerRepository := customerRepository.NewCustomerRepository(db)
-
-	// instructor
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
 	courseRepository := courseRepository.NewCourseRepository(db)
@@ -53,13 +53,12 @@ func New(db *gorm.DB) *echo.Echo {
 	mediamodulerepository := mediamodulerepository.NewMediaModuleRepository(db)
 	assignmentRepository := assignmentrepository.NewAssignmentRepository(db)
 	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
+	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
+	
 	/*
 		Services
 	*/
-	// customer
 	costumerService := costumerService.NewcostumerService(customerRepository)
-
-	// instructor
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
 	categoryService := categoryService.NewCategoryService(categoryRepository)
 	courseService := courseService.NewCourseService(courseRepository, categoryRepository)
@@ -67,16 +66,14 @@ func New(db *gorm.DB) *echo.Echo {
 	mediamoduleservice := mediamoduleservice.NewMediaModuleService(mediamodulerepository)
 	assignmentService := assignmentservice.NewAssignmentService(assignmentRepository)
 	customerAssignmentService := customerAssignmentService.NewcustomerAssignmentService(customerAssignmentRepository)
+	customerCourseService := customerCourseService.NewCustomerCourseService(customerCourseRepository, courseRepository)
 
 	/*
 		Controllers
 	*/
-	// customer
 	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
 	}
-
-	// instructor
 	instructorController := instructorController.InstructorController{
 		InstructorService: instructorService,
 	}
@@ -102,15 +99,20 @@ func New(db *gorm.DB) *echo.Echo {
 	customerAssignmentController := customerassignmentcontroller.CustomerAssignmentController{
 		CustomerAssignmentService: customerAssignmentService,
 	}
+
+	customerCourseController := customerCourseController.CustomerCourseController {
+		CustomerCourseService: customerCourseService,
+	}
+
+	
+	/*
+	API Routes
+	*/
 	app := echo.New()
 
 	app.Validator = &helper.CustomValidator{
 		Validator: validator.New(),
 	}
-
-	/*
-		API Routes
-	*/
 	configLogger := middlewares.ConfigLogger{
 		Format: "[${time_rfc3339}] ${status} ${method} ${host} ${path} ${latency_human}" + "\n",
 	}
@@ -162,7 +164,9 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/category/get_all", categoryController.GetAllCategory)
 	privateCostumer.GET("/category/get_by_id/:id", categoryController.GetCategoryByID)
 
-	// course
+	/*
+		Course
+	*/
 
 	//instructor access
 	privateInstructor.POST("/course/create", courseController.CreateCourse)
@@ -173,6 +177,8 @@ func New(db *gorm.DB) *echo.Echo {
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
+	privateCostumer.GET("/course/take/:courseId", customerCourseController.TakeCourse)
+	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
 
 	//module
 	//instructor access

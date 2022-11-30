@@ -15,7 +15,6 @@ type CourseService interface {
 	GetAllCourse(dto.User) ([]dto.Course, error)
 	GetCourseByID(id string) (dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
-	GetRatingCourse(dto.Course) float64
 }
 
 type courseService struct {
@@ -76,8 +75,14 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
 	}
 	// get rating of all courses
 	for i, course := range courses {
-		rating := cs.GetRatingCourse(course)
+		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
+	}
+
+	// get favorite of all courses
+	for i, course := range courses {
+		favorite := helper.GetFavoriteCourse(course, user.ID)
+		courses[i].Favorite = favorite
 	}
 	return courses, nil
 }
@@ -90,8 +95,12 @@ func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
 	}
 
 	// get rating of course
-	rating := cs.GetRatingCourse(course)
+	rating := helper.GetRatingCourse(course)
 	course.Rating = rating
+
+	// get favorites of course
+	favorite := helper.GetFavoriteCourse(course, id)
+	course.Favorite = favorite
 
 	return course, nil
 }
@@ -117,19 +126,6 @@ func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
 	return nil
 }
 
-// RatingCourse implements CourseService
-func (cs *courseService) GetRatingCourse(course dto.Course) float64 {
-	if len(course.Ratings) == 0 {
-		return 0
-	}
-	// get rating of course
-	for _, rating := range course.Ratings {
-		course.Rating += float64(rating.Rating)
-	}
-	// average rating
-	average := course.Rating / float64(len(course.Ratings))
-	return average
-}
 
 func NewCourseService(courseRepo courseRepository.CourseRepository, categoryRepo categoryRepository.CategoryRepository) CourseService {
 	return &courseService{
