@@ -174,6 +174,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateInstructor.GET("/course/get_all", courseController.GetAllCourse)
 	privateInstructor.PUT("/course/update/:id", courseController.UpdateCourse)
+	privateInstructor.GET("/course/get_by_id/:id/enroll", courseController.GetCourseEnrollByID)
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)

@@ -137,6 +137,33 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	})
 }
 
+// GetCourseEnrollByID is a function to get course by id
+func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
+	// get id from url param
+	id := c.Param("id")
+
+	// get course by id from service
+	course, err := cc.CourseService.GetCourseEnrollByID(id)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get course with customer enrolled",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get course with customer enrolled",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get course with customer enrolled",
+		"course": course,
+	})
+}
+
 // UpdateCourse is a function to update course
 func (cc *CourseController) UpdateCourse(c echo.Context) error {
 	var course dto.CourseTransaction

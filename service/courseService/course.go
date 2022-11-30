@@ -14,6 +14,7 @@ type CourseService interface {
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(dto.User) ([]dto.Course, error)
 	GetCourseByID(id string) (dto.Course, error)
+	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
 
@@ -84,7 +85,7 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
 		favorite := helper.GetFavoriteCourse(course, user.ID)
 		courses[i].Favorite = favorite
 	}
-	
+
 	// get number of module
 	for i, course := range courses {
 		numberOfModule := len(course.Modules)
@@ -116,6 +117,15 @@ func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
 	return course, nil
 }
 
+// GetCourseEnrollByID implements CourseService
+func (cs *courseService) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
+	course, err := cs.courseRepo.GetCourseEnrollByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return course, nil
+}
+
 // UpdateCourse implements CourseService
 func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
 	// check if instructor id is not same
@@ -136,7 +146,6 @@ func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
 	}
 	return nil
 }
-
 
 func NewCourseService(courseRepo courseRepository.CourseRepository, categoryRepo categoryRepository.CategoryRepository) CourseService {
 	return &courseService{
