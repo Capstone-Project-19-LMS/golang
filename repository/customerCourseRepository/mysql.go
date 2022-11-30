@@ -12,6 +12,18 @@ type customerCourseRepository struct {
 	db *gorm.DB
 }
 
+
+
+// DeleteCustomerCourse implements CustomerCourseRepository
+func (ccr *customerCourseRepository) DeleteCustomerCourse(id string) error {
+	err := ccr.db.Unscoped().Delete(&model.CustomerCourse{}, "id = ?", id)
+	if err.Error != nil {
+		return err.Error
+	}
+
+	return nil
+}
+
 // GetCustomerCourse implements CustomerCourseRepository
 func (ccr *customerCourseRepository) GetCustomerCourse(courseID string, customerID string) (dto.CustomerCourse, error) {
 	var customerCourse dto.CustomerCourse
@@ -24,6 +36,7 @@ func (ccr *customerCourseRepository) GetCustomerCourse(courseID string, customer
 	}
 	return customerCourse, nil
 }
+
 
 // HistoryCourse implements CustomerCourseRepository
 func (ccr *customerCourseRepository) GetHistoryCourseByCustomerID(customerId string) ([]dto.Course, error) {

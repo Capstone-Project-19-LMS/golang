@@ -180,6 +180,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
 	privateCostumer.GET("/course/:courseId/enroll", customerCourseController.TakeCourse)
 	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
+	privateCostumer.DELETE("/course/:courseId/enroll/delete", customerCourseController.DeleteCustomerCourse)
 
 	//module
 	//instructor access

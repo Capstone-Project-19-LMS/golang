@@ -13,6 +13,7 @@ import (
 )
 
 type CustomerCourseService interface {
+	DeleteCustomerCourse(courseID, customerID string) error
 	GetHistoryCourseByCustomerID(string) ([]dto.GetCourse, error)
 	TakeCourse(dto.CustomerCourseTransaction) error
 }
@@ -20,6 +21,44 @@ type CustomerCourseService interface {
 type customerCourseService struct {
 	courseRepo         courseRepository.CourseRepository
 	customerCourseRepo customerCourseRepository.CustomerCourseRepository
+}
+
+// DeleteCustomerCourse implements CustomerCourseService
+func (ccs *customerCourseService) DeleteCustomerCourse(courseID, customerID string) error {
+	// get customer course by id
+	customerCourse, err := ccs.customerCourseRepo.GetCustomerCourse(courseID, customerID)
+	if err != nil {
+		return err
+	}
+
+	// check if customer course is not belong to customer
+	if customerCourse.CustomerID != customerID {
+		return errors.New(constantError.ErrorNotAuthorized)
+	}
+
+	// delete customer course
+	err = ccs.customerCourseRepo.DeleteCustomerCourse(customerCourse.ID)
+	if err != nil {
+		return err
+	}
+
+	// get course by id
+	course, err := ccs.courseRepo.GetCourseByID(customerCourse.CourseID)
+	if err != nil {
+		return err
+	}
+
+	// update capacity course
+	courseUpdate := dto.CourseTransaction{
+		ID:      customerCourse.CourseID,
+		Capacity: course.Capacity + 1,
+	}
+	err = ccs.courseRepo.UpdateCourse(courseUpdate)
+	if err != nil {
+		return err
+	}	
+
+	return nil
 }
 
 // GetHistoryCourseByCustomerID implements CustomerCourseService

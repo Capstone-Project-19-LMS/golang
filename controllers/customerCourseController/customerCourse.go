@@ -14,6 +14,34 @@ type CustomerCourseController struct {
 	CustomerCourseService customerCourseService.CustomerCourseService
 }
 
+// DeleteCustomerCourse is a function to delete customer course
+func (ccc *CustomerCourseController) DeleteCustomerCourse(c echo.Context) error {
+	// get customer course id from url
+	courseID := c.Param("courseId")
+
+	// get customer id from jwt
+	customer := helper.GetUser(c)
+
+	// call service to delete customer course
+	err := ccc.CustomerCourseService.DeleteCustomerCourse(courseID, customer.ID)
+	if err != nil {	
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete customer course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete customer course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success delete customer course",
+	})
+}
 // GetHistoryCourseByCustomerID is a function to get history course by customer id
 func (ccc *CustomerCourseController) GetHistoryCourseByCustomerID(c echo.Context) error {
 	// Get user id from jwt
