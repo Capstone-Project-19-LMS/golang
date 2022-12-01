@@ -14,6 +14,8 @@ const (
 	ErrorCourseCapacity = "course capacity is full"
 	// ErrorCustomerAlreadyTakeCourse is error message when customer already take course
 	ErrorCustomerAlreadyTakeCourse = "customer already take course"
+	
+	ErrorNoActive = "email not verifikasi"
 )
 
 var ErrorCode = map[string]int{
@@ -23,5 +25,5 @@ var ErrorCode = map[string]int{
 	"email or password not match": 400,
 	"course capacity is full":        400,
 	"customer already take course":   400,
-	ErrorNoActive = "email not verifikasi"
+	"email not verifikasi": 500,
 )
