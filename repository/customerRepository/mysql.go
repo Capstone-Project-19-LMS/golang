@@ -135,7 +135,7 @@ func (u *customerRepository) VerifikasiCustomer(input dto.CustomerVerif) error {
 
 // LoginCustomer implements CustomerRepository
 func (u *customerRepository) LoginCustomer(customer dto.CostumerLogin) (dto.CostumerResponseGet, error) {
-	var customerLogin dto.Costumer
+	var customerLogin dto.CostumerResponseGet
 	err := u.db.Model(&model.Customer{}).First(&customerLogin, "email = ?", customer.Email).Error
 	if err != nil {
 		return dto.CostumerResponseGet{}, err
@@ -144,7 +144,7 @@ func (u *customerRepository) LoginCustomer(customer dto.CostumerLogin) (dto.Cost
 	if !match {
 		return dto.CostumerResponseGet{}, errors.New(constantError.ErrorEmailOrPasswordNotMatch)
 	}
-	var customerLoginResponse dto.CostumerResponseGet = dto.CostumerResponseGet{
+	var customerLoginResponse = dto.CostumerResponseGet{
 		ID:           customerLogin.ID,
 		Name:         customerLogin.Name,
 		Email:        customerLogin.Email,
