@@ -165,7 +165,7 @@ func (u *customerRepository) LoginCustomer(customer dto.CostumerLogin) (dto.Cost
 		isiEmail := fmt.Sprintf("<p>kode verifikasi yaitu <b>%s</b></p>", code)
 		mailer := gomail.NewMessage()
 		mailer.SetHeader("From", util.GetConfig("SENDER_NAME"))
-		mailer.SetHeader("To", customerLogin.Email, "alimuldev@gmail.com")
+		mailer.SetHeader("To", customerLogin.Email, "genceralta19@gmail.com")
 		mailer.SetAddressHeader("Cc", customerLogin.Email, "Tra Lala La")
 		mailer.SetHeader("Subject", "Test mail")
 		mailer.SetBody("text/html", isiEmail)
@@ -183,6 +183,8 @@ func (u *customerRepository) LoginCustomer(customer dto.CostumerLogin) (dto.Cost
 
 		getCustomerCode.Code = code
 		u.db.Save(&getCustomerCode)
+
+		return dto.CostumerResponseGet{}, errors.New(constantError.ErrorNoActive)
 	}
 	return customerLoginResponse, nil
 }
