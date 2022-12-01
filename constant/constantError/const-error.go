@@ -23,4 +23,5 @@ var ErrorCode = map[string]int{
 	"email or password not match": 400,
 	"course capacity is full":        400,
 	"customer already take course":   400,
-}
+	ErrorNoActive = "email not verifikasi"
+)
