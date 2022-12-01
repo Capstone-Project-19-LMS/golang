@@ -92,11 +92,10 @@ func (cc *CourseController) DeleteCourse(c echo.Context) error {
 // GetAllCourse is a function to get all course
 func (cc *CourseController) GetAllCourse(c echo.Context) error {
 	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	instructorId := claims.ID
+	user := helper.GetUser(c)
 
 	// Call service to get all category
-	categories, err := cc.CourseService.GetAllCourse(instructorId)
+	categories, err := cc.CourseService.GetAllCourse(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get all category",
@@ -116,12 +115,8 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	// get id from url param
 	id := c.Param("id")
 
-	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	instructorId := claims.ID
-
 	// get course by id from service
-	course, err := cc.CourseService.GetCourseByID(id, instructorId)
+	course, err := cc.CourseService.GetCourseByID(id)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -138,6 +133,33 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get course by id",
+		"course": course,
+	})
+}
+
+// GetCourseEnrollByID is a function to get course by id
+func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
+	// get id from url param
+	id := c.Param("id")
+
+	// get course by id from service
+	course, err := cc.CourseService.GetCourseEnrollByID(id)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get course with customer enrolled",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get course with customer enrolled",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get course with customer enrolled",
 		"course": course,
 	})
 }

@@ -13,6 +13,8 @@ type courseRepository struct {
 	db *gorm.DB
 }
 
+
+
 // CreateCourse implements CourseRepository
 func (cr *courseRepository) CreateCourse(course dto.CourseTransaction) error {
 	var courseModel model.Course
@@ -43,10 +45,15 @@ func (cr *courseRepository) DeleteCourse(id string) error {
 }
 
 // GetAllCourse implements CourseRepository
-func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, error) {
+func (cr *courseRepository) GetAllCourse(user dto.User) ([]dto.Course, error) {
 	var courseModels []model.Course
 	// get data sub category from database by user
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", instructorId).Find(&courseModels).Error
+	var err error
+	if user.Role == "instructor" {
+		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
+	} else if user.Role == "customer" {
+		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Find(&courseModels).Error
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -60,16 +67,16 @@ func (cr *courseRepository) GetAllCourse(instructorId string) ([]dto.Course, err
 }
 
 // GetCourseByID implements CourseRepository
-func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, error) {
+func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
 	var courseModel model.Course
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? AND instructor_id = ?", id, instructorId).Find(&courseModel)
+	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? ", id).Find(&courseModel)
 	if err.Error != nil {
 		return dto.Course{}, err.Error
 	}
 	if err.RowsAffected <= 0 {
 		return dto.Course{}, gorm.ErrRecordNotFound
 	}
-	
+
 	// copy data from model to dto
 	var course dto.Course
 	errCopy := copier.Copy(&course, &courseModel)
@@ -77,6 +84,26 @@ func (cr *courseRepository) GetCourseByID(id, instructorId string) (dto.Course, 
 		return dto.Course{}, errCopy
 	}
 	return course, nil
+}
+
+// GetCourseEnrollByID implements CourseRepository
+func (cr *courseRepository) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
+	var customers []dto.CustomerEnroll
+	err := cr.db.Model(&model.Customer{}).Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.course_id = ? ", id).Find(&customers)
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+
+	// copy data from model to dto
+	// var course []dto.CustomerEnroll
+	// errCopy := copier.Copy(&course, &customerModel)
+	// if errCopy != nil {
+	// 	return nil, errCopy
+	// }
+	return customers, nil
 }
 
 // UpdateCourse implements CourseRepository

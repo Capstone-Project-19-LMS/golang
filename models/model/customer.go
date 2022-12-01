@@ -15,6 +15,7 @@ type Customer struct {
 	Email               string         `json:"email" gorm:"notNull;unique;size:255"`
 	Password            string         `json:"password" gorm:"notNull"`
 	ProfileImage        string         `json:"profile_image" gorm:"size:255;default:null"`
+	IsActive            bool           `json:"is_active"`
 	CustomerCourses     []CustomerCourse
 	Favorites           []Favorite
 	Ratings             []Rating

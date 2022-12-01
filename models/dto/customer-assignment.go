@@ -16,3 +16,10 @@ type CustomerAssignment struct {
 	AssignmentID string         `json:"assignment_id"`
 	CustomerID   string         `json:"customer_id"`
 }
+type CustomerAssignmentTransaction struct {
+	ID           string `json:"id"`
+	File         string `json:"file"`
+	Grade        int    `json:"grade" gorm:"notNull"`
+	AssignmentID string `json:"assignment_id"`
+	CustomerID   string `json:"customer_id"`
+}

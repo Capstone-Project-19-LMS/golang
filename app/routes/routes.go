@@ -8,6 +8,8 @@ import (
 	"golang/controllers/categoryController"
 	"golang/controllers/costumerController"
 	"golang/controllers/courseController"
+	customerassignmentcontroller "golang/controllers/customerAssignmentController"
+	"golang/controllers/customerCourseController"
 	instructorController "golang/controllers/instructorController"
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
@@ -15,6 +17,8 @@ import (
 	assignmentrepository "golang/repository/assignmentRepository"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
+	customerassignmentrepository "golang/repository/customerAssignmentRepository"
+	"golang/repository/customerCourseRepository"
 	"golang/repository/customerRepository"
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
@@ -23,6 +27,8 @@ import (
 	"golang/service/categoryService"
 	"golang/service/costumerService"
 	"golang/service/courseService"
+	"golang/service/customerAssignmentService"
+	"golang/service/customerCourseService"
 	instructorservice "golang/service/instructorService"
 	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
@@ -39,39 +45,35 @@ func New(db *gorm.DB) *echo.Echo {
 	/*
 		Repositories
 	*/
-	// customer
 	customerRepository := customerRepository.NewCustomerRepository(db)
-
-	// instructor
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
 	courseRepository := courseRepository.NewCourseRepository(db)
 	moduleRepository := modulerepository.NewModuleRepository(db)
 	mediamodulerepository := mediamodulerepository.NewMediaModuleRepository(db)
 	assignmentRepository := assignmentrepository.NewAssignmentRepository(db)
+	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
+	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
+	
 	/*
 		Services
 	*/
-	// customer
 	costumerService := costumerService.NewcostumerService(customerRepository)
-
-	// instructor
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
 	categoryService := categoryService.NewCategoryService(categoryRepository)
 	courseService := courseService.NewCourseService(courseRepository, categoryRepository)
 	moduleService := moduleservice.NewModuleService(moduleRepository)
 	mediamoduleservice := mediamoduleservice.NewMediaModuleService(mediamodulerepository)
 	assignmentService := assignmentservice.NewAssignmentService(assignmentRepository)
+	customerAssignmentService := customerAssignmentService.NewcustomerAssignmentService(customerAssignmentRepository)
+	customerCourseService := customerCourseService.NewCustomerCourseService(customerCourseRepository, courseRepository)
 
 	/*
 		Controllers
 	*/
-	// customer
 	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
 	}
-
-	// instructor
 	instructorController := instructorController.InstructorController{
 		InstructorService: instructorService,
 	}
@@ -93,15 +95,24 @@ func New(db *gorm.DB) *echo.Echo {
 	assignmentController := assignmentcontroller.AssignmentController{
 		AssignmentService: assignmentService,
 	}
+
+	customerAssignmentController := customerassignmentcontroller.CustomerAssignmentController{
+		CustomerAssignmentService: customerAssignmentService,
+	}
+
+	customerCourseController := customerCourseController.CustomerCourseController {
+		CustomerCourseService: customerCourseService,
+	}
+
+	
+	/*
+	API Routes
+	*/
 	app := echo.New()
 
 	app.Validator = &helper.CustomValidator{
 		Validator: validator.New(),
 	}
-
-	/*
-		API Routes
-	*/
 	configLogger := middlewares.ConfigLogger{
 		Format: "[${time_rfc3339}] ${status} ${method} ${host} ${path} ${latency_human}" + "\n",
 	}
@@ -119,6 +130,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// costumer
 	costumer := app.Group("/customer")
 	costumer.POST("/register", costumerController.Register)
+	costumer.PUT("/verifikasi", costumerController.Verifikasi)
 	costumer.POST("/login", costumerController.Login)
 
 	privateCostumer := app.Group("/customer", middleware.JWTWithConfig(configCostumer))
@@ -152,7 +164,9 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/category/get_all", categoryController.GetAllCategory)
 	privateCostumer.GET("/category/get_by_id/:id", categoryController.GetCategoryByID)
 
-	// course
+	/*
+		Course
+	*/
 
 	//instructor access
 	privateInstructor.POST("/course/create", courseController.CreateCourse)
@@ -160,9 +174,13 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateInstructor.GET("/course/get_all", courseController.GetAllCourse)
 	privateInstructor.PUT("/course/update/:id", courseController.UpdateCourse)
+	privateInstructor.GET("/course/get_by_id/:id/enroll", courseController.GetCourseEnrollByID)
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
+	privateCostumer.GET("/course/:courseId/enroll", customerCourseController.TakeCourse)
+	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
+	privateCostumer.DELETE("/course/:courseId/enroll/delete", customerCourseController.DeleteCustomerCourse)
 
 	//module
 	//instructor access
@@ -199,6 +217,16 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/assignment/get_all", assignmentController.GetAllAssignment)
 	privateCostumer.GET("/assignment/get_by_id/:id", assignmentController.GetAssignmentByID)
 
+	//customer assignment
+	//instructor access
+	privateInstructor.POST("/customer_assignment/create", customerAssignmentController.CreateCustomerAssignment)
+	privateInstructor.DELETE("/customer_assignment/delete/:id", customerAssignmentController.DeleteCustomerAssignment)
+	privateInstructor.GET("/customer_assignment/get_all", customerAssignmentController.GetAllCustomerAssignment)
+	privateInstructor.GET("/customer_assignment/get_by_id/:id", customerAssignmentController.GetCustomerAssignmentByID)
+	privateInstructor.PUT("/customer_assignment/update/:id", customerAssignmentController.UpdateCustomerAssignment)
+	//costumer access
+	privateCostumer.GET("/customer_assignment/get_all", customerAssignmentController.GetAllCustomerAssignment)
+	privateCostumer.GET("/customer_assignment/get_by_id/:id", customerAssignmentController.GetCustomerAssignmentByID)
 	// -->
 
 	return app

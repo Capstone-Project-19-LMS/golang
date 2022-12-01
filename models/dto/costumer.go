@@ -6,6 +6,7 @@ type Costumer struct {
 	Email        string `json:"email"`
 	Password     string `json:"password"`
 	ProfileImage string `json:"profile_image" gorm:"size:255;default:null"`
+	IsActive     bool   `json:"is_active"`
 }
 
 type CostumerResponseGet struct {
@@ -14,15 +15,16 @@ type CostumerResponseGet struct {
 	Email        string `json:"email"`
 	Password     string `json:"password"`
 	ProfileImage string `json:"profile_image" gorm:"size:255;default:null"`
-	Role         string `json:"role"`
+	IsActive     bool   `json:"is_active"`
 }
 
 type CostumerRegister struct {
-	ID           string `json:"id"`
-	Name         string `json:"name" validate:"required"`
-	Email        string `json:"email" validate:"required,email"`
-	Password     string `json:"password" validate:"required"`
-	ProfileImage string `json:"profile_image" gorm:"size:255;default:null"`
+	ID             string `json:"id"`
+	Name           string `json:"name" validate:"required"`
+	Email          string `json:"email" validate:"required,email"`
+	Password       string `json:"password" validate:"required"`
+	ProfileImage   string `json:"profile_image" gorm:"size:255;default:null"`
+	CustomerCodeID string `json:"customer_code_id"`
 }
 
 type CostumerLogin struct {
@@ -31,8 +33,20 @@ type CostumerLogin struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type CustomerVerif struct {
+	CustomerID string `json:"customer_id"`
+	Code       string `json:"code"`
+}
+
 type CostumerResponse struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Token string `json:"token"`
+}
+
+type CustomerEnroll struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	ProfileImage string `json:"profile_image"`
 }
