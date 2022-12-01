@@ -26,4 +26,4 @@ var ErrorCode = map[string]int{
 	"course capacity is full":        400,
 	"customer already take course":   400,
 	"email not verifikasi": 500,
-)
+}
