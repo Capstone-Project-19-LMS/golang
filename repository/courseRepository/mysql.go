@@ -13,6 +13,8 @@ type courseRepository struct {
 	db *gorm.DB
 }
 
+
+
 // CreateCourse implements CourseRepository
 func (cr *courseRepository) CreateCourse(course dto.CourseTransaction) error {
 	var courseModel model.Course
@@ -82,6 +84,26 @@ func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
 		return dto.Course{}, errCopy
 	}
 	return course, nil
+}
+
+// GetCourseEnrollByID implements CourseRepository
+func (cr *courseRepository) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
+	var customers []dto.CustomerEnroll
+	err := cr.db.Model(&model.Customer{}).Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.course_id = ? ", id).Find(&customers)
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+
+	// copy data from model to dto
+	// var course []dto.CustomerEnroll
+	// errCopy := copier.Copy(&course, &customerModel)
+	// if errCopy != nil {
+	// 	return nil, errCopy
+	// }
+	return customers, nil
 }
 
 // UpdateCourse implements CourseRepository
