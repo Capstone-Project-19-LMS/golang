@@ -10,6 +10,7 @@ import (
 	"golang/controllers/courseController"
 	customerassignmentcontroller "golang/controllers/customerAssignmentController"
 	"golang/controllers/customerCourseController"
+	"golang/controllers/favoriteController"
 	instructorController "golang/controllers/instructorController"
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
@@ -20,6 +21,7 @@ import (
 	customerassignmentrepository "golang/repository/customerAssignmentRepository"
 	"golang/repository/customerCourseRepository"
 	"golang/repository/customerRepository"
+	"golang/repository/favoriteRepository"
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
 	modulerepository "golang/repository/moduleRepository"
@@ -29,6 +31,7 @@ import (
 	"golang/service/courseService"
 	"golang/service/customerAssignmentService"
 	"golang/service/customerCourseService"
+	"golang/service/favoriteService"
 	instructorservice "golang/service/instructorService"
 	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
@@ -54,6 +57,7 @@ func New(db *gorm.DB) *echo.Echo {
 	assignmentRepository := assignmentrepository.NewAssignmentRepository(db)
 	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
 	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
+	favoriteRepository := favoriteRepository.NewFavoriteRepository(db)
 	
 	/*
 		Services
@@ -67,6 +71,7 @@ func New(db *gorm.DB) *echo.Echo {
 	assignmentService := assignmentservice.NewAssignmentService(assignmentRepository)
 	customerAssignmentService := customerAssignmentService.NewcustomerAssignmentService(customerAssignmentRepository)
 	customerCourseService := customerCourseService.NewCustomerCourseService(customerCourseRepository, courseRepository)
+	favoriteService := favoriteService.NewFavoriteService(favoriteRepository, courseRepository)
 
 	/*
 		Controllers
@@ -102,6 +107,9 @@ func New(db *gorm.DB) *echo.Echo {
 
 	customerCourseController := customerCourseController.CustomerCourseController {
 		CustomerCourseService: customerCourseService,
+	}
+	favoriteController := favoriteController.FavoriteController {
+		FavoriteService: favoriteService,
 	}
 
 	
@@ -178,9 +186,13 @@ func New(db *gorm.DB) *echo.Echo {
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
-	privateCostumer.GET("/course/:courseId/enroll", customerCourseController.TakeCourse)
+	// customer course
+	privateCostumer.POST("/course/:courseId/enroll/take", customerCourseController.TakeCourse)
 	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
 	privateCostumer.DELETE("/course/:courseId/enroll/delete", customerCourseController.DeleteCustomerCourse)
+	// favorite
+	privateCostumer.POST("/course/:courseId/favorite/add", favoriteController.AddFavorite)
+	privateCostumer.DELETE("/course/:courseId/favorite/delete", favoriteController.DeleteFavorite)
 
 	//module
 	//instructor access

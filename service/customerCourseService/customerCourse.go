@@ -28,6 +28,9 @@ func (ccs *customerCourseService) DeleteCustomerCourse(courseID, customerID stri
 	// get customer course by id
 	customerCourse, err := ccs.customerCourseRepo.GetCustomerCourse(courseID, customerID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New(constantError.ErrorCustomerNotEnrolled)
+		}
 		return err
 	}
 

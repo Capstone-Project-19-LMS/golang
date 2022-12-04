@@ -43,7 +43,7 @@ func (ccr *customerCourseRepository) GetHistoryCourseByCustomerID(customerId str
 	var courseModels []model.Course
 
 	// get data course from database by customer id
-	err := ccr.db.Model(&model.Course{}).Joins("JOIN customer_courses ON customer_courses.course_id = courses.id").Preload("Favorites").Preload("Ratings").Where("customer_courses.customer_id = ?", customerId).Find(&courseModels).Error
+	err := ccr.db.Model(&model.Course{}).Joins("JOIN customer_courses ON customer_courses.course_id = courses.id").Preload("Favorites").Preload("Ratings").Unscoped().Where("customer_courses.customer_id = ?", customerId).Find(&courseModels).Error
 	if err != nil {
 		return nil, err
 	}
