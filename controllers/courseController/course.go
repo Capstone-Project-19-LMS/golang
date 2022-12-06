@@ -106,7 +106,7 @@ func (cc *CourseController) GetAllCourse(c echo.Context) error {
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get all category",
-		"categories": categories,
+		"courses": categories,
 	})
 }
 

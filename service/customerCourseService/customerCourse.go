@@ -28,6 +28,9 @@ func (ccs *customerCourseService) DeleteCustomerCourse(courseID, customerID stri
 	// get customer course by id
 	customerCourse, err := ccs.customerCourseRepo.GetCustomerCourse(courseID, customerID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New(constantError.ErrorCustomerNotEnrolled)
+		}
 		return err
 	}
 
@@ -78,6 +81,12 @@ func (ccs *customerCourseService) GetHistoryCourseByCustomerID(customerID string
 	for i, course := range courses {
 		favorite := helper.GetFavoriteCourse(course, customerID)
 		courses[i].Favorite = favorite
+	}
+
+	// get number of module
+	for i, course := range courses {
+		numberOfModule := len(course.Modules)
+		courses[i].NumberOfModules = numberOfModule
 	}
 
 	// copy courses from dto.course to dto.GetCustomerCourse

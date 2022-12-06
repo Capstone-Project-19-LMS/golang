@@ -46,6 +46,12 @@ func GetUserInstructor(c echo.Context) *JwtInstructorClaims {
 		return nil
 	}
 
+	// jika ada code yang panic
+	defer func() {
+		if err := recover(); err != nil {
+			return
+		}
+	}()
 	claims := user.Claims.(*JwtInstructorClaims)
 	return claims
 }
