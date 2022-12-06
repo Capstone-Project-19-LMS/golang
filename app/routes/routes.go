@@ -134,6 +134,7 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 
 	app.Use(configLogger.Init())
+	app.Use(middleware.CORS())
 
 	// costumer
 	costumer := app.Group("/customer")
@@ -193,6 +194,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// favorite
 	privateCostumer.POST("/course/:courseId/favorite/add", favoriteController.AddFavorite)
 	privateCostumer.DELETE("/course/:courseId/favorite/delete", favoriteController.DeleteFavorite)
+	privateCostumer.GET("/course/favorite/get_all", favoriteController.GetFavoriteCourseByCustomerID)
 
 	//module
 	//instructor access

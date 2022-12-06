@@ -81,3 +81,24 @@ func (fc *FavoriteController) DeleteFavorite(c echo.Context) error {
 		"message": "success delete favorite course",
 	})
 }
+
+// GetFavoriteCourseByCustomerID is a function to get favorite course by customer id
+func (fc *FavoriteController) GetFavoriteCourseByCustomerID(c echo.Context) error {
+	// Get user id from jwt
+	user := helper.GetUser(c)
+
+	// Call service to get favorite course by customer id
+	favoriteCourses, err := fc.FavoriteService.GetFavoriteByCustomerID(user.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get favorite course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get favorite course",
+		"courses": favoriteCourses,
+	})
+}

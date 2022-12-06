@@ -39,8 +39,21 @@ func (fr *favoriteRepository) DeleteFavorite(id string) error {
 }
 
 // GetFavoriteByCustomerID implements FavoriteRepository
-func (*favoriteRepository) GetFavoriteByCustomerID(customerID string) ([]dto.Favorite, error) {
-	panic("unimplemented")
+func (fr *favoriteRepository) GetFavoriteByCustomerID(customerID string) ([]dto.Course, error) {
+	var courseModels []model.Course
+
+	// get data course from database by customer id
+	err := fr.db.Model(&model.Course{}).Joins("JOIN favorites ON favorites.course_id = courses.id").Preload("Ratings").Preload("Modules").Unscoped().Where("favorites.customer_id = ?", customerID).Find(&courseModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var courses []dto.Course
+	err = copier.Copy(&courses, &courseModels)
+	if err != nil {
+		return nil, err
+	}
+	return courses, err
 }
 
 // GetFavorite implements FavoriteRepository

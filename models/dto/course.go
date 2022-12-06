@@ -55,7 +55,7 @@ type GetCourse struct {
 	CategoryID      string  `json:"category_id"`
 	Rating          float64 `json:"rating"`
 	Favorite        bool    `json:"favorite"`
-	NumberOfModules int     `json:"module"`
+	NumberOfModules int     `json:"number_of_modules"`
 }
 
 type CourseCustomerEnroll struct {

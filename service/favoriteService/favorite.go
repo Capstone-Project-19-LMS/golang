@@ -8,13 +8,14 @@ import (
 	"golang/repository/courseRepository"
 	"golang/repository/favoriteRepository"
 
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
 type FavoriteService interface {
 	AddFavorite(favorite dto.FavoriteTransaction) error
 	DeleteFavorite(courseID, customerID string) error
-	GetFavoriteByCustomerID(customerID string) ([]dto.Favorite, error)
+	GetFavoriteByCustomerID(customerID string) ([]dto.GetCourse, error)
 }
 
 type favoriteService struct {
@@ -75,8 +76,36 @@ func (fs *favoriteService) DeleteFavorite(courseID string, customerID string) er
 }
 
 // GetFavoriteByCustomerID implements FavoriteService
-func (*favoriteService) GetFavoriteByCustomerID(customerID string) ([]dto.Favorite, error) {
-	panic("unimplemented")
+func (fs *favoriteService) GetFavoriteByCustomerID(customerID string) ([]dto.GetCourse, error) {
+	courses, err := fs.favoriteRepo.GetFavoriteByCustomerID(customerID)
+	if err != nil {
+		return nil, err
+	}
+
+	// get rating of all courses
+	for i, course := range courses {
+		rating := helper.GetRatingCourse(course)
+		courses[i].Rating = rating
+	}
+
+	// get favorite of all courses
+	for i := 0; i < len(courses); i++ {
+		courses[i].Favorite = true
+	}
+
+	// get number of module
+	for i, course := range courses {
+		numberOfModule := len(course.Modules)
+		courses[i].NumberOfModules = numberOfModule
+	}
+
+	// copy courses from dto.course to dto.GetCustomerCourse
+	var customerCourses []dto.GetCourse
+	err = copier.Copy(&customerCourses, &courses)
+	if err != nil {
+		return nil, err
+	}
+	return customerCourses, nil
 }
 
 func NewFavoriteService(favoriteRepo favoriteRepository.FavoriteRepository,

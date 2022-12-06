@@ -83,6 +83,12 @@ func (ccs *customerCourseService) GetHistoryCourseByCustomerID(customerID string
 		courses[i].Favorite = favorite
 	}
 
+	// get number of module
+	for i, course := range courses {
+		numberOfModule := len(course.Modules)
+		courses[i].NumberOfModules = numberOfModule
+	}
+
 	// copy courses from dto.course to dto.GetCustomerCourse
 	var customerCourses []dto.GetCourse
 	err = copier.Copy(&customerCourses, &courses)
