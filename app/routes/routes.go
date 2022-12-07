@@ -14,6 +14,7 @@ import (
 	instructorController "golang/controllers/instructorController"
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
+	"golang/controllers/ratingController"
 	"golang/helper"
 	assignmentrepository "golang/repository/assignmentRepository"
 	"golang/repository/categoryRepository"
@@ -25,6 +26,7 @@ import (
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
 	modulerepository "golang/repository/moduleRepository"
+	"golang/repository/ratingRepository"
 	assignmentservice "golang/service/assignmentService"
 	"golang/service/categoryService"
 	"golang/service/costumerService"
@@ -35,6 +37,7 @@ import (
 	instructorservice "golang/service/instructorService"
 	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
+	"golang/service/ratingService"
 	"golang/util"
 
 	"github.com/go-playground/validator/v10"
@@ -58,6 +61,7 @@ func New(db *gorm.DB) *echo.Echo {
 	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
 	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
 	favoriteRepository := favoriteRepository.NewFavoriteRepository(db)
+	ratingRepository := ratingRepository.NewRatingRepository(db)
 	
 	/*
 		Services
@@ -72,6 +76,7 @@ func New(db *gorm.DB) *echo.Echo {
 	customerAssignmentService := customerAssignmentService.NewcustomerAssignmentService(customerAssignmentRepository)
 	customerCourseService := customerCourseService.NewCustomerCourseService(customerCourseRepository, courseRepository)
 	favoriteService := favoriteService.NewFavoriteService(favoriteRepository, courseRepository)
+	ratingService := ratingService.NewRatingService(ratingRepository, courseRepository)
 
 	/*
 		Controllers
@@ -110,6 +115,9 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 	favoriteController := favoriteController.FavoriteController {
 		FavoriteService: favoriteService,
+	}
+	ratingController := ratingController.RatingController {
+		RatingService: ratingService,
 	}
 
 	
@@ -195,6 +203,8 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.POST("/course/:courseId/favorite/add", favoriteController.AddFavorite)
 	privateCostumer.DELETE("/course/:courseId/favorite/delete", favoriteController.DeleteFavorite)
 	privateCostumer.GET("/course/favorite/get_all", favoriteController.GetFavoriteCourseByCustomerID)
+	// rating
+	privateCostumer.POST("/course/:courseId/rating/add", ratingController.AddRating)
 
 	//module
 	//instructor access

@@ -31,7 +31,7 @@ func (fs *favoriteService) AddFavorite(favorite dto.FavoriteTransaction) error {
 		return err
 	}
 
-	// check if customer already take the course
+	// check if customer already favorite the course
 	_, err = fs.favoriteRepo.GetFavorite(favorite.CourseID, favorite.CustomerID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return errors.New(constantError.ErrorCustomerAlreadyFavoriteCourse)
