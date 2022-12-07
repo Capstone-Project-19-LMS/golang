@@ -40,6 +40,8 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.Use
 		course.Thumbnail = "https://via.placeholder.com/150x100"
 	}
 
+	course.InstructorID = user.ID
+
 	// call repository to create course
 	err = cs.courseRepo.CreateCourse(course)
 	if err != nil {
@@ -74,6 +76,11 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
 	if err != nil {
 		return nil, err
 	}
+	// check if courses is empty
+	if len(courses) == 0 {
+		return []dto.Course{}, nil
+	}
+	
 	// get rating of all courses
 	for i, course := range courses {
 		rating := helper.GetRatingCourse(course)
