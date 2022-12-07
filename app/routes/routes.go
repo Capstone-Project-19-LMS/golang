@@ -14,6 +14,7 @@ import (
 	instructorController "golang/controllers/instructorController"
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
+	"golang/controllers/ratingController"
 	"golang/helper"
 	assignmentrepository "golang/repository/assignmentRepository"
 	"golang/repository/categoryRepository"
@@ -25,6 +26,7 @@ import (
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
 	modulerepository "golang/repository/moduleRepository"
+	"golang/repository/ratingRepository"
 	assignmentservice "golang/service/assignmentService"
 	"golang/service/categoryService"
 	"golang/service/costumerService"
@@ -35,6 +37,7 @@ import (
 	instructorservice "golang/service/instructorService"
 	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
+	"golang/service/ratingService"
 	"golang/util"
 
 	"github.com/go-playground/validator/v10"
@@ -58,6 +61,7 @@ func New(db *gorm.DB) *echo.Echo {
 	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
 	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
 	favoriteRepository := favoriteRepository.NewFavoriteRepository(db)
+	ratingRepository := ratingRepository.NewRatingRepository(db)
 	
 	/*
 		Services
@@ -72,6 +76,7 @@ func New(db *gorm.DB) *echo.Echo {
 	customerAssignmentService := customerAssignmentService.NewcustomerAssignmentService(customerAssignmentRepository)
 	customerCourseService := customerCourseService.NewCustomerCourseService(customerCourseRepository, courseRepository)
 	favoriteService := favoriteService.NewFavoriteService(favoriteRepository, courseRepository)
+	ratingService := ratingService.NewRatingService(ratingRepository, courseRepository)
 
 	/*
 		Controllers
@@ -110,6 +115,9 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 	favoriteController := favoriteController.FavoriteController {
 		FavoriteService: favoriteService,
+	}
+	ratingController := ratingController.RatingController {
+		RatingService: ratingService,
 	}
 
 	
@@ -183,18 +191,27 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateInstructor.GET("/course/get_all", courseController.GetAllCourse)
 	privateInstructor.PUT("/course/update/:id", courseController.UpdateCourse)
+	// customer course
 	privateInstructor.GET("/course/get_by_id/:id/enroll", courseController.GetCourseEnrollByID)
+	// rating
+	privateInstructor.GET("/course/get_by_id/:courseId/rating", ratingController.GetRatingByCourseID)
+	privateInstructor.PUT("/course/rating/update/:ratingId", ratingController.UpdateRating)
+	
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
 	// customer course
-	privateCostumer.POST("/course/:courseId/enroll/take", customerCourseController.TakeCourse)
+	privateCostumer.POST("/course/enroll/take/:courseId", customerCourseController.TakeCourse)
 	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
-	privateCostumer.DELETE("/course/:courseId/enroll/delete", customerCourseController.DeleteCustomerCourse)
+	privateCostumer.DELETE("/course/enroll/delete/:courseId", customerCourseController.DeleteCustomerCourse)
 	// favorite
-	privateCostumer.POST("/course/:courseId/favorite/add", favoriteController.AddFavorite)
-	privateCostumer.DELETE("/course/:courseId/favorite/delete", favoriteController.DeleteFavorite)
+	privateCostumer.POST("/course/favorite/add/:courseId", favoriteController.AddFavorite)
+	privateCostumer.DELETE("/course/favorite/delete/:courseId", favoriteController.DeleteFavorite)
 	privateCostumer.GET("/course/favorite/get_all", favoriteController.GetFavoriteCourseByCustomerID)
+	// rating
+	privateCostumer.POST("/course/rating/add/:courseId", ratingController.AddRating)
+	privateCostumer.DELETE("/course/rating/delete/:courseId", ratingController.DeleteRating)
+	privateCostumer.GET("/course/rating/get_by_customer/:courseId", ratingController.GetRatingByCourseIDCustomerID)
 
 	//module
 	//instructor access

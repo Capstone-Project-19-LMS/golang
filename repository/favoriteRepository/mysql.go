@@ -20,7 +20,7 @@ func (fr *favoriteRepository) AddFavorite(favorite dto.FavoriteTransaction) erro
 	if err != nil {
 		return err
 	}
-	// save customer course to database
+	// save favorite to database
 	err = fr.db.Model(&model.Favorite{}).Create(&favoriteModel).Error
 	if err != nil {
 		return err

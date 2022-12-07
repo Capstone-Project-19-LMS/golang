@@ -31,7 +31,7 @@ func (fs *favoriteService) AddFavorite(favorite dto.FavoriteTransaction) error {
 		return err
 	}
 
-	// check if customer already take the course
+	// check if customer already favorite the course
 	_, err = fs.favoriteRepo.GetFavorite(favorite.CourseID, favorite.CustomerID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return errors.New(constantError.ErrorCustomerAlreadyFavoriteCourse)
@@ -52,7 +52,7 @@ func (fs *favoriteService) AddFavorite(favorite dto.FavoriteTransaction) error {
 
 // DeleteFavorite implements FavoriteService
 func (fs *favoriteService) DeleteFavorite(courseID string, customerID string) error {
-	// get customer course by id
+	// get favorite by id
 	favorite, err := fs.favoriteRepo.GetFavorite(courseID, customerID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -61,7 +61,7 @@ func (fs *favoriteService) DeleteFavorite(courseID string, customerID string) er
 		return err
 	}
 
-	// check if customer course is not belong to customer
+	// check if favorite is not belong to customer
 	if favorite.CustomerID != customerID {
 		return errors.New(constantError.ErrorNotAuthorized)
 	}
