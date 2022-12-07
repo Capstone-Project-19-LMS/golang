@@ -196,16 +196,17 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
 	// customer course
-	privateCostumer.POST("/course/:courseId/enroll/take", customerCourseController.TakeCourse)
+	privateCostumer.POST("/course/enroll/take/:courseId", customerCourseController.TakeCourse)
 	privateCostumer.GET("/course/history", customerCourseController.GetHistoryCourseByCustomerID)
-	privateCostumer.DELETE("/course/:courseId/enroll/delete", customerCourseController.DeleteCustomerCourse)
+	privateCostumer.DELETE("/course/enroll/delete/:courseId", customerCourseController.DeleteCustomerCourse)
 	// favorite
-	privateCostumer.POST("/course/:courseId/favorite/add", favoriteController.AddFavorite)
-	privateCostumer.DELETE("/course/:courseId/favorite/delete", favoriteController.DeleteFavorite)
+	privateCostumer.POST("/course/favorite/add/:courseId", favoriteController.AddFavorite)
+	privateCostumer.DELETE("/course/favorite/delete/:courseId", favoriteController.DeleteFavorite)
 	privateCostumer.GET("/course/favorite/get_all", favoriteController.GetFavoriteCourseByCustomerID)
 	// rating
-	privateCostumer.POST("/course/:courseId/rating/add", ratingController.AddRating)
-	privateCostumer.DELETE("/course/:courseId/rating/delete", ratingController.DeleteRating)
+	privateCostumer.POST("/course/rating/add/:courseId", ratingController.AddRating)
+	privateCostumer.DELETE("/course/rating/delete/:courseId", ratingController.DeleteRating)
+	privateCostumer.GET("/course/rating/get_by_customer/:courseId", ratingController.GetRatingByCourseIDCustomerID)
 
 	//module
 	//instructor access

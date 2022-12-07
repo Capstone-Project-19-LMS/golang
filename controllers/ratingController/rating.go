@@ -90,3 +90,33 @@ func (rc *RatingController) DeleteRating(c echo.Context) error {
 		"message": "success delete rating course",
 	})
 }
+
+// GetRating is a function to get a rating by customer
+func (rc *RatingController) GetRatingByCourseIDCustomerID(c echo.Context) error {
+	// get course id from url
+	courseID := c.Param("courseId")
+
+	// get customer id from jwt
+	customer := helper.GetUser(c)
+
+	// call service to get rating course
+	rating, err := rc.RatingService.GetRatingByCourseIDCustomerID(courseID, customer.ID)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get rating course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get rating course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get rating course",
+		"data":    rating,
+	})
+}

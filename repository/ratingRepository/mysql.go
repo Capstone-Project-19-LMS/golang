@@ -43,7 +43,7 @@ func (*ratingRepository) GetRatingByCourseID(courseID string) ([]dto.Rating, err
 }
 
 // GetRating implements RatingRepository
-func (rr *ratingRepository) GetRating(courseID string, customerID string) (dto.Rating, error) {
+func (rr *ratingRepository) GetRatingByCourseIDCustomerID(courseID string, customerID string) (dto.Rating, error) {
 	var rating dto.Rating
 	err := rr.db.Model(&model.Rating{}).Where("course_id = ? AND customer_id = ?", courseID, customerID).First(&rating)
 	if err.Error != nil {
