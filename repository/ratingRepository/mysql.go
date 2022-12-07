@@ -38,8 +38,22 @@ func (rr *ratingRepository) DeleteRating(id string) error {
 }
 
 // GetRatingByCourseID implements RatingRepository
-func (*ratingRepository) GetRatingByCourseID(courseID string) ([]dto.Rating, error) {
-	panic("unimplemented")
+func (rr *ratingRepository) GetRatingByCourseID(courseID string) ([]dto.Rating, error) {
+	var ratingModels []model.Rating
+
+	// get data rating from database by course id
+	err := rr.db.Model(&model.Rating{}).Where("course_id = ?", courseID).Find(&ratingModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var ratings []dto.Rating
+	err = copier.Copy(&ratings, &ratingModels)
+	if err != nil {
+		return nil, err
+	}
+
+	return ratings, err
 }
 
 // GetRating implements RatingRepository

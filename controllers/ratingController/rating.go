@@ -120,3 +120,33 @@ func (rc *RatingController) GetRatingByCourseIDCustomerID(c echo.Context) error 
 		"data":    rating,
 	})
 }
+
+// GetRatingByCourseID is a function to get all rating by course id
+func (rc *RatingController) GetRatingByCourseID(c echo.Context) error {
+	// get course id from url
+	courseID := c.Param("courseId")
+
+	// get customer id from jwt
+	instructor := helper.GetUser(c)
+
+	// call service to get rating course
+	rating, err := rc.RatingService.GetRatingByCourseID(courseID, instructor.ID)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get rating of course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get rating of course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get rating of course",
+		"rating":    rating,
+	})
+}

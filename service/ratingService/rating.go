@@ -14,7 +14,7 @@ import (
 type RatingService interface {
 	AddRating(rating dto.RatingTransaction) error
 	DeleteRating(courseID, customerID string) error
-	GetRatingByCourseID(courseID string) ([]dto.Rating, error)
+	GetRatingByCourseID(courseID, InstructorID string) ([]dto.Rating, error)
 	GetRatingByCourseIDCustomerID(courseID, customerID string) (dto.Rating, error)
 }
 
@@ -76,8 +76,25 @@ func (rs *ratingService) DeleteRating(courseID, customerID string) error {
 }
 
 // GetRatingByCourseID implements RatingService
-func (*ratingService) GetRatingByCourseID(courseID string) ([]dto.Rating, error) {
-	panic("unimplemented")
+func (rs *ratingService) GetRatingByCourseID(courseID, instructorID string) ([]dto.Rating, error) {
+	// get course and check if it exists
+	course, err := rs.courseRepo.GetCourseByID(courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if instructor id in the course is the same as the instructor id in the token
+	if course.InstructorID != instructorID {
+		return nil, errors.New(constantError.ErrorNotAuthorized)
+	}
+	
+	var ratings []dto.Rating
+	ratings, errRating := rs.ratingRepo.GetRatingByCourseID(courseID)
+	if err != nil {
+		return ratings, errRating
+	}
+
+	return ratings, nil
 }
 
 // GetRating implements RatingService
