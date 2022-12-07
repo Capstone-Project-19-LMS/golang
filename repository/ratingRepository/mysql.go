@@ -69,6 +69,31 @@ func (rr *ratingRepository) GetRatingByCourseIDCustomerID(courseID string, custo
 	return rating, nil
 }
 
+// GetRatingByID implements RatingRepository
+func (rr *ratingRepository) GetRatingByID(id string) (dto.Rating, error) {
+	var rating dto.Rating
+	err := rr.db.Model(&model.Rating{}).Where("id = ?", id).First(&rating)
+	if err.Error != nil {
+		return dto.Rating{}, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return dto.Rating{}, gorm.ErrRecordNotFound
+	}
+	return rating, nil
+}
+
+// UpdateRating implements RatingRepository
+func (rr *ratingRepository) UpdateRating(rating dto.RatingTransaction) error {
+	// update rating to database
+	err := rr.db.Model(&model.Rating{}).Where("id = ?", rating.ID).Update("is_publish", rating.IsPublish).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func NewRatingRepository(db *gorm.DB) RatingRepository {
 	return &ratingRepository{
 		db: db,

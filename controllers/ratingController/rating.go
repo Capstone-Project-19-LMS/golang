@@ -150,3 +150,41 @@ func (rc *RatingController) GetRatingByCourseID(c echo.Context) error {
 		"rating":    rating,
 	})
 }
+
+// UpdateRating is a function to update rating by customer
+func (rc *RatingController) UpdateRating(c echo.Context) error {
+	// get rating id from url
+	ratingID := c.Param("ratingId")
+
+	var rating dto.RatingTransaction
+	// Binding request body to struct
+	err := c.Bind(&rating)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
+
+	rating.ID = ratingID
+
+	// call service to update rating course
+	err = rc.RatingService.UpdateRating(rating)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail update rating course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail update rating course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success update rating course",
+	})
+}

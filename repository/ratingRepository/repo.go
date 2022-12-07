@@ -7,4 +7,6 @@ type RatingRepository interface {
 	DeleteRating(id string) error
 	GetRatingByCourseID(courseID string) ([]dto.Rating, error)
 	GetRatingByCourseIDCustomerID(courseID, customerID string) (dto.Rating, error)
+	GetRatingByID(id string) (dto.Rating, error)
+	UpdateRating(rating dto.RatingTransaction) error
 }

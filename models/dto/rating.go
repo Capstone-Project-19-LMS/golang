@@ -22,7 +22,7 @@ type RatingTransaction struct {
 	ID string `json:"id"`
 	Rating int `json:"rating" validate:"required,min=1,max=5,numeric"`
 	Testimonial string `json:"testimonial" validate:"required"`
-	IsPublish bool `json:"is_publish"`
+	IsPublish bool `json:"is_publish" validate:"boolean"`
 	CustomerID string `json:"customer_id"`
 	CourseID string `json:"course_id" validate:"required,alphanum"`
 }

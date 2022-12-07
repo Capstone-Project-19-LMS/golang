@@ -16,6 +16,7 @@ type RatingService interface {
 	DeleteRating(courseID, customerID string) error
 	GetRatingByCourseID(courseID, InstructorID string) ([]dto.Rating, error)
 	GetRatingByCourseIDCustomerID(courseID, customerID string) (dto.Rating, error)
+	UpdateRating(rating dto.RatingTransaction) error
 }
 
 type ratingService struct {
@@ -87,7 +88,7 @@ func (rs *ratingService) GetRatingByCourseID(courseID, instructorID string) ([]d
 	if course.InstructorID != instructorID {
 		return nil, errors.New(constantError.ErrorNotAuthorized)
 	}
-	
+
 	var ratings []dto.Rating
 	ratings, errRating := rs.ratingRepo.GetRatingByCourseID(courseID)
 	if err != nil {
@@ -109,6 +110,17 @@ func (rs *ratingService) GetRatingByCourseIDCustomerID(courseID string, customer
 	}
 
 	return rating, nil
+}
+
+// UpdateRating implements RatingService
+func (rs *ratingService) UpdateRating(rating dto.RatingTransaction) error {
+	// call repository to update rating
+	err := rs.ratingRepo.UpdateRating(rating)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewRatingService(ratingRepo ratingRepository.RatingRepository,
