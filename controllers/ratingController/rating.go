@@ -61,3 +61,32 @@ func (rc *RatingController) AddRating(c echo.Context) error {
 		"message": "success rating course",
 	})
 }
+
+// DeleteRating is a function to delete rating by customer
+func (rc *RatingController) DeleteRating(c echo.Context) error {
+	// get course id from url
+	courseID := c.Param("courseId")
+
+	// get customer id from jwt
+	customer := helper.GetUser(c)
+
+	// call service to delete rating course
+	err := rc.RatingService.DeleteRating(courseID, customer.ID)
+	if err != nil {	
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete rating course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete rating course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success delete rating course",
+	})
+}

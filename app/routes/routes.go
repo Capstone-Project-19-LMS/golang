@@ -205,6 +205,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateCostumer.GET("/course/favorite/get_all", favoriteController.GetFavoriteCourseByCustomerID)
 	// rating
 	privateCostumer.POST("/course/:courseId/rating/add", ratingController.AddRating)
+	privateCostumer.DELETE("/course/:courseId/rating/delete", ratingController.DeleteRating)
 
 	//module
 	//instructor access

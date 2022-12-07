@@ -55,7 +55,7 @@ func (fc *FavoriteController) AddFavorite(c echo.Context) error {
 
 // DeleteFavorite is a function to delete customer course
 func (fc *FavoriteController) DeleteFavorite(c echo.Context) error {
-	// get customer course id from url
+	// get course id from url
 	courseID := c.Param("courseId")
 
 	// get customer id from jwt

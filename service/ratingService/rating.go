@@ -13,7 +13,7 @@ import (
 
 type RatingService interface {
 	AddRating(rating dto.RatingTransaction) error
-	DeleteRating(id string) error
+	DeleteRating(courseID, customerID string) error
 	GetRatingByCourseID(courseID string) ([]dto.Rating, error)
 	// GetRating(courseID, customerID string) (dto.Rating, error)
 }
@@ -51,8 +51,28 @@ func (rs *ratingService) AddRating(rating dto.RatingTransaction) error {
 }
 
 // DeleteRating implements RatingService
-func (*ratingService) DeleteRating(id string) error {
-	panic("unimplemented")
+func (rs *ratingService) DeleteRating(courseID, customerID string) error {
+	// get customer course by id
+	rating, err := rs.ratingRepo.GetRating(courseID, customerID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New(constantError.ErrorCustomerNotRatingCourse)
+		}
+		return err
+	}
+
+	// check if rating is not belong to customer
+	if rating.CustomerID != customerID {
+		return errors.New(constantError.ErrorNotAuthorized)
+	}
+
+	// delete rating course
+	err = rs.ratingRepo.DeleteRating(rating.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetRatingByCourseID implements RatingService

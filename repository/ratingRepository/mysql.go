@@ -28,8 +28,13 @@ func (rr *ratingRepository) AddRating(rating dto.RatingTransaction) error {
 }
 
 // DeleteRating implements RatingRepository
-func (*ratingRepository) DeleteRating(id string) error {
-	panic("unimplemented")
+func (rr *ratingRepository) DeleteRating(id string) error {
+	err := rr.db.Unscoped().Delete(&model.Rating{}, "id = ?", id)
+	if err.Error != nil {
+		return err.Error
+	}
+
+	return nil
 }
 
 // GetRatingByCourseID implements RatingRepository
