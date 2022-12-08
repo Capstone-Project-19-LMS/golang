@@ -151,7 +151,7 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	}
 
 	if user.Role == "instructor" {
-		var courseInstructor dto.GetCourseInstructor
+		var courseInstructor dto.GetCourseInstructorByID
 		err = copier.Copy(&courseInstructor, &getCourses)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, echo.Map{

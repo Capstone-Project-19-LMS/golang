@@ -15,7 +15,7 @@ type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(dto.User) ([]dto.GetCourse, error)
-	GetCourseByID(id string, user dto.User) (dto.Course, error)
+	GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error)
 	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
@@ -118,10 +118,10 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 }
 
 // GetCourseByID implements CourseService
-func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.Course, error) {
+func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error) {
 	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
-		return dto.Course{}, err
+		return dto.GetCourseByID{}, err
 	}
 
 	// get rating of course
@@ -140,8 +140,13 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.Course, er
 		// get enrolled of course
 		helper.GetEnrolledCourse(&course, user.ID)
 	}
+	var getCourses dto.GetCourseByID
+	err = copier.Copy(&getCourses, &course)
+	if err != nil {
+		return dto.GetCourseByID{}, err
+	}
 
-	return course, nil
+	return getCourses, nil
 }
 
 // GetCourseEnrollByID implements CourseService

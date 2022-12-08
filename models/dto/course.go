@@ -20,6 +20,7 @@ type Course struct {
 	Capacity        int              `json:"capacity"`
 	InstructorID    string           `json:"instructor_id"`
 	CategoryID      string           `json:"category_id"`
+	Category        Category         `json:"category"`
 	Rating          float64          `json:"rating"`
 	Favorite        bool             `json:"favorite"`
 	NumberOfModules int              `json:"number_of_modules"`
@@ -44,11 +45,11 @@ type GetCourseCategory struct {
 	Capacity        int              `json:"capacity"`
 	InstructorID    string           `json:"instructor_id"`
 	CategoryID      string           `json:"category_id"`
-	Category        Category        `json:"category"`
+	Category        Category         `json:"category"`
 	CustomerCourses []CustomerCourse `json:"customer_courses" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
-	Favorites       []Favorite       `json:"favorites" gorm:"foreignKey:CourseID"`         // foreignKey:CourseID is not needed
-	Ratings         []Rating         `json:"ratings" gorm:"foreignKey:CourseID"`           // foreignKey:CourseID is not needed
-	Modules         []Module         `json:"modules" gorm:"foreignKey:CourseID"`           // foreignKey:CourseID is not needed
+	Favorites       []Favorite       `json:"favorites" gorm:"foreignKey:CourseID"`        // foreignKey:CourseID is not needed
+	Ratings         []Rating         `json:"ratings" gorm:"foreignKey:CourseID"`          // foreignKey:CourseID is not needed
+	Modules         []Module         `json:"modules" gorm:"foreignKey:CourseID"`          // foreignKey:CourseID is not needed
 }
 
 type CourseTransaction struct {
@@ -81,6 +82,41 @@ type GetCourse struct {
 	Enroll          bool     `json:"enroll"`
 }
 
+type GetCourseWithoutCategory struct {
+	ID              string  `json:"id"`
+	Name            string  `json:"name"`
+	Description     string  `json:"description"`
+	Objective       string  `json:"objective"`
+	Price           float64 `json:"price"`
+	Discount        float64 `json:"discount"`
+	Thumbnail       string  `json:"thumbnail"`
+	Capacity        int     `json:"capacity"`
+	InstructorID    string  `json:"instructor_id"`
+	Rating          float64 `json:"rating"`
+	Favorite        bool    `json:"favorite"`
+	NumberOfModules int     `json:"number_of_modules"`
+	Enroll          bool    `json:"enroll"`
+}
+
+type GetCourseByID struct {
+	ID              string              `json:"id"`
+	Name            string              `json:"name"`
+	Description     string              `json:"description"`
+	Objective       string              `json:"objective"`
+	Price           float64             `json:"price"`
+	Discount        float64             `json:"discount"`
+	Thumbnail       string              `json:"thumbnail"`
+	Capacity        int                 `json:"capacity"`
+	InstructorID    string              `json:"instructor_id"`
+	Category        Category            `json:"category"`
+	Rating          float64             `json:"rating"`
+	Favorite        bool                `json:"favorite"`
+	NumberOfModules int                 `json:"number_of_modules"`
+	Enroll          bool                `json:"enroll"`
+	Ratings         []Rating            `json:"ratings" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
+	Modules         []ModuleTransaction `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
+}
+
 type GetCourseInstructor struct {
 	ID              string   `json:"id"`
 	Name            string   `json:"name"`
@@ -91,9 +127,39 @@ type GetCourseInstructor struct {
 	Thumbnail       string   `json:"thumbnail"`
 	Capacity        int      `json:"capacity"`
 	InstructorID    string   `json:"instructor_id"`
-	Category        Category `json:"category" gorm:"references:CategoryID"` 
+	Category        Category `json:"category" gorm:"references:CategoryID"`
 	Rating          float64  `json:"rating"`
 	NumberOfModules int      `json:"number_of_modules"`
+}
+
+type GetCourseInstructorWithoutCategory struct {
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Description     string   `json:"description"`
+	Objective       string   `json:"objective"`
+	Price           float64  `json:"price"`
+	Discount        float64  `json:"discount"`
+	Thumbnail       string   `json:"thumbnail"`
+	Capacity        int      `json:"capacity"`
+	InstructorID    string   `json:"instructor_id"`
+	Rating          float64  `json:"rating"`
+	NumberOfModules int      `json:"number_of_modules"`
+}
+
+type GetCourseInstructorByID struct {
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Description     string   `json:"description"`
+	Objective       string   `json:"objective"`
+	Price           float64  `json:"price"`
+	Discount        float64  `json:"discount"`
+	Thumbnail       string   `json:"thumbnail"`
+	Capacity        int      `json:"capacity"`
+	InstructorID    string   `json:"instructor_id"`
+	Category        Category `json:"category" gorm:"references:CategoryID"`
+	Rating          float64  `json:"rating"`
+	NumberOfModules int      `json:"number_of_modules"`
+	Modules         []ModuleTransaction `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 }
 
 type CourseCustomerEnroll struct {
