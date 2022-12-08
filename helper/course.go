@@ -1,6 +1,8 @@
 package helper
 
-import "golang/models/dto"
+import (
+	"golang/models/dto"
+)
 
 // get rating from course
 func GetRatingCourse(course dto.Course) float64 {

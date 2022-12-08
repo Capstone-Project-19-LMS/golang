@@ -15,7 +15,7 @@ type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(dto.User) ([]dto.GetCourse, error)
-	GetCourseByID(id string) (dto.Course, error)
+	GetCourseByID(id string, user dto.User) (dto.Course, error)
 	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
@@ -118,7 +118,7 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 }
 
 // GetCourseByID implements CourseService
-func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
+func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.Course, error) {
 	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
 		return dto.Course{}, err
@@ -128,13 +128,18 @@ func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
 	rating := helper.GetRatingCourse(course)
 	course.Rating = rating
 
-	// get favorites of course
-	favorite := helper.GetFavoriteCourse(course, id)
-	course.Favorite = favorite
-
 	// get number of module
 	numberOfModule := len(course.Modules)
 	course.NumberOfModules = numberOfModule
+
+	if user.Role == "customer" {
+		// get favorites of course
+		favorite := helper.GetFavoriteCourse(course, user.ID)
+		course.Favorite = favorite
+
+		// get enrolled of course
+		helper.GetEnrolledCourse(&course, user.ID)
+	}
 
 	return course, nil
 }
