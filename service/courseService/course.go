@@ -17,7 +17,7 @@ type CourseService interface {
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(dto.User) ([]dto.GetCourse, error)
 	GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error)
-	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
+	GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
 
@@ -125,6 +125,12 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 		return dto.GetCourseByID{}, err
 	}
 
+	if user.Role == "instructor" {
+		// check if instructor id in the course is the same as the instructor id in the token
+		if course.InstructorID != user.ID {
+			return dto.GetCourseByID{}, errors.New(constantError.ErrorNotAuthorized)
+		}
+	}
 	// get rating of course
 	rating := helper.GetRatingCourse(course)
 	course.Rating = rating
@@ -151,14 +157,19 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 }
 
 // GetCourseEnrollByID implements CourseService
-func (cs *courseService) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
+func (cs *courseService) GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error) {
 	// check if the course is exists
-	_, err := cs.courseRepo.GetCourseByID(id)
+	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, errors.New(constantError.ErrorCourseNotFound)
 		}
 		return nil, err
+	}
+
+	// check if instructor id in the course is the same as the instructor id in the token
+	if course.InstructorID != user.ID {
+		return nil, errors.New(constantError.ErrorNotAuthorized)
 	}
 
 	customerEnroll, err := cs.courseRepo.GetCourseEnrollByID(id)

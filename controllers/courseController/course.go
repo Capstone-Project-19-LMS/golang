@@ -178,8 +178,11 @@ func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	// get id from url param
 	id := c.Param("id")
 
+	// Get user id from jwt
+	user := helper.GetUser(c)
+
 	// get course by id from service
-	course, err := cc.CourseService.GetCourseEnrollByID(id)
+	course, err := cc.CourseService.GetCourseEnrollByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
