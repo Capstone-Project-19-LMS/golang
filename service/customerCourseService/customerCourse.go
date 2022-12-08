@@ -16,6 +16,7 @@ type CustomerCourseService interface {
 	DeleteCustomerCourse(courseID, customerID string) error
 	GetHistoryCourseByCustomerID(string) ([]dto.GetCourse, error)
 	TakeCourse(dto.CustomerCourseTransaction) error
+	UpdateEnrollmentStatus(customerCourse dto.CustomerCourseTransaction, instructorID string) error
 }
 
 type customerCourseService struct {
@@ -133,6 +134,37 @@ func (ccs *customerCourseService) TakeCourse(customerCourse dto.CustomerCourseTr
 	}
 	courseUpdate.Capacity -= 1
 	err = ccs.courseRepo.UpdateCourse(courseUpdate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateEnrollmentStatus implements CustomerCourseService
+func (ccs *customerCourseService) UpdateEnrollmentStatus(customerCourse dto.CustomerCourseTransaction, instructorID string) error {
+	// check if course is not belong to instructor
+	course, err := ccs.courseRepo.GetCourseByID(customerCourse.CourseID)
+	if err != nil {
+		return err
+	}
+
+	if course.InstructorID != instructorID {
+		return errors.New(constantError.ErrorNotAuthorized)
+	}
+	
+	// get data enrollment course
+	_, err = ccs.customerCourseRepo.GetCustomerCourse(customerCourse.CourseID, customerCourse.CustomerID)
+	// check if enrollment course is not found
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New(constantError.ErrorCustomerNotEnrolled)
+		}
+		return err
+	}
+	
+	// update enrollment status
+	err = ccs.customerCourseRepo.UpdateEnrollmentStatus(customerCourse)
 	if err != nil {
 		return err
 	}

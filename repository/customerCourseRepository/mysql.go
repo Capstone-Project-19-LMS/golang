@@ -71,6 +71,15 @@ func (ccr *customerCourseRepository) TakeCourse(customerCourse dto.CustomerCours
 	return nil
 }
 
+// UpdateEnrollmentStatus implements CustomerCourseRepository
+func (ccr *customerCourseRepository) UpdateEnrollmentStatus(customerCourse dto.CustomerCourseTransaction) error {
+	err := ccr.db.Model(&model.CustomerCourse{}).Where("course_id = ? AND customer_id = ?", customerCourse.CourseID, customerCourse.CustomerID).Update("status", customerCourse.Status).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewCustomerCourseRepository(db *gorm.DB) CustomerCourseRepository {
 	return &customerCourseRepository{
 		db: db,

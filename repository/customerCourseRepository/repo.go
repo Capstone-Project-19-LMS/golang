@@ -7,4 +7,5 @@ type CustomerCourseRepository interface {
 	GetCustomerCourse(courseID, customerID string) (dto.CustomerCourse, error)
 	GetHistoryCourseByCustomerID(string) ([]dto.Course, error)
 	TakeCourse(dto.CustomerCourseTransaction) error
+	UpdateEnrollmentStatus(dto.CustomerCourseTransaction) error
 }

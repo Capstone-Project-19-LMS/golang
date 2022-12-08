@@ -18,7 +18,7 @@ type CustomerCourse struct {
 
 type CustomerCourseTransaction struct {
 	ID string `json:"id"`
-	CustomerID string `json:"customer_id"`
+	CustomerID string `json:"customer_id" validate:"required,alphanum"`
 	CourseID string `json:"course_id" validate:"required,alphanum"` 
-	Status     bool           `json:"status"`
+	Status     bool           `json:"status" validate:"required,boolean"`
 }
