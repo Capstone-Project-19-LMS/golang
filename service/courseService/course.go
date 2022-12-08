@@ -7,12 +7,14 @@ import (
 	"golang/models/dto"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
+
+	"github.com/jinzhu/copier"
 )
 
 type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
-	GetAllCourse(dto.User) ([]dto.Course, error)
+	GetAllCourse(dto.User) ([]dto.GetCourse, error)
 	GetCourseByID(id string) (dto.Course, error)
 	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
@@ -71,26 +73,20 @@ func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 }
 
 // GetAllCourse implements CourseService
-func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
+func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 	courses, err := cs.courseRepo.GetAllCourse(user)
 	if err != nil {
 		return nil, err
 	}
 	// check if courses is empty
 	if len(courses) == 0 {
-		return []dto.Course{}, nil
+		return []dto.GetCourse{}, nil
 	}
-	
+
 	// get rating of all courses
 	for i, course := range courses {
 		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
-	}
-
-	// get favorite of all courses
-	for i, course := range courses {
-		favorite := helper.GetFavoriteCourse(course, user.ID)
-		courses[i].Favorite = favorite
 	}
 
 	// get number of module
@@ -99,7 +95,26 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
 		courses[i].NumberOfModules = numberOfModule
 	}
 
-	return courses, nil
+	if user.Role == "customer" {
+		// get favorite of all courses
+		for i, course := range courses {
+			favorite := helper.GetFavoriteCourse(course, user.ID)
+			courses[i].Favorite = favorite
+		}
+
+		// get enrolled of all courses
+		for i, course := range courses {
+			helper.GetEnrolledCourse(&course, user.ID)
+			courses[i].Enroll = course.Enroll
+		}
+	}
+	var getCourses []dto.GetCourse
+	err = copier.Copy(&getCourses, &courses)
+	if err != nil {
+		return nil, err
+	}
+
+	return getCourses, nil
 }
 
 // GetCourseByID implements CourseService

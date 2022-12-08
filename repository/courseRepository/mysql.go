@@ -46,13 +46,13 @@ func (cr *courseRepository) DeleteCourse(id string) error {
 
 // GetAllCourse implements CourseRepository
 func (cr *courseRepository) GetAllCourse(user dto.User) ([]dto.Course, error) {
-	var courseModels []model.Course
+	var courseModels []dto.GetCourseCategory
 	// get data sub category from database by user
 	var err error
 	if user.Role == "instructor" {
-		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
+		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
 	} else if user.Role == "customer" {
-		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Find(&courseModels).Error
+		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Find(&courseModels).Error
 	}
 	if err != nil {
 		return nil, err

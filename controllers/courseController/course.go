@@ -8,6 +8,7 @@ import (
 	"golang/service/courseService"
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -94,19 +95,35 @@ func (cc *CourseController) GetAllCourse(c echo.Context) error {
 	// Get user id from jwt
 	user := helper.GetUser(c)
 
-	// Call service to get all category
-	categories, err := cc.CourseService.GetAllCourse(user)
+	// Call service to get all courses
+	getCourses, err := cc.CourseService.GetAllCourse(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail get all category",
+			"message": "fail get all courses",
 			"error":   err.Error(),
+		})
+	}
+
+	if user.Role == "instructor" {
+		var coursesInstructor []dto.GetCourseInstructor
+		err = copier.Copy(&coursesInstructor, &getCourses)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail get all courses",
+				"error":   err.Error(),
+			})
+		}
+		// Return response if success
+		return c.JSON(http.StatusOK, echo.Map{
+			"message":   "success get all courses",
+			"courses": coursesInstructor,
 		})
 	}
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":   "success get all category",
-		"courses": categories,
+		"message":   "success get all courses",
+		"courses": getCourses,
 	})
 }
 

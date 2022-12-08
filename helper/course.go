@@ -28,3 +28,14 @@ func GetFavoriteCourse(course dto.Course, customerID string) bool {
 	}
 	return false
 }
+
+// function to get enrolled course
+func GetEnrolledCourse(course *dto.Course, customerID string) {
+	course.Enroll = false
+	// get enrolled of course
+	for _, customerCourse := range course.CustomerCourses {
+		if customerCourse.CustomerID == customerID {
+			course.Enroll = true
+		}
+	}
+}
