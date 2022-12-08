@@ -53,13 +53,13 @@ func (ccs *customerCourseService) DeleteCustomerCourse(courseID, customerID stri
 
 	// update capacity course
 	courseUpdate := dto.CourseTransaction{
-		ID:      customerCourse.CourseID,
+		ID:       customerCourse.CourseID,
 		Capacity: course.Capacity + 1,
 	}
 	err = ccs.courseRepo.UpdateCourse(courseUpdate)
 	if err != nil {
 		return err
-	}	
+	}
 
 	return nil
 }
@@ -71,22 +71,21 @@ func (ccs *customerCourseService) GetHistoryCourseByCustomerID(customerID string
 		return nil, err
 	}
 
-	// get rating of all courses
 	for i, course := range courses {
+		// get rating of all courses
 		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
-	}
 
-	// get favorite of all courses
-	for i, course := range courses {
+		// get favorite of all courses
 		favorite := helper.GetFavoriteCourse(course, customerID)
 		courses[i].Favorite = favorite
-	}
 
-	// get number of module
-	for i, course := range courses {
+		// get number of module
 		numberOfModule := len(course.Modules)
 		courses[i].NumberOfModules = numberOfModule
+
+		// get status enroll of all courses
+		courses[i].StatusEnroll = course.CustomerCourses[0].Status
 	}
 
 	// copy courses from dto.course to dto.GetCustomerCourse

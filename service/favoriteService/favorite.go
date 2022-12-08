@@ -99,6 +99,12 @@ func (fs *favoriteService) GetFavoriteByCustomerID(customerID string) ([]dto.Get
 		courses[i].NumberOfModules = numberOfModule
 	}
 
+	// get enrolled of all courses
+	for i, course := range courses {
+		helper.GetEnrolledCourse(&course, customerID)
+		courses[i].StatusEnroll = course.StatusEnroll
+	}
+
 	// copy courses from dto.course to dto.GetCustomerCourse
 	var customerCourses []dto.GetCourse
 	err = copier.Copy(&customerCourses, &courses)

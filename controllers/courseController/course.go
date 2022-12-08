@@ -196,7 +196,7 @@ func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get course with customer enrolled",
-		"course": course,
+		"customer_enroll": course,
 	})
 }
 

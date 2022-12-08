@@ -56,7 +56,7 @@ func (cr *categoryRepository) GetCategoryByID(id string, user dto.User) (dto.Cat
 	if user.Role == "instructor" {
 		err = cr.db.Model(&model.Category{}).Preload("Courses", "instructor_id = ?", user.ID).Preload("Courses.CustomerCourses").Preload("Courses.Favorites").Preload("Courses.Ratings").Preload("Courses.Modules").Where("id = ?", id ).Find(&category)
 	} else if user.Role == "customer" {
-		err = cr.db.Model(&model.Category{}).Preload("Courses.CustomerCourses").Preload("Courses.Favorites").Preload("Courses.Ratings").Preload("Courses.Modules").Where("id = ?", id).Find(&category)
+		err = cr.db.Model(&model.Category{}).Preload("Courses.CustomerCourses", "customer_id = ?", user.ID).Preload("Courses.Favorites").Preload("Courses.Ratings").Preload("Courses.Modules").Where("id = ?", id).Find(&category)
 	}
 	if err.Error != nil {
 		return dto.Category{}, err.Error

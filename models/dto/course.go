@@ -24,7 +24,7 @@ type Course struct {
 	Rating          float64          `json:"rating"`
 	Favorite        bool             `json:"favorite"`
 	NumberOfModules int              `json:"number_of_modules"`
-	Enroll          bool             `json:"enroll"`
+	StatusEnroll          bool             `json:"status_enroll"`
 	CustomerCourses []CustomerCourse `json:"customer_courses"`
 	Favorites       []Favorite       `json:"favorites"`
 	Ratings         []Rating         `json:"ratings"`
@@ -79,7 +79,7 @@ type GetCourse struct {
 	Rating          float64  `json:"rating"`
 	Favorite        bool     `json:"favorite"`
 	NumberOfModules int      `json:"number_of_modules"`
-	Enroll          bool     `json:"enroll"`
+	StatusEnroll          bool     `json:"status_enroll"`
 }
 
 type GetCourseWithoutCategory struct {
@@ -95,7 +95,7 @@ type GetCourseWithoutCategory struct {
 	Rating          float64 `json:"rating"`
 	Favorite        bool    `json:"favorite"`
 	NumberOfModules int     `json:"number_of_modules"`
-	Enroll          bool    `json:"enroll"`
+	StatusEnroll          bool    `json:"status_enroll"`
 }
 
 type GetCourseByID struct {
@@ -112,7 +112,7 @@ type GetCourseByID struct {
 	Rating          float64             `json:"rating"`
 	Favorite        bool                `json:"favorite"`
 	NumberOfModules int                 `json:"number_of_modules"`
-	Enroll          bool                `json:"enroll"`
+	StatusEnroll          bool                `json:"status_enroll"`
 	Ratings         []Rating            `json:"ratings" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 	Modules         []ModuleTransaction `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 }
@@ -164,6 +164,9 @@ type GetCourseInstructorByID struct {
 
 type CourseCustomerEnroll struct {
 	ID              string           `json:"id"`
+	CreatedAt       time.Time        `json:"created_at"`
+	UpdatedAt       time.Time        `json:"updated_at"`
+	DeletedAt       gorm.DeletedAt   `json:"deleted_at"`
 	Name            string           `json:"name"`
 	Description     string           `json:"description"`
 	Objective       string           `json:"objective"`
@@ -173,6 +176,10 @@ type CourseCustomerEnroll struct {
 	Capacity        int              `json:"capacity"`
 	InstructorID    string           `json:"instructor_id"`
 	CategoryID      string           `json:"category_id"`
-	NumberOfModules int              `json:"number_of_modules"`
-	CustomerCourses []CustomerCourse `json:"customer_courses"`
+	Category        Category         `json:"category"`
+	StatusEnroll          bool        `json:"status_enroll"`
+	CustomerCourses []CustomerCourse `json:"customer_courses" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
+	Favorites       []Favorite       `json:"favorites" gorm:"foreignKey:CourseID"`        // foreignKey:CourseID is not needed
+	Ratings         []Rating         `json:"ratings" gorm:"foreignKey:CourseID"`          // foreignKey:CourseID is not needed
+	Modules         []Module         `json:"modules" gorm:"foreignKey:CourseID"`          // foreignKey:CourseID is not needed
 }

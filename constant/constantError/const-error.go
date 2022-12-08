@@ -19,6 +19,7 @@ const (
 	ErrorCustomerNotFavoriteCourse = "the customer is not favorite the course"
 	ErrorCustomerNotRatingCourse = "the customer is not review the course yet"
 	ErrorCustomerNotEnrolled = "the customer is not enrolled in the course"
+	ErrorCourseNotFound = "the course is not found"
 
 	ErrorNoActive = "email not verifikasi"
 )
@@ -28,6 +29,7 @@ var ErrorCode = map[string]int{
 	"category not found":             404,
 	"the customer is not favorite the course": 404,
 	"the customer is not review the course yet": 404,
+	"the course is not found": 404,
 	"you are not authorized":         401,
 	"email or password not match": 400,
 	"course capacity is full":        400,

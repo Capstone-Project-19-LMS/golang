@@ -9,6 +9,7 @@ import (
 	"golang/repository/courseRepository"
 
 	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 type CourseService interface {
@@ -105,7 +106,7 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 		// get enrolled of all courses
 		for i, course := range courses {
 			helper.GetEnrolledCourse(&course, user.ID)
-			courses[i].Enroll = course.Enroll
+			courses[i].StatusEnroll = course.StatusEnroll
 		}
 	}
 	var getCourses []dto.GetCourse
@@ -151,11 +152,20 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 
 // GetCourseEnrollByID implements CourseService
 func (cs *courseService) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
-	course, err := cs.courseRepo.GetCourseEnrollByID(id)
+	// check if the course is exists
+	_, err := cs.courseRepo.GetCourseByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.New(constantError.ErrorCourseNotFound)
+		}
+		return nil, err
+	}
+
+	customerEnroll, err := cs.courseRepo.GetCourseEnrollByID(id)
 	if err != nil {
 		return nil, err
 	}
-	return course, nil
+	return customerEnroll, nil
 }
 
 // UpdateCourse implements CourseService

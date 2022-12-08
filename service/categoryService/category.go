@@ -56,30 +56,24 @@ func (cs *categoryService) GetCategoryByID(id string, user dto.User) (dto.GetCat
 	if err != nil {
 		return dto.GetCategory{}, err
 	}
-	
+
 	// get rating of all courses
 	for i, course := range category.Courses {
 		rating := helper.GetRatingCourse(course)
 		category.Courses[i].Rating = rating
-	}
 
-	// get number of module
-	for i, course := range category.Courses {
+		// get number of module
 		numberOfModule := len(course.Modules)
 		category.Courses[i].NumberOfModules = numberOfModule
-	}
 
-	if user.Role == "customer" {
-		// get favorite of all courses
-		for i, course := range category.Courses {
+		if user.Role == "customer" {
+			// get favorite of all courses
 			favorite := helper.GetFavoriteCourse(course, user.ID)
 			category.Courses[i].Favorite = favorite
-		}
 
-		// get enrolled of all courses
-		for i, course := range category.Courses {
+			// get enrolled of all courses
 			helper.GetEnrolledCourse(&course, user.ID)
-			category.Courses[i].Enroll = course.Enroll
+			category.Courses[i].StatusEnroll = course.StatusEnroll
 		}
 	}
 
