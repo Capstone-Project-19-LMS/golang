@@ -1,7 +1,6 @@
 package customerCourseRepository
 
 import (
-	"fmt"
 	"golang/models/dto"
 	"golang/models/model"
 
@@ -44,11 +43,10 @@ func (ccr *customerCourseRepository) GetHistoryCourseByCustomerID(customerId str
 	var courseModels []dto.CourseCustomerEnroll
 
 	// get data course from database by customer id
-	err := ccr.db.Model(&model.Course{}).Joins("JOIN customer_courses ON customer_courses.course_id = courses.id").Preload("CustomerCourses", "customer_id = ?", customerId).Preload("Favorites").Preload("Ratings").Preload("Modules").Unscoped().Where("customer_courses.customer_id = ?", customerId).Find(&courseModels).Error
+	err := ccr.db.Model(&model.Course{}).Joins("JOIN customer_courses ON customer_courses.course_id = courses.id").Preload("Category").Preload("CustomerCourses", "customer_id = ?", customerId).Preload("Favorites", "customer_id = ?", customerId).Preload("Ratings").Preload("Modules").Unscoped().Where("customer_courses.customer_id = ?", customerId).Find(&courseModels).Error
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(courseModels[0].CustomerCourses)
 
 	var courses []dto.Course
 	err = copier.Copy(&courses, &courseModels)

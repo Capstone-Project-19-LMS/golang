@@ -86,21 +86,15 @@ func (fs *favoriteService) GetFavoriteByCustomerID(customerID string) ([]dto.Get
 	for i, course := range courses {
 		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
-	}
 
-	// get favorite of all courses
-	for i := 0; i < len(courses); i++ {
+		// get favorite of all courses
 		courses[i].Favorite = true
-	}
 
-	// get number of module
-	for i, course := range courses {
+		// get number of module
 		numberOfModule := len(course.Modules)
 		courses[i].NumberOfModules = numberOfModule
-	}
 
-	// get enrolled of all courses
-	for i, course := range courses {
+		// get enrolled of all courses
 		helper.GetEnrolledCourse(&course, customerID)
 		courses[i].StatusEnroll = course.StatusEnroll
 	}

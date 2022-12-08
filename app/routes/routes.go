@@ -211,7 +211,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// rating
 	privateCostumer.POST("/course/rating/add/:courseId", ratingController.AddRating)
 	privateCostumer.DELETE("/course/rating/delete/:courseId", ratingController.DeleteRating)
-	privateCostumer.GET("/course/rating/get_by_customer/:courseId", ratingController.GetRatingByCourseIDCustomerID)
+	privateCostumer.GET("/course/rating/get_by_id/:courseId", ratingController.GetRatingByCourseIDCustomerID)
 
 	//module
 	//instructor access

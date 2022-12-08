@@ -52,7 +52,7 @@ func (cr *courseRepository) GetAllCourse(user dto.User) ([]dto.Course, error) {
 	if user.Role == "instructor" {
 		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
 	} else if user.Role == "customer" {
-		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses", "customer_id = ?", user.ID).Preload("Favorites").Preload("Ratings").Preload("Modules").Find(&courseModels).Error
+		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses", "customer_id = ?", user.ID).Preload("Favorites", "customer_id = ?", user.ID).Preload("Ratings").Preload("Modules").Find(&courseModels).Error
 	}
 	if err != nil {
 		return nil, err
