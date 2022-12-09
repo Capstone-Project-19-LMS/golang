@@ -54,7 +54,7 @@ func New(db *gorm.DB) *echo.Echo {
 	assignmentRepository := assignmentrepository.NewAssignmentRepository(db)
 	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
 	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
-	
+
 	/*
 		Services
 	*/
@@ -100,13 +100,12 @@ func New(db *gorm.DB) *echo.Echo {
 		CustomerAssignmentService: customerAssignmentService,
 	}
 
-	customerCourseController := customerCourseController.CustomerCourseController {
+	customerCourseController := customerCourseController.CustomerCourseController{
 		CustomerCourseService: customerCourseService,
 	}
 
-	
 	/*
-	API Routes
+		API Routes
 	*/
 	app := echo.New()
 
