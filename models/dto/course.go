@@ -32,7 +32,7 @@ type Course struct {
 type CourseTransaction struct {
 	ID           string  `json:"id"`
 	Name         string  `json:"name" validate:"required"`
-	Description  string  `json:"description"`
+	Description  string  `json:"description" validate:"required"`
 	Objective    string  `json:"objective"`
 	Price        float64 `json:"price"`
 	Discount     float64 `json:"discount"`
@@ -55,7 +55,7 @@ type GetCourse struct {
 	CategoryID      string  `json:"category_id"`
 	Rating          float64 `json:"rating"`
 	Favorite        bool    `json:"favorite"`
-	NumberOfModules int     `json:"module"`
+	NumberOfModules int     `json:"number_of_modules"`
 }
 
 type CourseCustomerEnroll struct {

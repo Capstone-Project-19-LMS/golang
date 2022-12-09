@@ -1,7 +1,6 @@
 package costumerController
 
 import (
-	"fmt"
 	middlewares "golang/app/middlewares/costumer"
 	"golang/models/dto"
 	costumerService "golang/service/costumerService"
@@ -87,7 +86,6 @@ func (u *CostumerController) Login(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
-	fmt.Println(user)
 	if !user.IsActive {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "account non active",

@@ -46,6 +46,13 @@ func GetUserCustomer(c echo.Context) *JwtCostumerClaims {
 		return nil
 	}
 
+	// jika ada code yang panic
+	defer func() {
+		if err := recover(); err != nil {
+			return
+		}
+	}()
+
 	claims := user.Claims.(*JwtCostumerClaims)
 	return claims
 }
