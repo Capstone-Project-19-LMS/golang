@@ -12,12 +12,15 @@ var whitelistCostumer []string = make([]string, 5)
 
 type JwtCostumerClaims struct {
 	ID string `json:"id"`
+	Role string `json:"role"`
 	jwt.StandardClaims
 }
 
 func GenerateTokenCustomer(userID string) (string, error) {
+	role := "customer"
 	claims := JwtCostumerClaims{
 		userID,
+		role,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * 2).Unix(),
 		},
@@ -42,6 +45,13 @@ func GetUserCustomer(c echo.Context) *JwtCostumerClaims {
 	if !isListed {
 		return nil
 	}
+
+	// jika ada code yang panic
+	defer func() {
+		if err := recover(); err != nil {
+			return
+		}
+	}()
 
 	claims := user.Claims.(*JwtCostumerClaims)
 	return claims
