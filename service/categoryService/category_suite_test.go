@@ -30,7 +30,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 		MockReturnBody     dto.Category
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       dto.Category
+		ExpectedBody       dto.GetCategory
 		ExpectedError                 error
 		}{
 		{
@@ -56,19 +56,47 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Capacity:        100,
 						InstructorID:    "abcde",
 						CategoryID:      "abcde",
-						Rating:          5,
-						Favorite:        false,
-						NumberOfModules: 10,
+						CustomerCourses: []dto.CustomerCourse{
+							{
+								ID:         "abcde",
+								CustomerID: "abcde",
+								CourseID:   "abcde",
+								Status:     true,
+							},
+						},
+						Favorites: []dto.Favorite{
+							{
+								ID:         "abcde",
+								CustomerID: "abcde",
+								CourseID:   "abcde",
+							},
+						},
+						Ratings: []dto.Rating{
+							{
+								ID:         "abcde",
+								CustomerID: "abcde",
+								CourseID:   "abcde",
+								Rating: 5,
+							},
+						},
+						Modules: []dto.Module{
+							{
+								ID:          "efgh",
+								Name:        "test",
+								Content:    "test",
+								CourseID:    "abcde",
+							},
+						},
 					},
 				},
 			},
 			nil,
 			true,
-			dto.Category{
+			dto.GetCategory{
 				ID:          "abcde",
 				Name:        "test",
 				Description: "test",
-				Courses: []dto.Course{
+				Courses: []dto.GetCourseWithoutCategory{
 					{
 						ID:              "abcde",
 						Name:            "test",
@@ -79,10 +107,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Thumbnail:       "test",
 						Capacity:        100,
 						InstructorID:    "abcde",
-						CategoryID:      "abcde",
 						Rating:          5,
-						Favorite:        false,
-						NumberOfModules: 10,
+						Favorite:        true,
+						NumberOfModules: 1,
+						StatusEnroll: 		true,
 					},
 				},
 			},
@@ -98,7 +126,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			dto.Category{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.Category{},
+			dto.GetCategory{},
 			gorm.ErrRecordNotFound,
 		},
 	}
