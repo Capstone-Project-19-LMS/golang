@@ -193,6 +193,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.PUT("/course/update/:id", courseController.UpdateCourse)
 	// customer course
 	privateInstructor.GET("/course/get_by_id/:id/enroll", courseController.GetCourseEnrollByID)
+	privateInstructor.PUT("/course/enroll/update/:courseId", customerCourseController.UpdateEnrollmentStatus)
 	// rating
 	privateInstructor.GET("/course/get_by_id/:courseId/rating", ratingController.GetRatingByCourseID)
 	privateInstructor.PUT("/course/rating/update/:ratingId", ratingController.UpdateRating)
@@ -211,7 +212,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// rating
 	privateCostumer.POST("/course/rating/add/:courseId", ratingController.AddRating)
 	privateCostumer.DELETE("/course/rating/delete/:courseId", ratingController.DeleteRating)
-	privateCostumer.GET("/course/rating/get_by_customer/:courseId", ratingController.GetRatingByCourseIDCustomerID)
+	privateCostumer.GET("/course/rating/get_by_id/:courseId", ratingController.GetRatingByCourseIDCustomerID)
 
 	//module
 	//instructor access

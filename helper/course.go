@@ -1,6 +1,8 @@
 package helper
 
-import "golang/models/dto"
+import (
+	"golang/models/dto"
+)
 
 // get rating from course
 func GetRatingCourse(course dto.Course) float64 {
@@ -27,4 +29,15 @@ func GetFavoriteCourse(course dto.Course, customerID string) bool {
 		}
 	}
 	return false
+}
+
+// function to get enrolled course
+func GetEnrolledCourse(course *dto.Course, customerID string) {
+	course.StatusEnroll = false
+	// get enrolled of course
+	for _, customerCourse := range course.CustomerCourses {
+		if customerCourse.CustomerID == customerID {
+			course.StatusEnroll = customerCourse.Status
+		}
+	}
 }

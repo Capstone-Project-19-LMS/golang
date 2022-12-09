@@ -7,14 +7,17 @@ import (
 	"golang/models/dto"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
+
+	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
-	GetAllCourse(dto.User) ([]dto.Course, error)
-	GetCourseByID(id string) (dto.Course, error)
-	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
+	GetAllCourse(dto.User) ([]dto.GetCourse, error)
+	GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error)
+	GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
 
@@ -71,26 +74,20 @@ func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 }
 
 // GetAllCourse implements CourseService
-func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
+func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 	courses, err := cs.courseRepo.GetAllCourse(user)
 	if err != nil {
 		return nil, err
 	}
 	// check if courses is empty
 	if len(courses) == 0 {
-		return []dto.Course{}, nil
+		return []dto.GetCourse{}, nil
 	}
-	
+
 	// get rating of all courses
 	for i, course := range courses {
 		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
-	}
-
-	// get favorite of all courses
-	for i, course := range courses {
-		favorite := helper.GetFavoriteCourse(course, user.ID)
-		courses[i].Favorite = favorite
 	}
 
 	// get number of module
@@ -99,38 +96,87 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.Course, error) {
 		courses[i].NumberOfModules = numberOfModule
 	}
 
-	return courses, nil
+	if user.Role == "customer" {
+		// get favorite of all courses
+		for i, course := range courses {
+			favorite := helper.GetFavoriteCourse(course, user.ID)
+			courses[i].Favorite = favorite
+		}
+
+		// get enrolled of all courses
+		for i, course := range courses {
+			helper.GetEnrolledCourse(&course, user.ID)
+			courses[i].StatusEnroll = course.StatusEnroll
+		}
+	}
+	var getCourses []dto.GetCourse
+	err = copier.Copy(&getCourses, &courses)
+	if err != nil {
+		return nil, err
+	}
+
+	return getCourses, nil
 }
 
 // GetCourseByID implements CourseService
-func (cs *courseService) GetCourseByID(id string) (dto.Course, error) {
+func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error) {
 	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
-		return dto.Course{}, err
+		return dto.GetCourseByID{}, err
 	}
 
+	if user.Role == "instructor" {
+		// check if instructor id in the course is the same as the instructor id in the token
+		if course.InstructorID != user.ID {
+			return dto.GetCourseByID{}, errors.New(constantError.ErrorNotAuthorized)
+		}
+	}
 	// get rating of course
 	rating := helper.GetRatingCourse(course)
 	course.Rating = rating
-
-	// get favorites of course
-	favorite := helper.GetFavoriteCourse(course, id)
-	course.Favorite = favorite
 
 	// get number of module
 	numberOfModule := len(course.Modules)
 	course.NumberOfModules = numberOfModule
 
-	return course, nil
+	if user.Role == "customer" {
+		// get favorites of course
+		favorite := helper.GetFavoriteCourse(course, user.ID)
+		course.Favorite = favorite
+
+		// get enrolled of course
+		helper.GetEnrolledCourse(&course, user.ID)
+	}
+	var getCourses dto.GetCourseByID
+	err = copier.Copy(&getCourses, &course)
+	if err != nil {
+		return dto.GetCourseByID{}, err
+	}
+
+	return getCourses, nil
 }
 
 // GetCourseEnrollByID implements CourseService
-func (cs *courseService) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
-	course, err := cs.courseRepo.GetCourseEnrollByID(id)
+func (cs *courseService) GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error) {
+	// check if the course is exists
+	course, err := cs.courseRepo.GetCourseByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.New(constantError.ErrorCourseNotFound)
+		}
+		return nil, err
+	}
+
+	// check if instructor id in the course is the same as the instructor id in the token
+	if course.InstructorID != user.ID {
+		return nil, errors.New(constantError.ErrorNotAuthorized)
+	}
+
+	customerEnroll, err := cs.courseRepo.GetCourseEnrollByID(id)
 	if err != nil {
 		return nil, err
 	}
-	return course, nil
+	return customerEnroll, nil
 }
 
 // UpdateCourse implements CourseService

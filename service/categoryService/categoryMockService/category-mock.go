@@ -21,10 +21,10 @@ func (c *CategoryMock) DeleteCategory(id string) error {
 
 	return args.Error(0)
 }
-func (c *CategoryMock) GetCategoryByID(id string, user dto.User) (dto.Category, error) {
+func (c *CategoryMock) GetCategoryByID(id string, user dto.User) (dto.GetCategory, error) {
 	args := c.Called(id, user)
 
-	return args.Get(0).(dto.Category), args.Error(1)
+	return args.Get(0).(dto.GetCategory), args.Error(1)
 }
 
 func (c *CategoryMock) GetAllCategory() ([]dto.CategoryTransaction, error) {

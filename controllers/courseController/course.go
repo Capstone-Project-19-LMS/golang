@@ -8,6 +8,7 @@ import (
 	"golang/service/courseService"
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -94,19 +95,35 @@ func (cc *CourseController) GetAllCourse(c echo.Context) error {
 	// Get user id from jwt
 	user := helper.GetUser(c)
 
-	// Call service to get all category
-	categories, err := cc.CourseService.GetAllCourse(user)
+	// Call service to get all courses
+	getCourses, err := cc.CourseService.GetAllCourse(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail get all category",
+			"message": "fail get all courses",
 			"error":   err.Error(),
+		})
+	}
+
+	if user.Role == "instructor" {
+		var coursesInstructor []dto.GetCourseInstructor
+		err = copier.Copy(&coursesInstructor, &getCourses)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail get all courses",
+				"error":   err.Error(),
+			})
+		}
+		// Return response if success
+		return c.JSON(http.StatusOK, echo.Map{
+			"message":   "success get all courses",
+			"courses": coursesInstructor,
 		})
 	}
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":   "success get all category",
-		"courses": categories,
+		"message":   "success get all courses",
+		"courses": getCourses,
 	})
 }
 
@@ -115,8 +132,11 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	// get id from url param
 	id := c.Param("id")
 
+	// Get user id from jwt
+	user := helper.GetUser(c)
+
 	// get course by id from service
-	course, err := cc.CourseService.GetCourseByID(id)
+	getCourses, err := cc.CourseService.GetCourseByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -130,10 +150,26 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 		})
 	}
 
+	if user.Role == "instructor" {
+		var courseInstructor dto.GetCourseInstructorByID
+		err = copier.Copy(&courseInstructor, &getCourses)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail get all courses",
+				"error":   err.Error(),
+			})
+		}
+		// Return response if success
+		return c.JSON(http.StatusOK, echo.Map{
+			"message":   "success get course by id",
+			"courses": courseInstructor,
+		})
+	}
+
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get course by id",
-		"course": course,
+		"course": getCourses,
 	})
 }
 
@@ -142,8 +178,11 @@ func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	// get id from url param
 	id := c.Param("id")
 
+	// Get user id from jwt
+	user := helper.GetUser(c)
+
 	// get course by id from service
-	course, err := cc.CourseService.GetCourseEnrollByID(id)
+	course, err := cc.CourseService.GetCourseEnrollByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -160,7 +199,7 @@ func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get course with customer enrolled",
-		"course": course,
+		"customer_enroll": course,
 	})
 }
 
