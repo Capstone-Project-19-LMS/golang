@@ -4,12 +4,14 @@ import (
 	"golang/helper"
 	"golang/models/dto"
 	"golang/repository/categoryRepository"
+
+	"github.com/jinzhu/copier"
 )
 
 type CategoryService interface {
 	CreateCategory(dto.CategoryTransaction) error
 	DeleteCategory(id string) error
-	GetCategoryByID(id string, user dto.User) (dto.Category, error)
+	GetCategoryByID(id string, user dto.User) (dto.GetCategory, error)
 	GetAllCategory() ([]dto.CategoryTransaction, error)
 	UpdateCategory(dto.CategoryTransaction) error
 }
@@ -49,12 +51,39 @@ func (cs *categoryService) GetAllCategory() ([]dto.CategoryTransaction, error) {
 }
 
 // GetCategoryByID implements CategoryService
-func (cs *categoryService) GetCategoryByID(id string, user dto.User) (dto.Category, error) {
+func (cs *categoryService) GetCategoryByID(id string, user dto.User) (dto.GetCategory, error) {
 	category, err := cs.categoryRepo.GetCategoryByID(id, user)
 	if err != nil {
-		return dto.Category{}, err
+		return dto.GetCategory{}, err
 	}
-	return category, nil
+
+	// get rating of all courses
+	for i, course := range category.Courses {
+		rating := helper.GetRatingCourse(course)
+		category.Courses[i].Rating = rating
+
+		// get number of module
+		numberOfModule := len(course.Modules)
+		category.Courses[i].NumberOfModules = numberOfModule
+
+		if user.Role == "customer" {
+			// get favorite of all courses
+			favorite := helper.GetFavoriteCourse(course, user.ID)
+			category.Courses[i].Favorite = favorite
+
+			// get enrolled of all courses
+			helper.GetEnrolledCourse(&course, user.ID)
+			category.Courses[i].StatusEnroll = course.StatusEnroll
+		}
+	}
+
+	var getCategory dto.GetCategory
+	err = copier.Copy(&getCategory, &category)
+	if err != nil {
+		return dto.GetCategory{}, err
+	}
+
+	return getCategory, nil
 }
 
 // UpdateCategory implements CategoryService

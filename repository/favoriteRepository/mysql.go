@@ -20,7 +20,7 @@ func (fr *favoriteRepository) AddFavorite(favorite dto.FavoriteTransaction) erro
 	if err != nil {
 		return err
 	}
-	// save customer course to database
+	// save favorite to database
 	err = fr.db.Model(&model.Favorite{}).Create(&favoriteModel).Error
 	if err != nil {
 		return err
@@ -40,10 +40,10 @@ func (fr *favoriteRepository) DeleteFavorite(id string) error {
 
 // GetFavoriteByCustomerID implements FavoriteRepository
 func (fr *favoriteRepository) GetFavoriteByCustomerID(customerID string) ([]dto.Course, error) {
-	var courseModels []model.Course
+	var courseModels []dto.GetCourseCategory
 
 	// get data course from database by customer id
-	err := fr.db.Model(&model.Course{}).Joins("JOIN favorites ON favorites.course_id = courses.id").Preload("Ratings").Preload("Modules").Unscoped().Where("favorites.customer_id = ?", customerID).Find(&courseModels).Error
+	err := fr.db.Model(&model.Course{}).Joins("JOIN favorites ON favorites.course_id = courses.id").Preload("Category").Preload("CustomerCourses", "customer_id = ?", customerID).Preload("Ratings").Preload("Modules").Unscoped().Where("favorites.customer_id = ?", customerID).Find(&courseModels).Error
 	if err != nil {
 		return nil, err
 	}

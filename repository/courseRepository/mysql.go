@@ -46,13 +46,13 @@ func (cr *courseRepository) DeleteCourse(id string) error {
 
 // GetAllCourse implements CourseRepository
 func (cr *courseRepository) GetAllCourse(user dto.User) ([]dto.Course, error) {
-	var courseModels []model.Course
+	var courseModels []dto.GetCourseCategory
 	// get data sub category from database by user
 	var err error
 	if user.Role == "instructor" {
-		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
+		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("instructor_id = ?", user.ID).Find(&courseModels).Error
 	} else if user.Role == "customer" {
-		err = cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Find(&courseModels).Error
+		err = cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses", "customer_id = ?", user.ID).Preload("Favorites", "customer_id = ?", user.ID).Preload("Ratings").Preload("Modules").Find(&courseModels).Error
 	}
 	if err != nil {
 		return nil, err
@@ -68,8 +68,8 @@ func (cr *courseRepository) GetAllCourse(user dto.User) ([]dto.Course, error) {
 
 // GetCourseByID implements CourseRepository
 func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
-	var courseModel model.Course
-	err := cr.db.Model(&model.Course{}).Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? ", id).Find(&courseModel)
+	var courseModel dto.GetCourseCategory
+	err := cr.db.Model(&model.Course{}).Preload("Category").Preload("CustomerCourses").Preload("Favorites").Preload("Ratings").Preload("Modules").Where("id = ? ", id).Find(&courseModel)
 	if err.Error != nil {
 		return dto.Course{}, err.Error
 	}
@@ -89,20 +89,13 @@ func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
 // GetCourseEnrollByID implements CourseRepository
 func (cr *courseRepository) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
 	var customers []dto.CustomerEnroll
-	err := cr.db.Model(&model.Customer{}).Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.course_id = ? ", id).Find(&customers)
+	err := cr.db.Model(&model.Customer{}).Select("*", "customer_courses.id AS customer_course_id", "customers.id AS id" , "customer_courses.status AS status_enroll").Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.course_id = ? ", id).Find(&customers)
 	if err.Error != nil {
 		return nil, err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return nil, gorm.ErrRecordNotFound
+		return []dto.CustomerEnroll{}, nil
 	}
-
-	// copy data from model to dto
-	// var course []dto.CustomerEnroll
-	// errCopy := copier.Copy(&course, &customerModel)
-	// if errCopy != nil {
-	// 	return nil, errCopy
-	// }
 	return customers, nil
 }
 

@@ -40,10 +40,10 @@ func (ccr *customerCourseRepository) GetCustomerCourse(courseID string, customer
 
 // HistoryCourse implements CustomerCourseRepository
 func (ccr *customerCourseRepository) GetHistoryCourseByCustomerID(customerId string) ([]dto.Course, error) {
-	var courseModels []model.Course
+	var courseModels []dto.CourseCustomerEnroll
 
 	// get data course from database by customer id
-	err := ccr.db.Model(&model.Course{}).Joins("JOIN customer_courses ON customer_courses.course_id = courses.id").Preload("Favorites").Preload("Ratings").Preload("Modules").Unscoped().Where("customer_courses.customer_id = ?", customerId).Find(&courseModels).Error
+	err := ccr.db.Model(&model.Course{}).Joins("JOIN customer_courses ON customer_courses.course_id = courses.id").Preload("Category").Preload("CustomerCourses", "customer_id = ?", customerId).Preload("Favorites", "customer_id = ?", customerId).Preload("Ratings").Preload("Modules").Unscoped().Where("customer_courses.customer_id = ?", customerId).Find(&courseModels).Error
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +65,15 @@ func (ccr *customerCourseRepository) TakeCourse(customerCourse dto.CustomerCours
 	}
 	// save customer course to database
 	err = ccr.db.Model(&model.CustomerCourse{}).Create(&customerCourseModel).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateEnrollmentStatus implements CustomerCourseRepository
+func (ccr *customerCourseRepository) UpdateEnrollmentStatus(customerCourse dto.CustomerCourseTransaction) error {
+	err := ccr.db.Model(&model.CustomerCourse{}).Where("course_id = ? AND customer_id = ?", customerCourse.CourseID, customerCourse.CustomerID).Update("status", customerCourse.Status).Error
 	if err != nil {
 		return err
 	}

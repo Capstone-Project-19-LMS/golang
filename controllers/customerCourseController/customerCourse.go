@@ -69,6 +69,12 @@ func (ccc *CustomerCourseController) TakeCourse(c echo.Context) error {
 	courseID := c.Param("courseId")
 	customerCourse.CourseID = courseID
 
+	// Get customer id from jwt
+	customer := helper.GetUser(c)
+	customerCourse.CustomerID = customer.ID
+
+	customerCourse.Status = true
+
 	// validate request body
 	if err := c.Validate(customerCourse); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
@@ -76,11 +82,7 @@ func (ccc *CustomerCourseController) TakeCourse(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
-
-	// Get customer id from jwt
-	customer := helper.GetUser(c)
-	customerCourse.CustomerID = customer.ID
-
+	
 	// call service to tak course
 	err := ccc.CustomerCourseService.TakeCourse(customerCourse)
 	if err != nil {
@@ -99,5 +101,51 @@ func (ccc *CustomerCourseController) TakeCourse(c echo.Context) error {
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success take course",
+	})
+}
+
+func (ccc *CustomerCourseController) UpdateEnrollmentStatus(c echo.Context) error {
+	var customerCourse dto.CustomerCourseTransaction
+	// get course id from url
+	courseID := c.Param("courseId")
+	customerCourse.CourseID = courseID
+
+	// get bind data from request body
+	if err := c.Bind(&customerCourse); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "fail bind request body",
+			"error":   err.Error(),
+		})
+	}
+
+	// validate request body
+	if err := c.Validate(customerCourse); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "There is an empty field",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get customer id from jwt
+	instructor := helper.GetUser(c)
+
+	// call service to update enrollment status
+	err := ccc.CustomerCourseService.UpdateEnrollmentStatus(customerCourse, instructor.ID)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail update enrollment status",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail update enrollment status",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success update enrollment status",
 	})
 }

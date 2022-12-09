@@ -37,10 +37,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 		Method             string
 		ParamID            string
 		ParamUser		  dto.User
-		MockReturnBody     dto.Category
+		MockReturnBody     dto.GetCategory
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       dto.Category
+		ExpectedBody       dto.GetCategory
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -52,11 +52,11 @@ func (s *suiteCategory) TestGetCategoryByID() {
 				ID: "abcde",
 				Role: "customer",
 			},
-			dto.Category{
+			dto.GetCategory{
 				ID: "abcde",
 				Name: "test",
 				Description: "test",
-				Courses: []dto.Course{
+				Courses: []dto.GetCourseWithoutCategory{
 					{
 						ID: "abcde",
 						Name: "test",
@@ -67,7 +67,6 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Thumbnail: "test",
 						Capacity: 100,
 						InstructorID: "abcde",
-						CategoryID: "abcde",
 						Rating: 5,
 						Favorite: false,
 						NumberOfModules: 10,
@@ -76,11 +75,11 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			},
 			nil,
 			true,
-			dto.Category{
+			dto.GetCategory{
 				ID: "abcde",
 				Name: "test",
 				Description: "test",
-				Courses: []dto.Course{
+				Courses: []dto.GetCourseWithoutCategory{
 					{
 						ID: "abcde",
 						Name: "test",
@@ -91,7 +90,6 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Thumbnail: "test",
 						Capacity: 100,
 						InstructorID: "abcde",
-						CategoryID: "abcde",
 						Rating: 5,
 						Favorite: false,
 						NumberOfModules: 10,
@@ -109,10 +107,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 				ID: "abcde",
 				Role: "customer",
 			},
-			dto.Category{},
+			dto.GetCategory{},
 			errors.New("error"),
 			false,
-			dto.Category{},
+			dto.GetCategory{},
 			http.StatusInternalServerError,
 			"fail get category by id",
 		},
@@ -124,10 +122,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 				ID: "abcde",
 				Role: "customer",
 			},
-			dto.Category{},
+			dto.GetCategory{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.Category{},
+			dto.GetCategory{},
 			http.StatusNotFound,
 			"fail get category by id",
 		},
