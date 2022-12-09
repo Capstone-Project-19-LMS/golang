@@ -36,7 +36,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 		Name               string
 		Method             string
 		ParamID            string
-		ParamUser		  dto.User
+		ParamUser          dto.User
 		MockReturnBody     dto.GetCategory
 		MockReturnError    error
 		HasReturnBody      bool
@@ -49,26 +49,26 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"GET",
 			"abcde",
 			dto.User{
-				ID: "abcde",
+				ID:   "abcde",
 				Role: "customer",
 			},
 			dto.GetCategory{
-				ID: "abcde",
-				Name: "test",
+				ID:          "abcde",
+				Name:        "test",
 				Description: "test",
 				Courses: []dto.GetCourseWithoutCategory{
 					{
-						ID: "abcde",
-						Name: "test",
-						Description: "test",
-						Objective: "test",
-						Price: 10000,
-						Discount: 0,
-						Thumbnail: "test",
-						Capacity: 100,
-						InstructorID: "abcde",
-						Rating: 5,
-						Favorite: false,
+						ID:              "abcde",
+						Name:            "test",
+						Description:     "test",
+						Objective:       "test",
+						Price:           10000,
+						Discount:        0,
+						Thumbnail:       "test",
+						Capacity:        100,
+						InstructorID:    "abcde",
+						Rating:          5,
+						Favorite:        false,
 						NumberOfModules: 10,
 					},
 				},
@@ -76,22 +76,22 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			nil,
 			true,
 			dto.GetCategory{
-				ID: "abcde",
-				Name: "test",
+				ID:          "abcde",
+				Name:        "test",
 				Description: "test",
 				Courses: []dto.GetCourseWithoutCategory{
 					{
-						ID: "abcde",
-						Name: "test",
-						Description: "test",
-						Objective: "test",
-						Price: 10000,
-						Discount: 0,
-						Thumbnail: "test",
-						Capacity: 100,
-						InstructorID: "abcde",
-						Rating: 5,
-						Favorite: false,
+						ID:              "abcde",
+						Name:            "test",
+						Description:     "test",
+						Objective:       "test",
+						Price:           10000,
+						Discount:        0,
+						Thumbnail:       "test",
+						Capacity:        100,
+						InstructorID:    "abcde",
+						Rating:          5,
+						Favorite:        false,
 						NumberOfModules: 10,
 					},
 				},
@@ -104,7 +104,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"GET",
 			"abcde",
 			dto.User{
-				ID: "abcde",
+				ID:   "abcde",
 				Role: "customer",
 			},
 			dto.GetCategory{},
@@ -119,7 +119,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"GET",
 			"abcde",
 			dto.User{
-				ID: "abcde",
+				ID:   "abcde",
 				Role: "customer",
 			},
 			dto.GetCategory{},

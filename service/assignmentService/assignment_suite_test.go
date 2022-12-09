@@ -26,70 +26,62 @@ func (s *suiteAssignment) TestGetAssignmentByID() {
 	testCase := []struct {
 		Name            string
 		ParamID         string
-		ParamUser       dto.User
 		MockReturnBody  dto.Assignment
 		MockReturnError error
 		HasReturnBody   bool
-		ExpectedBody    dto.GetAssignment
+		ExpectedBody    dto.Assignment
 		ExpectedError   error
 	}{
 		{
-			"success get assignment by id and customer",
+			"success get assignment by id ",
 			"abcde",
-			dto.User{
-				ID:   "abcde",
-				Role: "customer",
-			},
 			dto.Assignment{
 				ID:          "abcde",
 				Title:       "tes",
 				Description: "tes",
-				ModuleID:    "tes",
+				ModuleID:    "abcde",
 				CustomerAssignments: []dto.CustomerAssignment{
 					{
-						ID:           "tes",
+						ID:           "abcde",
 						File:         "tes",
 						Grade:        1,
-						AssignmentID: "tes",
-						CustomerID:   "tes",
+						AssignmentID: "abcde",
+						CustomerID:   "abcde",
 					},
 				},
 			},
 			nil,
 			true,
-			dto.GetAssignment{
+			dto.Assignment{
 				ID:          "abcde",
 				Title:       "tes",
 				Description: "tes",
-				ModuleID:    "tes",
+				ModuleID:    "abcde",
 				CustomerAssignments: []dto.CustomerAssignment{
 					{
-						ID:           "tes",
+						ID:           "abcde",
 						File:         "tes",
 						Grade:        1,
-						AssignmentID: "tes",
-						CustomerID:   "tes",
+						AssignmentID: "abcde",
+						CustomerID:   "abcde",
 					},
 				},
 			},
 			nil,
 		},
 		{
-			"failed get assignment by id and customer",
+			"failed get assignment by id",
 			"abcde",
-			dto.User{
-				ID:   "abcde",
-				Role: "customer",
-			},
+
 			dto.Assignment{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.GetAssignment{},
+			dto.Assignment{},
 			gorm.ErrRecordNotFound,
 		},
 	}
 	for _, v := range testCase {
-		mockCall := s.mock.On("GetAssignmentByID", v.ParamID, v.ParamUser).Return(v.MockReturnBody, v.MockReturnError)
+		mockCall := s.mock.On("GetAssignmentByID", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			assignment, err := s.assignmentService.GetAssignmentByID(v.ParamID)
 			if v.HasReturnBody {

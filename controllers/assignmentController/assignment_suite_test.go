@@ -2,158 +2,115 @@ package assignmentcontroller
 
 import (
 	"encoding/json"
-	"errors"
-	middlewareCustomer "golang/app/middlewares/costumer"
-	middlewareInstructor "golang/app/middlewares/instructor"
 	"golang/models/dto"
-	"golang/service/categoryService/categoryMockService"
+	"golang/service/assignmentService/assignmentMockService"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
 
-type suiteCategory struct {
+type suiteAssignment struct {
 	suite.Suite
 	assignmentController *AssignmentController
-	mock                 *categoryMockService.CategoryMock
+	mock                 *assignmentMockService.AssignmentMock
 }
 
-func (s *suiteCategory) SetupTest() {
-	mock := &categoryMockService.CategoryMock{}
+func (s *suiteAssignment) SetupTest() {
+	mock := &assignmentMockService.AssignmentMock{}
 	s.mock = mock
 	s.assignmentController = &AssignmentController{
 		AssignmentService: s.mock,
 	}
 }
 
-func (s *suiteCategory) TestGetCategoryByID() {
+func (s *suiteAssignment) TestGetAssignmentByID() {
 	testCase := []struct {
 		Name               string
 		Method             string
 		ParamID            string
-		ParamUser          dto.User
-		MockReturnBody     dto.GetCategory
+		MockReturnBody     dto.Assignment
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       dto.GetCategory
+		ExpectedBody       dto.Assignment
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
-			"success get category by id and customer",
+			"success get assignment by id",
 			"GET",
 			"abcde",
-			dto.User{
-				ID:   "abcde",
-				Role: "customer",
-			},
-			dto.GetCategory{
+
+			dto.Assignment{
 				ID:          "abcde",
-				Name:        "test",
-				Description: "test",
-				Courses: []dto.GetCourseWithoutCategory{
+				Title:       "tes",
+				Description: "tes",
+				ModuleID:    "abcde",
+				CustomerAssignments: []dto.CustomerAssignment{
 					{
-						ID:              "abcde",
-						Name:            "test",
-						Description:     "test",
-						Objective:       "test",
-						Price:           10000,
-						Discount:        0,
-						Thumbnail:       "test",
-						Capacity:        100,
-						InstructorID:    "abcde",
-						Rating:          5,
-						Favorite:        false,
-						NumberOfModules: 10,
+						ID:           "abcde",
+						File:         "tes",
+						Grade:        1,
+						AssignmentID: "tes",
+						CustomerID:   "tes",
 					},
 				},
 			},
 			nil,
 			true,
-			dto.GetCategory{
+			dto.Assignment{
 				ID:          "abcde",
-				Name:        "test",
-				Description: "test",
-				Courses: []dto.GetCourseWithoutCategory{
+				Title:       "tes",
+				Description: "tes",
+				ModuleID:    "abcde",
+				CustomerAssignments: []dto.CustomerAssignment{
 					{
-						ID:              "abcde",
-						Name:            "test",
-						Description:     "test",
-						Objective:       "test",
-						Price:           10000,
-						Discount:        0,
-						Thumbnail:       "test",
-						Capacity:        100,
-						InstructorID:    "abcde",
-						Rating:          5,
-						Favorite:        false,
-						NumberOfModules: 10,
+						ID:           "abcde",
+						File:         "tes",
+						Grade:        1,
+						AssignmentID: "tes",
+						CustomerID:   "abcde",
 					},
 				},
 			},
+
 			http.StatusOK,
-			"success get category by id",
+			"success get assignment by id",
 		},
 		{
-			"failed get category by id",
+			"failed get assignment by id",
 			"GET",
 			"abcde",
-			dto.User{
-				ID:   "abcde",
-				Role: "customer",
-			},
-			dto.GetCategory{},
-			errors.New("error"),
-			false,
-			dto.GetCategory{},
-			http.StatusInternalServerError,
-			"fail get category by id",
-		},
-		{
-			"failed get category by id",
-			"GET",
-			"abcde",
-			dto.User{
-				ID:   "abcde",
-				Role: "customer",
-			},
-			dto.GetCategory{},
+			dto.Assignment{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.GetCategory{},
-			http.StatusNotFound,
-			"fail get category by id",
+			dto.Assignment{},
+			http.StatusInternalServerError,
+			"failed get assignment by id",
 		},
 	}
+
 	for _, v := range testCase {
-		mockCall := s.mock.On("GetCategoryByID", v.ParamID, v.ParamUser).Return(v.MockReturnBody, v.MockReturnError)
+		mockCall := s.mock.On("GetAssignmentByID", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			// Create request
-			r := httptest.NewRequest(v.Method, "/categories/"+v.ParamID, nil)
+			r := httptest.NewRequest(v.Method, "/assignment/"+v.ParamID, nil)
 			// Create response recorder
 			w := httptest.NewRecorder()
 
 			// handler echo
 			e := echo.New()
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/categories/:id")
+			ctx.SetPath("/assignment/get_by_id/:id")
 			ctx.SetParamNames("id")
 			ctx.SetParamValues(v.ParamID)
-			if v.ParamUser.Role == "customer" {
-				ctx.Set("user", &jwt.Token{Claims: &middlewareCustomer.JwtCostumerClaims{ID: v.ParamUser.ID, Role: v.ParamUser.Role}})
-			} else {
-				ctx.Set("user", &jwt.Token{Claims: &middlewareInstructor.JwtInstructorClaims{ID: v.ParamUser.ID, Role: v.ParamUser.Role}})
-			}
 
-			err := s.categoryController.GetCategoryByID(ctx)
+			err := s.assignmentController.GetAssignmentByID(ctx)
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
-
 			var resp map[string]interface{}
 			err = json.NewDecoder(w.Result().Body).Decode(&resp)
 			s.NoError(err)
@@ -161,10 +118,9 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			s.Equal(v.ExpectedMesaage, resp["message"])
 
 			if v.HasReturnBody {
-				s.Equal(v.ExpectedBody.Name, resp["category"].(map[string]interface{})["name"])
-				s.Equal(v.ExpectedBody.Description, resp["category"].(map[string]interface{})["description"])
-				s.Equal(v.ExpectedBody.Courses[0].Name, resp["category"].(map[string]interface{})["courses"].([]interface{})[0].(map[string]interface{})["name"])
-				s.Equal(v.ExpectedBody.Courses[0].Description, resp["category"].(map[string]interface{})["courses"].([]interface{})[0].(map[string]interface{})["description"])
+				s.Equal(v.ExpectedBody.Title, resp["assignment"].(map[string]interface{})["title"])
+				s.Equal(v.ExpectedBody.Description, resp["assignment"].(map[string]interface{})["description"])
+
 			}
 		})
 		// remove mock
@@ -172,6 +128,6 @@ func (s *suiteCategory) TestGetCategoryByID() {
 	}
 }
 
-func TestSuiteCategory(t *testing.T) {
-	suite.Run(t, new(suiteCategory))
+func TestSuiteAssignment(t *testing.T) {
+	suite.Run(t, new(suiteAssignment))
 }
