@@ -12,7 +12,7 @@ import (
 type suiteCategory struct {
 	suite.Suite
 	categoryService CategoryService
-	mock               *categoryMockRepository.CategoryMock
+	mock            *categoryMockRepository.CategoryMock
 }
 
 func (s *suiteCategory) SetupTest() {
@@ -24,15 +24,15 @@ func (s *suiteCategory) SetupTest() {
 
 func (s *suiteCategory) TestGetCategoryByID() {
 	testCase := []struct {
-		Name               string
-		ParamID            string
-		ParamUser          dto.User
-		MockReturnBody     dto.Category
-		MockReturnError    error
-		HasReturnBody      bool
-		ExpectedBody       dto.GetCategory
-		ExpectedError                 error
-		}{
+		Name            string
+		ParamID         string
+		ParamUser       dto.User
+		MockReturnBody  dto.Category
+		MockReturnError error
+		HasReturnBody   bool
+		ExpectedBody    dto.GetCategory
+		ExpectedError   error
+	}{
 		{
 			"success get category by id and customer",
 			"abcde",
@@ -46,16 +46,16 @@ func (s *suiteCategory) TestGetCategoryByID() {
 				Description: "test",
 				Courses: []dto.Course{
 					{
-						ID:              "abcde",
-						Name:            "test",
-						Description:     "test",
-						Objective:       "test",
-						Price:           10000,
-						Discount:        0,
-						Thumbnail:       "test",
-						Capacity:        100,
-						InstructorID:    "abcde",
-						CategoryID:      "abcde",
+						ID:           "abcde",
+						Name:         "test",
+						Description:  "test",
+						Objective:    "test",
+						Price:        10000,
+						Discount:     0,
+						Thumbnail:    "test",
+						Capacity:     100,
+						InstructorID: "abcde",
+						CategoryID:   "abcde",
 						CustomerCourses: []dto.CustomerCourse{
 							{
 								ID:         "abcde",
@@ -76,15 +76,15 @@ func (s *suiteCategory) TestGetCategoryByID() {
 								ID:         "abcde",
 								CustomerID: "abcde",
 								CourseID:   "abcde",
-								Rating: 5,
+								Rating:     5,
 							},
 						},
 						Modules: []dto.Module{
 							{
-								ID:          "efgh",
-								Name:        "test",
-								Content:    "test",
-								CourseID:    "abcde",
+								ID:       "efgh",
+								Name:     "test",
+								Content:  "test",
+								CourseID: "abcde",
 							},
 						},
 					},
@@ -110,7 +110,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Rating:          5,
 						Favorite:        true,
 						NumberOfModules: 1,
-						StatusEnroll: 		true,
+						StatusEnroll:    true,
 					},
 				},
 			},
