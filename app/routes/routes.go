@@ -128,7 +128,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// costumer
 	costumer := app.Group("/customer")
 	costumer.POST("/register", costumerController.Register)
-	costumer.PUT("/verifikasi", costumerController.Verifikasi)
+	costumer.POST("/verifikasi", costumerController.Verifikasi)
 	costumer.POST("/login", costumerController.Login)
 
 	privateCostumer := app.Group("/customer", middleware.JWTWithConfig(configCostumer))
