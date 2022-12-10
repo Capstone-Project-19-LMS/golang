@@ -38,8 +38,8 @@ func (config *ConfigDB) InitDB() *gorm.DB {
 	return db
 }
 
-func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate(
+func DBMigrate(db *gorm.DB) error {
+	err := db.AutoMigrate(
 		model.Instructor{},
 		model.Customer{},
 		model.CustomerCode{},
@@ -53,4 +53,10 @@ func DBMigrate(db *gorm.DB) {
 		model.Assignment{},
 		model.CustomerAssignment{},
 	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

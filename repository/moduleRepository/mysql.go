@@ -16,9 +16,11 @@ type moduleRepository struct {
 // CreateModule implements ModuleRepository
 func (mr *moduleRepository) CreateModule(module dto.ModuleTransaction) error {
 	var moduleModel model.Module
-	copier.Copy(&moduleModel, &module)
-
-	err := mr.db.Model(&model.Module{}).Create(&moduleModel).Error
+	err := copier.Copy(&moduleModel, &module)
+	if err != nil {
+		return err
+	}
+	err = mr.db.Model(&model.Module{}).Create(&moduleModel).Error
 	if err != nil {
 		return err
 	}
@@ -49,8 +51,10 @@ func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 	}
 	// copy data from model to dto
 	var modules []dto.Module
-	copier.Copy(&modules, &moduleModels)
-
+	err = copier.Copy(&modules, &moduleModels)
+	if err != nil {
+		return nil, err
+	}
 	return modules, nil
 }
 
@@ -67,8 +71,10 @@ func (mr *moduleRepository) GetModuleByID(id string) (dto.Module, error) {
 
 	// copy data from model to dto
 	var Module dto.Module
-	copier.Copy(&Module, &moduleModel)
-
+	errCopy := copier.Copy(&Module, &moduleModel)
+	if errCopy != nil {
+		return dto.Module{}, errCopy
+	}
 	return Module, nil
 }
 
@@ -80,8 +86,10 @@ func (mr *moduleRepository) GetModuleByCourseID(courseID string) ([]dto.Module, 
 	}
 	// copy data from model to dto
 	var modules []dto.Module
-	copier.Copy(&modules, &moduleModels)
-
+	err = copier.Copy(&modules, &moduleModels)
+	if err != nil {
+		return nil, err
+	}
 	return modules, nil
 
 }
@@ -89,8 +97,11 @@ func (mr *moduleRepository) GetModuleByCourseID(courseID string) ([]dto.Module, 
 // UpdateModule implements ModuleRepository
 func (mr *moduleRepository) UpdateModule(module dto.ModuleTransaction) error {
 	var moduleModel model.Module
-	copier.Copy(&moduleModel, &module)
-
+	errCopy := copier.Copy(&moduleModel, &module)
+	if errCopy != nil {
+		return errCopy
+	}
+	
 	// update account with new data
 	err := mr.db.Model(&model.Module{}).Where("id = ?", module.ID).Updates(&moduleModel)
 	if err.Error != nil {

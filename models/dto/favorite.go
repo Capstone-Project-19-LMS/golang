@@ -14,3 +14,9 @@ type Favorite struct {
 	CustomerID string         `json:"customer_id"`
 	CourseID   string         `json:"course_id"`
 }
+
+type FavoriteTransaction struct {
+	ID         string         `json:"id"`
+	CustomerID string         `json:"customer_id"`
+	CourseID   string         `json:"course_id" validate:"required,alphanum"`
+}

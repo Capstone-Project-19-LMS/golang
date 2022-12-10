@@ -12,12 +12,15 @@ var whitelistInstructor []string = make([]string, 5)
 
 type JwtInstructorClaims struct {
 	ID string `json:"id"`
+	Role         string `json:"role"`
 	jwt.StandardClaims
 }
 
 func GenerateTokenInstructor(userID string) (string, error) {
+	role := "instructor"
 	claims := JwtInstructorClaims{
 		userID,
+		role,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * 2).Unix(),
 		},
@@ -42,7 +45,13 @@ func GetUserInstructor(c echo.Context) *JwtInstructorClaims {
 	if !isListed {
 		return nil
 	}
-	
+
+	// jika ada code yang panic
+	defer func() {
+		if err := recover(); err != nil {
+			return
+		}
+	}()
 	claims := user.Claims.(*JwtInstructorClaims)
 	return claims
 }
