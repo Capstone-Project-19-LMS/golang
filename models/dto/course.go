@@ -25,6 +25,8 @@ type Course struct {
 	Favorite        bool             `json:"favorite"`
 	NumberOfModules int              `json:"number_of_modules"`
 	StatusEnroll          bool             `json:"status_enroll"`
+	ProgressModule int `json:"progress_module"`
+	ProgressPercentage float64 `json:"progress_percentage"`
 	CustomerCourses []CustomerCourse `json:"customer_courses"`
 	Favorites       []Favorite       `json:"favorites"`
 	Ratings         []Rating         `json:"ratings"`
@@ -78,8 +80,10 @@ type GetCourse struct {
 	Category        Category `json:"category"`
 	Rating          float64  `json:"rating"`
 	Favorite        bool     `json:"favorite"`
-	NumberOfModules int      `json:"number_of_modules"`
 	StatusEnroll          bool     `json:"status_enroll"`
+	NumberOfModules int      `json:"number_of_modules"`
+	ProgressModule int `json:"progress_module"`
+	ProgressPercentage float64 `json:"progress_percentage"`
 }
 
 type GetCourseWithoutCategory struct {

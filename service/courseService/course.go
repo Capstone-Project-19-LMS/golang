@@ -89,29 +89,31 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 		return []dto.GetCourse{}, nil
 	}
 
-	// get rating of all courses
 	for i, course := range courses {
+		// get rating of all courses
 		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
-	}
 
-	// get number of module
-	for i, course := range courses {
+		// get number of module
 		numberOfModule := len(course.Modules)
 		courses[i].NumberOfModules = numberOfModule
-	}
 
-	if user.Role == "customer" {
-		// get favorite of all courses
-		for i, course := range courses {
+		if user.Role == "customer" {
+			// get favorite of all courses
 			favorite := helper.GetFavoriteCourse(course, user.ID)
 			courses[i].Favorite = favorite
-		}
 
-		// get enrolled of all courses
-		for i, course := range courses {
+			// get enrolled of all courses
 			helper.GetEnrolledCourse(&course, user.ID)
 			courses[i].StatusEnroll = course.StatusEnroll
+			
+			// get progress of all courses
+			courses[i].ProgressModule = course.ProgressModule
+			if courses[i].NumberOfModules == 0 {
+				courses[i].ProgressPercentage = 0
+			} else {
+				courses[i].ProgressPercentage = float64(courses[i].ProgressModule) * 100 / float64(courses[i].NumberOfModules)
+			}
 		}
 	}
 	var getCourses []dto.GetCourse

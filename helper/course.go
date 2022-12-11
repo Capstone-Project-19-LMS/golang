@@ -38,6 +38,7 @@ func GetEnrolledCourse(course *dto.Course, customerID string) {
 	for _, customerCourse := range course.CustomerCourses {
 		if customerCourse.CustomerID == customerID {
 			course.StatusEnroll = customerCourse.Status
+			course.ProgressModule = customerCourse.NoModule
 		}
 	}
 }
