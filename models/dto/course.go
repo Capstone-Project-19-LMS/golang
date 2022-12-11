@@ -117,6 +117,8 @@ type GetCourseByID struct {
 	Favorite        bool                `json:"favorite"`
 	NumberOfModules int                 `json:"number_of_modules"`
 	StatusEnroll          bool                `json:"status_enroll"`
+	ProgressModule int `json:"progress_module"`
+	ProgressPercentage float64 `json:"progress_percentage"`
 	Ratings         []Rating            `json:"ratings" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 	Modules         []ModuleTransaction `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 }

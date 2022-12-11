@@ -153,6 +153,12 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 
 		// get enrolled of course
 		helper.GetEnrolledCourse(&course, user.ID)
+		// get progress of all courses
+		if course.NumberOfModules == 0 {
+			course.ProgressPercentage = 0
+		} else {
+			course.ProgressPercentage = float64(course.ProgressModule) * 100 / float64(course.NumberOfModules)
+		}
 	}
 	var getCourses dto.GetCourseByID
 	err = copier.Copy(&getCourses, &course)
