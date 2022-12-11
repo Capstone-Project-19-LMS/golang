@@ -120,6 +120,9 @@ func (ccs *customerCourseService) TakeCourse(customerCourse dto.CustomerCourseTr
 	id := helper.GenerateUUID()
 	customerCourse.ID = id
 
+	// set no module
+	customerCourse.NoModule = 1
+
 	// call repository to take the course
 	err = ccs.customerCourseRepo.TakeCourse(customerCourse)
 	if err != nil {

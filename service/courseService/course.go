@@ -106,14 +106,11 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 			// get enrolled of all courses
 			helper.GetEnrolledCourse(&course, user.ID)
 			courses[i].StatusEnroll = course.StatusEnroll
-			
-			// get progress of all courses
 			courses[i].ProgressModule = course.ProgressModule
-			if courses[i].NumberOfModules == 0 {
-				courses[i].ProgressPercentage = 0
-			} else {
-				courses[i].ProgressPercentage = float64(courses[i].ProgressModule) * 100 / float64(courses[i].NumberOfModules)
-			}
+
+			// get progress of all courses
+			ProgressPercentage := helper.GetProgressCourse(&courses[i])
+			courses[i].ProgressPercentage = ProgressPercentage
 		}
 	}
 	var getCourses []dto.GetCourse
@@ -154,11 +151,8 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 		// get enrolled of course
 		helper.GetEnrolledCourse(&course, user.ID)
 		// get progress of all courses
-		if course.NumberOfModules == 0 {
-			course.ProgressPercentage = 0
-		} else {
-			course.ProgressPercentage = float64(course.ProgressModule) * 100 / float64(course.NumberOfModules)
-		}
+		course.ProgressPercentage = helper.GetProgressCourse(&course)
+
 	}
 	var getCourses dto.GetCourseByID
 	err = copier.Copy(&getCourses, &course)
