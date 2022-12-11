@@ -43,6 +43,11 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.Use
 		course.Thumbnail = "https://via.placeholder.com/150x100"
 	}
 
+	// check if capacity is lower than 0
+	if course.Capacity < 0 {
+		return errors.New(constantError.ErrorCapacityLowerThanZero)
+	}
+
 	course.InstructorID = user.ID
 
 	// call repository to create course
