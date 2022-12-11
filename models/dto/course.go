@@ -100,6 +100,8 @@ type GetCourseWithoutCategory struct {
 	Favorite        bool    `json:"favorite"`
 	NumberOfModules int     `json:"number_of_modules"`
 	StatusEnroll          bool    `json:"status_enroll"`
+	ProgressModule int `json:"progress_module"`
+	ProgressPercentage float64 `json:"progress_percentage"`
 }
 
 type GetCourseByID struct {
