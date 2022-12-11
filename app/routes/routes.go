@@ -60,9 +60,10 @@ func New(db *gorm.DB) *echo.Echo {
 	assignmentRepository := assignmentrepository.NewAssignmentRepository(db)
 	customerAssignmentRepository := customerassignmentrepository.NewcustomerAssignmentRepository(db)
 	customerCourseRepository := customerCourseRepository.NewCustomerCourseRepository(db)
+
 	favoriteRepository := favoriteRepository.NewFavoriteRepository(db)
 	ratingRepository := ratingRepository.NewRatingRepository(db)
-	
+
 	/*
 		Services
 	*/
@@ -110,19 +111,18 @@ func New(db *gorm.DB) *echo.Echo {
 		CustomerAssignmentService: customerAssignmentService,
 	}
 
-	customerCourseController := customerCourseController.CustomerCourseController {
+	customerCourseController := customerCourseController.CustomerCourseController{
 		CustomerCourseService: customerCourseService,
 	}
-	favoriteController := favoriteController.FavoriteController {
+	favoriteController := favoriteController.FavoriteController{
 		FavoriteService: favoriteService,
 	}
-	ratingController := ratingController.RatingController {
+	ratingController := ratingController.RatingController{
 		RatingService: ratingService,
 	}
 
-	
 	/*
-	API Routes
+		API Routes
 	*/
 	app := echo.New()
 
@@ -147,7 +147,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// costumer
 	costumer := app.Group("/customer")
 	costumer.POST("/register", costumerController.Register)
-	costumer.PUT("/verifikasi", costumerController.Verifikasi)
+	costumer.POST("/verifikasi", costumerController.Verifikasi)
 	costumer.POST("/login", costumerController.Login)
 
 	privateCostumer := app.Group("/customer", middleware.JWTWithConfig(configCostumer))
@@ -197,7 +197,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// rating
 	privateInstructor.GET("/course/get_by_id/:courseId/rating", ratingController.GetRatingByCourseID)
 	privateInstructor.PUT("/course/rating/update/:ratingId", ratingController.UpdateRating)
-	
+
 	//costumer access
 	privateCostumer.GET("/course/get_by_id/:id", courseController.GetCourseByID)
 	privateCostumer.GET("/course/get_all", courseController.GetAllCourse)
@@ -257,9 +257,11 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.GET("/customer_assignment/get_by_id/:id", customerAssignmentController.GetCustomerAssignmentByID)
 	privateInstructor.PUT("/customer_assignment/update/:id", customerAssignmentController.UpdateCustomerAssignment)
 	//costumer access
+	privateCostumer.POST("/customer_assignment/create", customerAssignmentController.CreateCustomerAssignment)
+	privateCostumer.DELETE("/customer_assignment/delete/:id", customerAssignmentController.DeleteCustomerAssignment)
 	privateCostumer.GET("/customer_assignment/get_all", customerAssignmentController.GetAllCustomerAssignment)
 	privateCostumer.GET("/customer_assignment/get_by_id/:id", customerAssignmentController.GetCustomerAssignmentByID)
-	// -->
+	privateCostumer.PUT("/customer_assignment/update/:id", customerAssignmentController.UpdateCustomerAssignment)
 
 	return app
 }
