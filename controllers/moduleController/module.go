@@ -3,6 +3,7 @@ package moduleController
 import (
 	"golang/constant/constantError"
 	"golang/models/dto"
+	"golang/models/model"
 	moduleservice "golang/service/moduleService"
 	"net/http"
 
@@ -96,9 +97,10 @@ func (mc *ModuleController) GetAllModule(c echo.Context) error {
 func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
-
+	input := new(model.CustomerCourse)
+	c.Bind(input)
 	// Call service to get module by id
-	module, err := mc.ModuleService.GetModuleByID(id)
+	module, err := mc.ModuleService.GetModuleByID(id, input.CustomerID)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -122,10 +124,11 @@ func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 // GetModuleByCourseID is a function to get module by id
 func (mc *ModuleController) GetModuleByCourseID(c echo.Context) error {
 	// Get id from url
-	courseid := c.Param("course_id")
+	input := new(model.CustomerCourse)
 
+	c.Bind(input)
 	// Call service to get module by id
-	modules, err := mc.ModuleService.GetModuleByCourseID(courseid)
+	modules, err := mc.ModuleService.GetModuleByCourseID(input.CourseID, input.CustomerID)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
