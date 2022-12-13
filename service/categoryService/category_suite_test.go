@@ -58,6 +58,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						CategoryID:      "abcde",
 						ProgressModule: 2,
 						ProgressPercentage: 100,
+						IsFinish: false,
 						CustomerCourses: []dto.CustomerCourse{
 							{
 								ID:         "abcde",
@@ -117,6 +118,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						StatusEnroll: 		true,
 						ProgressModule: 2,
 						ProgressPercentage: 100,
+						IsFinish: false,
 					},
 				},
 			},
