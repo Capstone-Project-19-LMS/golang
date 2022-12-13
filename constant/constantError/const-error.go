@@ -20,6 +20,7 @@ const (
 	ErrorCustomerNotRatingCourse = "the customer is not review the course yet"
 	ErrorCustomerNotEnrolled = "the customer is not enrolled in the course"
 	ErrorCourseNotFound = "the course is not found"
+	ErrorCapacityLowerThanZero = "capacity lower than zero"
 
 	ErrorNoActive = "email not verifikasi"
 )
@@ -37,5 +38,6 @@ var ErrorCode = map[string]int{
 	"customer already favorite the course": 400,
 	"customer already review the course": 400,
 	"the customer is not enrolled in the course": 400,
+	"capacity lower than zero": 400,
 	"email not verifikasi": 500,
 }

@@ -43,6 +43,11 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.Use
 		course.Thumbnail = "https://via.placeholder.com/150x100"
 	}
 
+	// check if capacity is lower than 0
+	if course.Capacity < 0 {
+		return errors.New(constantError.ErrorCapacityLowerThanZero)
+	}
+
 	course.InstructorID = user.ID
 
 	// call repository to create course
@@ -84,29 +89,28 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 		return []dto.GetCourse{}, nil
 	}
 
-	// get rating of all courses
 	for i, course := range courses {
+		// get rating of all courses
 		rating := helper.GetRatingCourse(course)
 		courses[i].Rating = rating
-	}
 
-	// get number of module
-	for i, course := range courses {
+		// get number of module
 		numberOfModule := len(course.Modules)
 		courses[i].NumberOfModules = numberOfModule
-	}
 
-	if user.Role == "customer" {
-		// get favorite of all courses
-		for i, course := range courses {
+		if user.Role == "customer" {
+			// get favorite of all courses
 			favorite := helper.GetFavoriteCourse(course, user.ID)
 			courses[i].Favorite = favorite
-		}
 
-		// get enrolled of all courses
-		for i, course := range courses {
+			// get enrolled of all courses
 			helper.GetEnrolledCourse(&course, user.ID)
 			courses[i].StatusEnroll = course.StatusEnroll
+			courses[i].ProgressModule = course.ProgressModule
+
+			// get progress of all courses
+			ProgressPercentage := helper.GetProgressCourse(&courses[i])
+			courses[i].ProgressPercentage = ProgressPercentage
 		}
 	}
 	var getCourses []dto.GetCourse
@@ -146,6 +150,9 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 
 		// get enrolled of course
 		helper.GetEnrolledCourse(&course, user.ID)
+		// get progress of all courses
+		course.ProgressPercentage = helper.GetProgressCourse(&course)
+
 	}
 	var getCourses dto.GetCourseByID
 	err = copier.Copy(&getCourses, &course)
