@@ -39,6 +39,7 @@ func GetEnrolledCourse(course *dto.Course, customerID string) {
 		if customerCourse.CustomerID == customerID {
 			course.StatusEnroll = customerCourse.Status
 			course.ProgressModule = customerCourse.NoModule
+			course.IsFinish = customerCourse.IsFinish
 		}
 	}
 }

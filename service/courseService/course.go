@@ -107,6 +107,7 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 			helper.GetEnrolledCourse(&course, user.ID)
 			courses[i].StatusEnroll = course.StatusEnroll
 			courses[i].ProgressModule = course.ProgressModule
+			courses[i].IsFinish = course.IsFinish
 
 			// get progress of all courses
 			ProgressPercentage := helper.GetProgressCourse(&courses[i])

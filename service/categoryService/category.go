@@ -75,6 +75,7 @@ func (cs *categoryService) GetCategoryByID(id string, user dto.User) (dto.GetCat
 			helper.GetEnrolledCourse(&course, user.ID)
 			category.Courses[i].StatusEnroll = course.StatusEnroll
 			category.Courses[i].ProgressModule = course.ProgressModule
+			category.Courses[i].IsFinish = course.IsFinish
 
 			// get progress of all courses
 			ProgressPercentage := helper.GetProgressCourse(&category.Courses[i])
