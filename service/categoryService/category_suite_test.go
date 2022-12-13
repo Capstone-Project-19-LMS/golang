@@ -56,12 +56,16 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Capacity:        100,
 						InstructorID:    "abcde",
 						CategoryID:      "abcde",
+						ProgressModule: 2,
+						ProgressPercentage: 100,
 						CustomerCourses: []dto.CustomerCourse{
 							{
 								ID:         "abcde",
 								CustomerID: "abcde",
 								CourseID:   "abcde",
 								Status:     true,
+								NoModule:  2,
+								IsFinish: false,
 							},
 						},
 						Favorites: []dto.Favorite{
@@ -111,6 +115,8 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						Favorite:        true,
 						NumberOfModules: 1,
 						StatusEnroll: 		true,
+						ProgressModule: 2,
+						ProgressPercentage: 100,
 					},
 				},
 			},

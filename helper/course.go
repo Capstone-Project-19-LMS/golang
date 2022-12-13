@@ -38,6 +38,16 @@ func GetEnrolledCourse(course *dto.Course, customerID string) {
 	for _, customerCourse := range course.CustomerCourses {
 		if customerCourse.CustomerID == customerID {
 			course.StatusEnroll = customerCourse.Status
+			course.ProgressModule = customerCourse.NoModule
 		}
 	}
+}
+
+// function to get progress of course
+func GetProgressCourse(course *dto.Course) float64 {
+	var ProgressPercentage float64 = 0
+	if course.NumberOfModules != 0 {
+		ProgressPercentage = float64(course.ProgressModule - 1) * 100 / float64(course.NumberOfModules)
+	}
+	return ProgressPercentage
 }
