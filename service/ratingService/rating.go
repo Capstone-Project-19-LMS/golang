@@ -27,10 +27,17 @@ type ratingService struct {
 // AddRating implements RatingService
 func (rs *ratingService) AddRating(rating dto.RatingTransaction) error {
 	// check if course is not found
-	_, err := rs.courseRepo.GetCourseByID(rating.CourseID)
+	course, err := rs.courseRepo.GetCourseByID(rating.CourseID)
 	if err != nil {
 		return err
 	}
+
+	// check if customer already finished the course
+	helper.GetEnrolledCourse(&course, rating.CustomerID)
+	if !course.IsFinish {
+		return errors.New(constantError.ErrorCustomerNotFinishedCourse)
+	}
+
 
 	// check if customer already review the course
 	_, err = rs.ratingRepo.GetRatingByCourseIDCustomerID(rating.CourseID, rating.CustomerID)
