@@ -12,7 +12,7 @@ import (
 type suiteCategory struct {
 	suite.Suite
 	categoryService CategoryService
-	mock               *categoryMockRepository.CategoryMock
+	mock            *categoryMockRepository.CategoryMock
 }
 
 func (s *suiteCategory) SetupTest() {
@@ -24,15 +24,15 @@ func (s *suiteCategory) SetupTest() {
 
 func (s *suiteCategory) TestGetCategoryByID() {
 	testCase := []struct {
-		Name               string
-		ParamID            string
-		ParamUser          dto.User
-		MockReturnBody     dto.Category
-		MockReturnError    error
-		HasReturnBody      bool
-		ExpectedBody       dto.GetCategory
-		ExpectedError                 error
-		}{
+		Name            string
+		ParamID         string
+		ParamUser       dto.User
+		MockReturnBody  dto.Category
+		MockReturnError error
+		HasReturnBody   bool
+		ExpectedBody    dto.GetCategory
+		ExpectedError   error
+	}{
 		{
 			"success get category by id and customer",
 			"abcde",
@@ -58,6 +58,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						CategoryID:      "abcde",
 						ProgressModule: 2,
 						ProgressPercentage: 100,
+						IsFinish: false,
 						CustomerCourses: []dto.CustomerCourse{
 							{
 								ID:         "abcde",
@@ -80,15 +81,15 @@ func (s *suiteCategory) TestGetCategoryByID() {
 								ID:         "abcde",
 								CustomerID: "abcde",
 								CourseID:   "abcde",
-								Rating: 5,
+								Rating:     5,
 							},
 						},
 						Modules: []dto.Module{
 							{
-								ID:          "efgh",
-								Name:        "test",
-								Content:    "test",
-								CourseID:    "abcde",
+								ID:       "efgh",
+								Name:     "test",
+								Content:  "test",
+								CourseID: "abcde",
 							},
 						},
 					},
@@ -117,6 +118,7 @@ func (s *suiteCategory) TestGetCategoryByID() {
 						StatusEnroll: 		true,
 						ProgressModule: 2,
 						ProgressPercentage: 100,
+						IsFinish: false,
 					},
 				},
 			},

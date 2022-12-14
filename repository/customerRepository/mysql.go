@@ -159,7 +159,7 @@ func (u *customerRepository) LoginCustomer(customer dto.CostumerLogin) (dto.Cost
 	}
 	if !customerLoginResponse.IsActive {
 		var getCustomerCode model.CustomerCode
-		u.db.First(&getCustomerCode, "customer_id=?", customerLoginResponse.ID)
+		u.db.First(&getCustomerCode, "email=?", customerLoginResponse.Email)
 		letter := []rune("1234567890")
 		b := make([]rune, 4)
 		for i := range b {
