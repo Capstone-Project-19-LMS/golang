@@ -98,7 +98,13 @@ func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
 	input := new(model.CustomerCourse)
-	c.Bind(input)
+	err := c.Bind(input)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
 	// Call service to get module by id
 	module, err := mc.ModuleService.GetModuleByID(id, input.CustomerID)
 	if err != nil {
@@ -126,7 +132,13 @@ func (mc *ModuleController) GetModuleByCourseID(c echo.Context) error {
 	// Get id from url
 	input := new(model.CustomerCourse)
 
-	c.Bind(input)
+	err := c.Bind(input)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
 	// Call service to get module by id
 	modules, err := mc.ModuleService.GetModuleByCourseID(input.CourseID, input.CustomerID)
 	if err != nil {
