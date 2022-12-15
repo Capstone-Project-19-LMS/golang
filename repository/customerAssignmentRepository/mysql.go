@@ -1,6 +1,9 @@
 package customerassignmentrepository
 
 import (
+	"errors"
+	"fmt"
+	"golang/constant/constantError"
 	"golang/models/dto"
 	"golang/models/model"
 
@@ -21,10 +24,46 @@ func (ctr *customerAssignmentRepository) CreateCustomerAssignment(customerAssign
 		return err
 	}
 
-	err = ctr.db.Model(&model.CustomerAssignment{}).Create(&customerAssignmentModel).Error
-	if err != nil {
-		return err
+	var getAllCustomerAssignment []model.CustomerAssignment
+
+	ctr.db.Find(&getAllCustomerAssignment)
+
+	for _, gaca := range getAllCustomerAssignment {
+		if customerAssignment.CustomerID == gaca.CustomerID {
+			if customerAssignment.AssignmentID == gaca.AssignmentID {
+				return errors.New(constantError.ErrorDuplicateAssignmentCustomer)
+			}
+		}
 	}
+
+	result := ctr.db.Model(&model.CustomerAssignment{}).Create(&customerAssignmentModel)
+	var storage dto.CustomerAssignment = dto.CustomerAssignment{}
+	result.Last(&storage)
+
+	var getAssignment model.Assignment
+	ctr.db.Where("id=?", storage.AssignmentID).Find(&getAssignment)
+
+	var getModule model.Module
+	ctr.db.Where("id=?", getAssignment.ModuleID).Find(&getModule)
+
+	var updateCustomerCourse model.CustomerCourse
+
+	ctr.db.Where("customer_id =?", storage.CustomerID).Where("course_id=?", getModule.CourseID).Find(&updateCustomerCourse)
+
+	updateCustomerCourse.NoModule = updateCustomerCourse.NoModule + 1
+
+	var getAllModule []model.Module
+	ctr.db.Where("course_id=?", getModule.CourseID).Find(&getAllModule)
+
+	for _, gam := range getAllModule {
+		if updateCustomerCourse.NoModule == gam.NoModule {
+			ctr.db.Save(&updateCustomerCourse)
+		}
+
+	}
+
+	fmt.Println(updateCustomerCourse)
+
 	return nil
 }
 
