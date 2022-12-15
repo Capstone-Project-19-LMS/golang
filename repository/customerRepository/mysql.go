@@ -38,9 +38,10 @@ func (u *customerRepository) CreateCustomer(customer dto.CostumerRegister) error
 		if customer.Email == dataCustomer.Email {
 			if !dataCustomer.IsActive {
 				var getCustomerCode model.CustomerCode
-				u.db.First(&getCustomerCode, "customer_id=?", dataCustomer.ID)
+				u.db.First(&getCustomerCode, "email=?", dataCustomer.Email)
+				fmt.Println(getCustomerCode.ID)
 				letter := []rune("1234567890")
-				b := make([]rune, 7)
+				b := make([]rune, 4)
 				for i := range b {
 					b[i] = letter[rand.Intn(len(letter))]
 				}
@@ -64,9 +65,11 @@ func (u *customerRepository) CreateCustomer(customer dto.CostumerRegister) error
 				if errss != nil {
 					log.Fatal(errss.Error())
 				}
-
+				getCustomerCode.Email = dataCustomer.Email
 				getCustomerCode.Code = code
 				u.db.Save(&getCustomerCode)
+
+				return nil
 			}
 
 		}
@@ -78,7 +81,7 @@ func (u *customerRepository) CreateCustomer(customer dto.CostumerRegister) error
 		return err
 	}
 	letter := []rune("1234567890")
-	b := make([]rune, 7)
+	b := make([]rune, 4)
 	for i := range b {
 		b[i] = letter[rand.Intn(len(letter))]
 	}
@@ -102,10 +105,12 @@ func (u *customerRepository) CreateCustomer(customer dto.CostumerRegister) error
 	if errss != nil {
 		log.Fatal(errss.Error())
 	}
+
+	fmt.Println(customer.Email)
 	customerCode := model.CustomerCode{
-		ID:         customer.CustomerCodeID,
-		CustomerID: customer.ID,
-		Code:       code,
+		ID:    customer.CustomerCodeID,
+		Email: customer.Email,
+		Code:  code,
 	}
 
 	err2 := u.db.Create(&customerCode).Error
@@ -118,12 +123,12 @@ func (u *customerRepository) CreateCustomer(customer dto.CostumerRegister) error
 func (u *customerRepository) VerifikasiCustomer(input dto.CustomerVerif) error {
 	var customerCodeModel model.CustomerCode
 	var customerModel model.Customer
-	err := u.db.First(&customerCodeModel, "customer_id=?", input.CustomerID)
+	err := u.db.First(&customerCodeModel, "email=?", input.Email)
 
 	if err.Error != nil {
 		return err.Error
 	}
-	u.db.First(&customerModel, "id=?", input.CustomerID)
+	u.db.First(&customerModel, "email=?", input.Email)
 
 	if input.Code == customerCodeModel.Code {
 		customerModel.IsActive = true
@@ -154,9 +159,9 @@ func (u *customerRepository) LoginCustomer(customer dto.CostumerLogin) (dto.Cost
 	}
 	if !customerLoginResponse.IsActive {
 		var getCustomerCode model.CustomerCode
-		u.db.First(&getCustomerCode, "customer_id=?", customerLoginResponse.ID)
+		u.db.First(&getCustomerCode, "email=?", customerLoginResponse.Email)
 		letter := []rune("1234567890")
-		b := make([]rune, 7)
+		b := make([]rune, 4)
 		for i := range b {
 			b[i] = letter[rand.Intn(len(letter))]
 		}

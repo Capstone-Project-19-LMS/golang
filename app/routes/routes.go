@@ -147,7 +147,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// costumer
 	costumer := app.Group("/customer")
 	costumer.POST("/register", costumerController.Register)
-	costumer.PUT("/verifikasi", costumerController.Verifikasi)
+	costumer.POST("/verifikasi", costumerController.Verifikasi)
 	costumer.POST("/login", costumerController.Login)
 
 	privateCostumer := app.Group("/customer", middleware.JWTWithConfig(configCostumer))
@@ -220,12 +220,12 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.DELETE("/module/delete/:id", moduleController.DeleteModule)
 	privateInstructor.GET("/module/get_all", moduleController.GetAllModule)
 	privateInstructor.GET("/module/get_by_id/:id", moduleController.GetModuleByID)
-	privateInstructor.GET("/module/get_by_course_id/:course_id", moduleController.GetModuleByCourseID)
+	privateInstructor.GET("/module/get_by_course_id", moduleController.GetModuleByCourseID)
 	privateInstructor.PUT("/module/update/:id", moduleController.UpdateModule)
 	//costumer access
 	privateCostumer.GET("/module/get_all", moduleController.GetAllModule)
 	privateCostumer.GET("/module/get_by_id/:id", moduleController.GetModuleByID)
-	privateCostumer.GET("/module/get_by_course_id/:course_id", moduleController.GetModuleByCourseID)
+	privateCostumer.GET("/module/get_by_course_id", moduleController.GetModuleByCourseID)
 
 	//media module
 	//instructor access
@@ -257,9 +257,11 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.GET("/customer_assignment/get_by_id/:id", customerAssignmentController.GetCustomerAssignmentByID)
 	privateInstructor.PUT("/customer_assignment/update/:id", customerAssignmentController.UpdateCustomerAssignment)
 	//costumer access
+	privateCostumer.POST("/customer_assignment/create", customerAssignmentController.CreateCustomerAssignment)
+	privateCostumer.DELETE("/customer_assignment/delete/:id", customerAssignmentController.DeleteCustomerAssignment)
 	privateCostumer.GET("/customer_assignment/get_all", customerAssignmentController.GetAllCustomerAssignment)
 	privateCostumer.GET("/customer_assignment/get_by_id/:id", customerAssignmentController.GetCustomerAssignmentByID)
-	// -->
+	privateCostumer.PUT("/customer_assignment/update/:id", customerAssignmentController.UpdateCustomerAssignment)
 
 	return app
 }
