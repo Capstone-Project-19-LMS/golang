@@ -113,10 +113,19 @@ func (cc *CourseController) GetAllCourse(c echo.Context) error {
 				"error":   err.Error(),
 			})
 		}
+		var amountModule int
+		var amountCustomer int
+		for _, course := range coursesInstructor {
+			amountModule += course.NumberOfModules
+			amountCustomer += course.AmountCustomer
+		}
 		// Return response if success
 		return c.JSON(http.StatusOK, echo.Map{
 			"message":   "success get all courses",
 			"courses": coursesInstructor,
+			"amount_course":len(coursesInstructor),
+			"amount_materi" : amountModule,
+			"amount_customer_course" : amountCustomer,
 		})
 	}
 
