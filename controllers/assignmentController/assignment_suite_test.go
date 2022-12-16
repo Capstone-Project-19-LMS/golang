@@ -1,13 +1,16 @@
 package assignmentcontroller
 
 import (
+	"bytes"
 	"encoding/json"
+	"golang/helper"
 	"golang/models/dto"
 	"golang/service/assignmentService/assignmentMockService"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -24,6 +27,101 @@ func (s *suiteAssignment) SetupTest() {
 	s.mock = mock
 	s.assignmentController = &AssignmentController{
 		AssignmentService: s.mock,
+	}
+}
+
+func (s *suiteAssignment) TestCreateAssignment() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		Body               dto.AssignmentTransaction
+		MockReturnError    error
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success create assignment",
+			"POST",
+			dto.AssignmentTransaction{
+				Title:       "tes",
+				Description: "tes",
+				ModuleID:    "abcde",
+			},
+			nil,
+			http.StatusOK,
+			"success create assignment",
+		},
+		{
+			"fail bind data",
+			"POST",
+			dto.AssignmentTransaction{
+				Title:       "tes",
+				Description: "tes",
+				ModuleID:    "abcde",
+			},
+			nil,
+			http.StatusInternalServerError,
+			"fail bind data",
+		},
+		{
+			"There is an empty field",
+			"POST",
+			dto.AssignmentTransaction{
+				Title:       "tes",
+				Description: "tes",
+				ModuleID:    "abcde",
+			},
+
+			nil,
+			http.StatusBadRequest,
+			"There is an empty field",
+		},
+		{
+			"fail create assignment",
+			"POST",
+			dto.AssignmentTransaction{
+				Title:       "tes",
+				Description: "tes",
+				ModuleID:    "abcde",
+			},
+
+			nil,
+			http.StatusInternalServerError,
+			"fail create assignment",
+		},
+	}
+	for i, v := range testCase {
+		mockCall := s.mock.On("CreateAssignment", v.Body).Return(v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			res, _ := json.Marshal(v.Body)
+			// Create request
+			r := httptest.NewRequest(v.Method, "/assignment/", bytes.NewBuffer(res))
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			e.Validator = &helper.CustomValidator{
+				Validator: validator.New(),
+			}
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/assignment/create")
+
+			err := s.assignmentController.CreateAssignment(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+		})
+		// remove mock
+		mockCall.Unset()
 	}
 }
 
