@@ -87,6 +87,9 @@ func (ccs *customerCourseService) GetHistoryCourseByCustomerID(customerID string
 
 		// get status enroll of all courses
 		courses[i].StatusEnroll = course.CustomerCourses[0].Status
+
+		sumCustomer := len(course.CustomerCourses)
+		courses[i].AmountCustomer = sumCustomer
 	}
 
 	// copy courses from dto.course to dto.GetCustomerCourse
