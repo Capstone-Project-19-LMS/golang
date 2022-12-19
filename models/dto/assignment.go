@@ -28,8 +28,8 @@ type GetAssignment struct {
 }
 
 type AssignmentTransaction struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	ModuleID    string `json:"module_id"`
+	ID          string `json:"id" `
+	Title       string `json:"title" validate:"required"`
+	Description string `json:"description" validate:"required"`
+	ModuleID    string `json:"module_id"  validate:"required"`
 }
