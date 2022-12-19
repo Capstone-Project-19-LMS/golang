@@ -124,6 +124,74 @@ func (s *suiteAssignment) TestCreateAssignment() {
 	}
 }
 
+func (s *suiteAssignment) TestDeleteAssignment() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		ParamID            string
+		MockReturnError    error
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success delete assignment",
+			"DELETE",
+			"abcde",
+			nil,
+			http.StatusOK,
+			"success delete assignment",
+		},
+		{
+			"fail delete assignment",
+			"DELETE",
+			"abcde",
+			gorm.ErrRecordNotFound,
+			http.StatusInternalServerError,
+			"fail delete assignment",
+		},
+		{
+			"fail delete assignment",
+			"DELETE",
+			"abcde",
+
+			errors.New("fail delete category"),
+			http.StatusInternalServerError,
+			"fail delete assignment",
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mock.On("DeleteAssignment", v.ParamID).Return(v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			// Create request
+			r := httptest.NewRequest(v.Method, "/assignment/"+v.ParamID, nil)
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			e.Validator = &helper.CustomValidator{
+				Validator: validator.New(),
+			}
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/assignment/:id")
+			ctx.SetParamNames("id")
+			ctx.SetParamValues(v.ParamID)
+
+			err := s.assignmentController.DeleteAssignment(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
 func (s *suiteAssignment) TestGetAssignmentByID() {
 	testCase := []struct {
 		Name               string
