@@ -70,7 +70,6 @@ func (s *suiteAssignment) TestCreateAssignment() {
 			dto.AssignmentTransaction{
 				Title: "tes",
 			},
-
 			nil,
 			http.StatusBadRequest,
 			"There is an empty field",
