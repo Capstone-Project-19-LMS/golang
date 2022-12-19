@@ -33,8 +33,8 @@ func (c *CategoryMock) GetAllCategory() ([]dto.CategoryTransaction, error) {
 	return args.Get(0).([]dto.CategoryTransaction), args.Error(1)
 }
 
-func (c *CategoryMock) UpdateCategory(dto.CategoryTransaction) error {
-	args := c.Called()
+func (c *CategoryMock) UpdateCategory(category dto.CategoryTransaction) error {
+	args := c.Called(category)
 
 	return args.Error(0)
 }

@@ -50,29 +50,29 @@ func (cc *CategoryController) CreateCategory(c echo.Context) error {
 	})
 }
 
-// DeleteCategory is a function to delete account
+// DeleteCategory is a function to delete category
 func (cc *CategoryController) DeleteCategory(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
 
-	// Call service to delete account
+	// Call service to delete category
 	err := cc.CategoryService.DeleteCategory(id)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
-				"message": "fail delete account",
+				"message": "fail delete category",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail delete account",
+			"message": "fail delete category",
 			"error":   err.Error(),
 		})
 	}
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success delete account",
+		"message": "success delete category",
 	})
 }
 
@@ -119,13 +119,7 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error {
 
 	if user.Role == "instructor" {
 		var categoryInstructor dto.GetCategoryInstructor
-		err = copier.Copy(&categoryInstructor, &getCategory)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, echo.Map{
-				"message": "fail get category by id",
-				"error":   err.Error(),
-			})
-		}
+		_ = copier.Copy(&categoryInstructor, &getCategory)
 		// Return response if success
 		return c.JSON(http.StatusOK, echo.Map{
 			"message":   "success get category by id",

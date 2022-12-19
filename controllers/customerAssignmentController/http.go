@@ -36,6 +36,12 @@ func (cac *CustomerAssignmentController) CreateCustomerAssignment(c echo.Context
 	// Call service to create customerAssignment
 	err = cac.CustomerAssignmentService.CreateCustomerAssignment(customerAssignment)
 	if err != nil {
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail create customer assignment",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail create customer assignment",
 			"error":   err.Error(),
