@@ -34,7 +34,7 @@ func (c *AssignmentMock) GetAllAssignment() ([]dto.Assignment, error) {
 }
 
 func (c *AssignmentMock) UpdateAssignment(assignment dto.AssignmentTransaction) error {
-	args := c.Called()
+	args := c.Called(assignment)
 
 	return args.Error(0)
 }
