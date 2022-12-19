@@ -3,6 +3,7 @@ package assignmentcontroller
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"golang/helper"
 	"golang/models/dto"
 	"golang/service/assignmentService/assignmentMockService"
@@ -67,9 +68,7 @@ func (s *suiteAssignment) TestCreateAssignment() {
 			"There is an empty field",
 			"POST",
 			dto.AssignmentTransaction{
-				Title:       "tes",
-				Description: "tes",
-				ModuleID:    "abcde",
+				Title: "tes",
 			},
 
 			nil,
@@ -85,7 +84,7 @@ func (s *suiteAssignment) TestCreateAssignment() {
 				ModuleID:    "abcde",
 			},
 
-			nil,
+			errors.New("Fail create assignment"),
 			http.StatusInternalServerError,
 			"fail create assignment",
 		},
