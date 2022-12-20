@@ -62,8 +62,8 @@ func (cac *CustomerAssignmentController) DeleteCustomerAssignment(c echo.Context
 	// Call service to delete customer assignment
 	err := cac.CustomerAssignmentService.DeleteCustomerAssignment(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail delete customer assignment",
 				"error":   err.Error(),
 			})
