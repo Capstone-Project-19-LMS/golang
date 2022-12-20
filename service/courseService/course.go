@@ -7,15 +7,18 @@ import (
 	"golang/models/dto"
 	"golang/repository/categoryRepository"
 	"golang/repository/courseRepository"
+
+	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 type CourseService interface {
 	CreateCourse(dto.CourseTransaction, dto.User) error
 	DeleteCourse(id, instructorId string) error
-	GetAllCourse(instructorId string) ([]dto.Course, error)
-	GetCourseByID(id, instructorId string) (dto.Course, error)
+	GetAllCourse(dto.User) ([]dto.GetCourse, error)
+	GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error)
+	GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
-	GetRatingCourse(dto.Course) float64
 }
 
 type courseService struct {
@@ -40,6 +43,13 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.Use
 		course.Thumbnail = "https://via.placeholder.com/150x100"
 	}
 
+	// check if capacity is lower than 0
+	if course.Capacity < 0 {
+		return errors.New(constantError.ErrorCapacityLowerThanZero)
+	}
+
+	course.InstructorID = user.ID
+
 	// call repository to create course
 	err = cs.courseRepo.CreateCourse(course)
 	if err != nil {
@@ -50,7 +60,7 @@ func (cs *courseService) CreateCourse(course dto.CourseTransaction, user dto.Use
 
 func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 	// check if instructor id is not same
-	course, err := cs.courseRepo.GetCourseByID(id, instructorId)
+	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
 		return err
 	}
@@ -69,37 +79,118 @@ func (cs *courseService) DeleteCourse(id string, instructorId string) error {
 }
 
 // GetAllCourse implements CourseService
-func (cs *courseService) GetAllCourse(instructorId string) ([]dto.Course, error) {
-	courses, err := cs.courseRepo.GetAllCourse(instructorId)
+func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
+	courses, err := cs.courseRepo.GetAllCourse(user)
 	if err != nil {
 		return nil, err
 	}
-	// get rating of all courses
-	for i, course := range courses {
-		rating := cs.GetRatingCourse(course)
-		courses[i].Rating = rating
+	// check if courses is empty
+	if len(courses) == 0 {
+		return []dto.GetCourse{}, nil
 	}
-	return courses, nil
+
+	for i, course := range courses {
+		// get rating of all courses
+		rating := helper.GetRatingCourse(course)
+		courses[i].Rating = rating
+
+		// get number of module
+		numberOfModule := len(course.Modules)
+		courses[i].NumberOfModules = numberOfModule
+
+		if user.Role == "customer" {
+			// get favorite of all courses
+			favorite := helper.GetFavoriteCourse(course, user.ID)
+			courses[i].Favorite = favorite
+
+			// get enrolled of all courses
+			helper.GetEnrolledCourse(&course, user.ID)
+			courses[i].StatusEnroll = course.StatusEnroll
+			courses[i].ProgressModule = course.ProgressModule
+			courses[i].IsFinish = course.IsFinish
+
+			// get progress of all courses
+			ProgressPercentage := helper.GetProgressCourse(&courses[i])
+			courses[i].ProgressPercentage = ProgressPercentage
+		}
+	}
+	var getCourses []dto.GetCourse
+	err = copier.Copy(&getCourses, &courses)
+	if err != nil {
+		return nil, err
+	}
+
+	return getCourses, nil
 }
 
 // GetCourseByID implements CourseService
-func (cs *courseService) GetCourseByID(id, instructorId string) (dto.Course, error) {
-	course, err := cs.courseRepo.GetCourseByID(id, instructorId)
+func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error) {
+	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {
-		return dto.Course{}, err
+		return dto.GetCourseByID{}, err
 	}
 
+	if user.Role == "instructor" {
+		// check if instructor id in the course is the same as the instructor id in the token
+		if course.InstructorID != user.ID {
+			return dto.GetCourseByID{}, errors.New(constantError.ErrorNotAuthorized)
+		}
+	}
 	// get rating of course
-	rating := cs.GetRatingCourse(course)
+	rating := helper.GetRatingCourse(course)
 	course.Rating = rating
 
-	return course, nil
+	// get number of module
+	numberOfModule := len(course.Modules)
+	course.NumberOfModules = numberOfModule
+
+	if user.Role == "customer" {
+		// get favorites of course
+		favorite := helper.GetFavoriteCourse(course, user.ID)
+		course.Favorite = favorite
+
+		// get enrolled of course
+		helper.GetEnrolledCourse(&course, user.ID)
+		// get progress of all courses
+		course.ProgressPercentage = helper.GetProgressCourse(&course)
+
+	}
+	var getCourses dto.GetCourseByID
+	err = copier.Copy(&getCourses, &course)
+	if err != nil {
+		return dto.GetCourseByID{}, err
+	}
+
+	return getCourses, nil
+}
+
+// GetCourseEnrollByID implements CourseService
+func (cs *courseService) GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error) {
+	// check if the course is exists
+	course, err := cs.courseRepo.GetCourseByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.New(constantError.ErrorCourseNotFound)
+		}
+		return nil, err
+	}
+
+	// check if instructor id in the course is the same as the instructor id in the token
+	if course.InstructorID != user.ID {
+		return nil, errors.New(constantError.ErrorNotAuthorized)
+	}
+
+	customerEnroll, err := cs.courseRepo.GetCourseEnrollByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return customerEnroll, nil
 }
 
 // UpdateCourse implements CourseService
 func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
 	// check if instructor id is not same
-	oldCourse, err := cs.courseRepo.GetCourseByID(course.ID, course.InstructorID)
+	oldCourse, err := cs.courseRepo.GetCourseByID(course.ID)
 	if err != nil {
 		return err
 	}
@@ -115,20 +206,6 @@ func (cs *courseService) UpdateCourse(course dto.CourseTransaction) error {
 		return err
 	}
 	return nil
-}
-
-// RatingCourse implements CourseService
-func (cs *courseService) GetRatingCourse(course dto.Course) float64 {
-	if len(course.Ratings) == 0 {
-		return 0
-	}
-	// get rating of course
-	for _, rating := range course.Ratings {
-		course.Rating += float64(rating.Rating)
-	}
-	// average rating
-	average := course.Rating / float64(len(course.Ratings))
-	return average
 }
 
 func NewCourseService(courseRepo courseRepository.CourseRepository, categoryRepo categoryRepository.CategoryRepository) CourseService {
