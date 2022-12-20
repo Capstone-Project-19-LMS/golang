@@ -180,8 +180,8 @@ func (mc *ModuleController) UpdateModule(c echo.Context) error {
 	// Call service to update module
 	err = mc.ModuleService.UpdateModule(module)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail update module",
 				"error":   err.Error(),
 			})

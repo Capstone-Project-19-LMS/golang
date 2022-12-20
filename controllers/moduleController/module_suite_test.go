@@ -456,6 +456,111 @@ func (s *suiteModule) TestGetAllModule() {
 	}
 }
 
+func (s *suiteModule) TestUpdateModule() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		Body               dto.ModuleTransaction
+		ParamID            string
+		MockReturnError    error
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success update module",
+			"POST",
+			dto.ModuleTransaction{
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
+				NoModule: 1,
+			},
+			"abcde",
+			nil,
+			http.StatusOK,
+			"success update module",
+		},
+		{
+			"fail bind data",
+			"POST",
+			dto.ModuleTransaction{
+				Name:    "tes",
+				Content: "tes",
+			},
+			"abcde",
+			nil,
+			http.StatusInternalServerError,
+			"fail bind data",
+		},
+		{
+			"fail update module",
+			"POST",
+			dto.ModuleTransaction{
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
+				NoModule: 1,
+			},
+			"abcde",
+			gorm.ErrRecordNotFound,
+			http.StatusInternalServerError,
+			"fail update module",
+		},
+		{
+			"fail update module",
+			"POST",
+			dto.ModuleTransaction{
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
+				NoModule: 1,
+			},
+			"abcde",
+			errors.New("fail update module"),
+			http.StatusInternalServerError,
+			"fail update module",
+		},
+	}
+	for i, v := range testCase {
+		mockCall := s.mock.On("UpdateModule", v.Body).Return(v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			res, _ := json.Marshal(v.Body)
+			// Create request
+			r := httptest.NewRequest(v.Method, "/module/update/"+v.ParamID, bytes.NewBuffer(res))
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			e.Validator = &helper.CustomValidator{
+				Validator: validator.New(),
+			}
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/module/update/:id")
+			ctx.SetParamNames("id")
+			ctx.SetParamValues(v.ParamID)
+
+			err := s.moduleController.UpdateModule(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
 func TestSuiteModule(t *testing.T) {
 	suite.Run(t, new(suiteModule))
 }
