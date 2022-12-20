@@ -3,7 +3,6 @@ package main
 import (
 	"golang/app/routes"
 	"golang/util"
-	"log"
 
 	_dbDriver "golang/drivers/mysql"
 )
@@ -24,5 +23,6 @@ func main() {
 	}
 	app := routes.New(db)
 
-	log.Fatal(app.Start(util.GetConfig("APP_PORT")))
+	// log.Fatal(app.Start(util.GetConfig("APP_PORT")))
+	app.Logger.Fatal(app.StartAutoTLS(":443"))
 }
