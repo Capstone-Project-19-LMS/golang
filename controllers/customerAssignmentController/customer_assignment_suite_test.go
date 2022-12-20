@@ -293,6 +293,219 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 	}
 }
 
+func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		MockReturnBody     []dto.CustomerAssignment
+		MockReturnError    error
+		HasReturnBody      bool
+		ExpectedBody       []dto.CustomerAssignment
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success get all customer assignment",
+			"GET",
+
+			[]dto.CustomerAssignment{
+				{
+					ID:           "abcde",
+					File:         "tes",
+					Grade:        1,
+					AssignmentID: "abcde",
+					CustomerID:   "abcde",
+					CreatedAt:    time.Now(),
+					UpdatedAt:    time.Now(),
+					DeletedAt:    gorm.DeletedAt{},
+				},
+				{
+					ID:           "abcdef",
+					File:         "tes 2",
+					Grade:        2,
+					AssignmentID: "abcdef",
+					CustomerID:   "abcdef",
+					CreatedAt:    time.Now(),
+					UpdatedAt:    time.Now(),
+					DeletedAt:    gorm.DeletedAt{},
+				},
+			},
+			nil,
+			true,
+			[]dto.CustomerAssignment{
+				{
+					ID:           "abcde",
+					File:         "tes",
+					Grade:        1,
+					AssignmentID: "abcde",
+					CustomerID:   "abcde",
+					CreatedAt:    time.Now(),
+					UpdatedAt:    time.Now(),
+					DeletedAt:    gorm.DeletedAt{},
+				},
+				{
+					ID:           "abcde",
+					File:         "tes",
+					Grade:        1,
+					AssignmentID: "abcde",
+					CustomerID:   "abcde",
+					CreatedAt:    time.Now(),
+					UpdatedAt:    time.Now(),
+					DeletedAt:    gorm.DeletedAt{},
+				},
+			},
+			http.StatusOK,
+			"success get all customer assignment",
+		},
+		{
+			"fail get all customer assignment",
+			"GET",
+
+			[]dto.CustomerAssignment{},
+			errors.New("error"),
+			false,
+			[]dto.CustomerAssignment{},
+			http.StatusInternalServerError,
+			"fail get all customer assignment",
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetAllCustomerAssignment").Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			// Create request
+			r := httptest.NewRequest(v.Method, "/customer_assignment/get_all", nil)
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/customer_assignment/get_all")
+
+			err := s.customerAssignmentController.GetAllCustomerAssignment(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
+func (s *suiteCustomerAssignment) TestUpdateCustomerAssignment() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		Body               dto.CustomerAssignmentTransaction
+		ParamID            string
+		MockReturnError    error
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success update customer assignment",
+			"POST",
+			dto.CustomerAssignmentTransaction{
+				ID:           "abcde",
+				File:         "tes",
+				Grade:        1,
+				AssignmentID: "abcde",
+				CustomerID:   "abcde",
+			},
+			"abcde",
+			nil,
+			http.StatusOK,
+			"success update customer assignment",
+		},
+		{
+			"fail bind data",
+			"POST",
+			dto.CustomerAssignmentTransaction{
+				ID:           "abcde",
+				File:         "tes",
+				Grade:        1,
+				AssignmentID: "abcde",
+				CustomerID:   "abcde",
+			},
+			"abcde",
+			nil,
+			http.StatusInternalServerError,
+			"fail bind data",
+		},
+		{
+			"fail update customer assignment",
+			"POST",
+			dto.CustomerAssignmentTransaction{
+				ID:           "abcde",
+				File:         "tes",
+				Grade:        1,
+				AssignmentID: "abcde",
+				CustomerID:   "abcde",
+			},
+			"abcde",
+			gorm.ErrRecordNotFound,
+			http.StatusInternalServerError,
+			"fail update customer assignment",
+		},
+		{
+			"fail update customer assignment",
+			"POST",
+			dto.CustomerAssignmentTransaction{
+				ID:           "abcde",
+				File:         "tes",
+				Grade:        1,
+				AssignmentID: "abcde",
+				CustomerID:   "abcde",
+			},
+			"abcde",
+			errors.New("fail update customer assignment"),
+			http.StatusInternalServerError,
+			"fail update customer assignment",
+		},
+	}
+	for i, v := range testCase {
+		mockCall := s.mock.On("UpdateCustomerAssignment", v.Body).Return(v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			res, _ := json.Marshal(v.Body)
+			// Create request
+			r := httptest.NewRequest(v.Method, "/customer_assignment/update/"+v.ParamID, bytes.NewBuffer(res))
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			e.Validator = &helper.CustomValidator{
+				Validator: validator.New(),
+			}
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/customer_assignment/update/:id")
+			ctx.SetParamNames("id")
+			ctx.SetParamValues(v.ParamID)
+
+			err := s.customerAssignmentController.UpdateCustomerAssignment(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
 func TestSuiteCustomerAssignment(t *testing.T) {
 	suite.Run(t, new(suiteCustomerAssignment))
 }
