@@ -6,10 +6,12 @@ import (
 	"errors"
 	"golang/helper"
 	"golang/models/dto"
+	"golang/models/model"
 	modulemockservice "golang/service/moduleService/moduleMockService"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -189,6 +191,160 @@ func (s *suiteModule) TestDeleteModule() {
 			s.NoError(err)
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
+func (s *suiteModule) TestGetModuleByID() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		ParamID            string
+		CustomerCourseID   model.CustomerCourse
+		MockReturnBody     dto.ModuleAcc
+		MockReturnError    error
+		HasReturnBody      bool
+		ExpectedBody       dto.ModuleAcc
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success get module by id",
+			"GET",
+			"abcde",
+			model.CustomerCourse{
+				ID: "abcde",
+			},
+			dto.ModuleAcc{
+				ID:        "abcde",
+				Name:      "tes",
+				Content:   "tes",
+				CourseID:  "tes",
+				NoModule:  1,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+				DeletedAt: gorm.DeletedAt{},
+				MediaModules: []dto.MediaModule{
+					{
+						ID:       "abcde",
+						Url:      "tes",
+						ModuleID: "abcde",
+					},
+				},
+				Assignment: dto.Assignment{
+					ID:                  "abcde",
+					Title:               "tes",
+					ModuleID:            "abcde",
+					CustomerAssignments: []dto.CustomerAssignment{},
+				},
+			},
+			nil,
+			true,
+			dto.ModuleAcc{
+				ID:        "abcde",
+				Name:      "tes",
+				Content:   "tes",
+				CourseID:  "tes",
+				NoModule:  1,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+				DeletedAt: gorm.DeletedAt{},
+				MediaModules: []dto.MediaModule{
+					{
+						ID:       "abcde",
+						Url:      "tes",
+						ModuleID: "abcde",
+					},
+				},
+				Assignment: dto.Assignment{
+					ID:                  "abcde",
+					Title:               "tes",
+					ModuleID:            "abcde",
+					CustomerAssignments: []dto.CustomerAssignment{},
+				},
+			},
+			http.StatusOK,
+			"success get module by id",
+		},
+		{
+			"fail get module by id",
+			"GET",
+			"abcde",
+			model.CustomerCourse{
+				ID: "abcde",
+			},
+			dto.ModuleAcc{},
+			gorm.ErrRecordNotFound,
+			false,
+			dto.ModuleAcc{},
+			http.StatusInternalServerError,
+			"fail get module by id",
+		},
+		{
+			"fail get module by id",
+			"GET",
+			"abcde",
+			model.CustomerCourse{
+				ID: "abcde",
+			},
+			dto.ModuleAcc{},
+			gorm.ErrRecordNotFound,
+			false,
+			dto.ModuleAcc{},
+			http.StatusInternalServerError,
+			"fail get module by id",
+		},
+		// {
+		// 	"fail bind data",
+		// 	"GET",
+		// 	"abcde",
+		// 	model.CustomerCourse{
+		// 		ID:         "abcde",
+		// 		CustomerID: "abcde",
+		// 		CourseID:   "abcde",
+		// 		NoModule:   1,
+		// 		IsFinish:   true,
+		// 		Status:     true,
+		// 		CreatedAt:  time.Now(),
+		// 		UpdatedAt:  time.Now(),
+		// 		DeletedAt:  gorm.DeletedAt{},
+		// 	},
+		// 	dto.ModuleAcc{},
+		// 	nil,
+		// 	false,
+		// 	dto.ModuleAcc{},
+		// 	http.StatusInternalServerError,
+		// 	"fail bind data",
+		// },
+	}
+
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetModuleByID", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+
+			// Create request
+			r := httptest.NewRequest(v.Method, "/module/"+v.ParamID, nil)
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/module/get_by_id/:id")
+			ctx.SetParamNames("id")
+			ctx.SetParamValues(v.ParamID)
+
+			err := s.moduleController.GetModuleByID(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+
 		})
 		// remove mock
 		mockCall.Unset()

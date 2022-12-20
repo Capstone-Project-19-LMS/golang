@@ -108,8 +108,8 @@ func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 	// Call service to get module by id
 	module, err := mc.ModuleService.GetModuleByID(id, input.CustomerID)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail get module by id",
 				"error":   err.Error(),
 			})
