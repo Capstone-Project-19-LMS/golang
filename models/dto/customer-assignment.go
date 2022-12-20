@@ -17,9 +17,9 @@ type CustomerAssignment struct {
 	CustomerID   string         `json:"customer_id"`
 }
 type CustomerAssignmentTransaction struct {
-	ID           string `json:"id"`
-	File         string `json:"file"`
-	Grade        int    `json:"grade" gorm:"notNull"`
-	AssignmentID string `json:"assignment_id"`
-	CustomerID   string `json:"customer_id"`
+	ID           string `json:"id" `
+	File         string `json:"file" validate:"required"`
+	Grade        int    `json:"grade" gorm:"notNull" validate:"required"`
+	AssignmentID string `json:"assignment_id" validate:"required"`
+	CustomerID   string `json:"customer_id" validate:"required"`
 }

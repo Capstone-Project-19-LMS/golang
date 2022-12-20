@@ -62,8 +62,8 @@ func (cac *CustomerAssignmentController) DeleteCustomerAssignment(c echo.Context
 	// Call service to delete customer assignment
 	err := cac.CustomerAssignmentService.DeleteCustomerAssignment(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail delete customer assignment",
 				"error":   err.Error(),
 			})
@@ -106,8 +106,8 @@ func (cac *CustomerAssignmentController) GetCustomerAssignmentByID(c echo.Contex
 	// Call service to get customerAssignment by id
 	customerAssignment, err := cac.CustomerAssignmentService.GetCustomerAssignmentByID(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail get customer assignment by id",
 				"error":   err.Error(),
 			})
@@ -144,8 +144,8 @@ func (cac *CustomerAssignmentController) UpdateCustomerAssignment(c echo.Context
 	// Call service to update customerAssignment
 	err = cac.CustomerAssignmentService.UpdateCustomerAssignment(customerAssignment)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail update customer assignment",
 				"error":   err.Error(),
 			})
