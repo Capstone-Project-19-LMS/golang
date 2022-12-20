@@ -6,7 +6,6 @@ import (
 	"golang/models/dto"
 	"golang/repository/courseRepository/courseMockRepository"
 	"golang/repository/favoriteRepository/favoriteMockRepository"
-	"golang/service/courseService"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -17,7 +16,6 @@ import (
 type suiteFavorite struct {
 	suite.Suite
 	favoriteService FavoriteService
-	courseService   courseService.CourseService
 	mockFavorite    *favoriteMockRepository.FavoriteMock
 	mockCourse      *courseMockRepository.CourseMock
 }

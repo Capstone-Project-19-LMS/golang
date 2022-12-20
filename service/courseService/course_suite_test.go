@@ -6,7 +6,6 @@ import (
 	"golang/models/dto"
 	"golang/repository/categoryRepository/categoryMockRepository"
 	"golang/repository/courseRepository/courseMockRepository"
-	"golang/service/categoryService"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -17,7 +16,6 @@ import (
 type suiteCourse struct {
 	suite.Suite
 	courseService   CourseService
-	categoryService categoryService.CategoryService
 	mockCourse      *courseMockRepository.CourseMock
 	mockCategory    *categoryMockRepository.CategoryMock
 }
