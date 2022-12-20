@@ -56,8 +56,8 @@ func (ac *AssignmentController) DeleteAssignment(c echo.Context) error {
 	// Call service to delete assignment
 	err := ac.AssignmentService.DeleteAssignment(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail delete assignment",
 				"error":   err.Error(),
 			})
@@ -100,14 +100,14 @@ func (ac *AssignmentController) GetAssignmentByID(c echo.Context) error {
 	// Call service to get assignment by id
 	assignment, err := ac.AssignmentService.GetAssignmentByID(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
-				"message": "fail get assignment by id",
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "failed get assignment by id",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail get assignment by id",
+			"message": "failed get assignment by id",
 			"error":   err.Error(),
 		})
 	}

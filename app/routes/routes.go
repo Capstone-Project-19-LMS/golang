@@ -126,6 +126,11 @@ func New(db *gorm.DB) *echo.Echo {
 	*/
 	app := echo.New()
 
+	// auto tls
+	// app.AutoTLSManager.HostPolicy = autocert.HostWhitelist("gencer.live")
+	// Cache certificates to avoid issues with rate limits (https://letsencrypt.org/docs/rate-limits)
+	// app.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
+
 	app.Validator = &helper.CustomValidator{
 		Validator: validator.New(),
 	}
@@ -143,6 +148,14 @@ func New(db *gorm.DB) *echo.Echo {
 
 	app.Use(configLogger.Init())
 	app.Use(middleware.CORS())
+
+	// auto tls
+	// app.GET("/", func(c echo.Context) error {
+	// 	return c.HTML(http.StatusOK, `
+	// 		<h1>Welcome to Echo!</h1>
+	// 		<h3>TLS certificates automatically installed from Let's Encrypt :)</h3>
+	// 	`)
+	// })
 
 	// costumer
 	costumer := app.Group("/customer")
