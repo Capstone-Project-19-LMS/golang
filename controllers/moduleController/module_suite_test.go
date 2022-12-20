@@ -351,6 +351,111 @@ func (s *suiteModule) TestGetModuleByID() {
 	}
 }
 
+func (s *suiteModule) TestGetAllModule() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		MockReturnBody     []dto.Module
+		MockReturnError    error
+		HasReturnBody      bool
+		ExpectedBody       []dto.Module
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success get all module",
+			"GET",
+
+			[]dto.Module{
+				{
+					ID:        "abcde",
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+					DeletedAt: gorm.DeletedAt{},
+					Name:      "tes",
+					Content:   "tes",
+					CourseID:  "abcde",
+					NoModule:  1,
+				},
+				{
+					ID:        "abcdef",
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+					DeletedAt: gorm.DeletedAt{},
+					Name:      "tes 2",
+					Content:   "tes 2",
+					CourseID:  "abcdef",
+					NoModule:  2,
+				},
+			},
+			nil,
+			true,
+			[]dto.Module{
+				{
+					ID:        "abcde",
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+					DeletedAt: gorm.DeletedAt{},
+					Name:      "tes",
+					Content:   "tes",
+					CourseID:  "abcde",
+					NoModule:  1,
+				},
+				{
+					ID:        "abcdef",
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+					DeletedAt: gorm.DeletedAt{},
+					Name:      "tes 2",
+					Content:   "tes 2",
+					CourseID:  "abcdef",
+					NoModule:  2,
+				},
+			},
+			http.StatusOK,
+			"success get all module",
+		},
+		{
+			"fail get all module",
+			"GET",
+
+			[]dto.Module{},
+			errors.New("error"),
+			false,
+			[]dto.Module{},
+			http.StatusInternalServerError,
+			"fail get all module",
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetAllModule").Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			// Create request
+			r := httptest.NewRequest(v.Method, "/module", nil)
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/module")
+
+			err := s.moduleController.GetAllModule(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
 func TestSuiteModule(t *testing.T) {
 	suite.Run(t, new(suiteModule))
 }
