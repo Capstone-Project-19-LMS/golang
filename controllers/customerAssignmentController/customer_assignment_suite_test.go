@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -187,6 +188,105 @@ func (s *suiteCustomerAssignment) TestDeleteCustomerAssignment() {
 			s.NoError(err)
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
+func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		ParamID            string
+		MockReturnBody     dto.CustomerAssignment
+		MockReturnError    error
+		HasReturnBody      bool
+		ExpectedBody       dto.CustomerAssignment
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success get customer assignment by id",
+			"GET",
+			"abcde",
+
+			dto.CustomerAssignment{
+				ID:           "abcde",
+				File:         "tes",
+				Grade:        1,
+				AssignmentID: "abcde",
+				CustomerID:   "abcde",
+				CreatedAt:    time.Now(),
+				UpdatedAt:    time.Now(),
+				DeletedAt:    gorm.DeletedAt{},
+			},
+			nil,
+			true,
+			dto.CustomerAssignment{
+				ID:           "abcde",
+				File:         "tes",
+				Grade:        1,
+				AssignmentID: "abcde",
+				CustomerID:   "abcde",
+				CreatedAt:    time.Now(),
+				UpdatedAt:    time.Now(),
+				DeletedAt:    gorm.DeletedAt{},
+			},
+			http.StatusOK,
+			"success get customer assignment by id",
+		},
+		{
+			"fail get customer assignment by id",
+			"GET",
+			"abcde",
+
+			dto.CustomerAssignment{},
+			gorm.ErrRecordNotFound,
+			false,
+			dto.CustomerAssignment{},
+			http.StatusInternalServerError,
+			"fail get customer assignment by id",
+		},
+		{
+			"fail get customer assignment by id",
+			"GET",
+			"abcde",
+
+			dto.CustomerAssignment{},
+			gorm.ErrRecordNotFound,
+			false,
+			dto.CustomerAssignment{},
+			http.StatusInternalServerError,
+			"fail get customer assignment by id",
+		},
+	}
+
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetCustomerAssignmentByID", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+
+			// Create request
+			r := httptest.NewRequest(v.Method, "/customer_assignment/get_by_id/"+v.ParamID, nil)
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/customer_assignment/get_by_id/:id")
+			ctx.SetParamNames("id")
+			ctx.SetParamValues(v.ParamID)
+
+			err := s.customerAssignmentController.GetCustomerAssignmentByID(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+
 		})
 		// remove mock
 		mockCall.Unset()

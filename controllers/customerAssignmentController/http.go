@@ -106,8 +106,8 @@ func (cac *CustomerAssignmentController) GetCustomerAssignmentByID(c echo.Contex
 	// Call service to get customerAssignment by id
 	customerAssignment, err := cac.CustomerAssignmentService.GetCustomerAssignmentByID(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail get customer assignment by id",
 				"error":   err.Error(),
 			})
