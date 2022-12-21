@@ -17,7 +17,9 @@ type moduleRepository struct {
 func (mr *moduleRepository) CreateModule(module dto.ModuleTransaction) error {
 
 	var moduleModel model.Module
+
 	err := copier.Copy(&moduleModel, &module)
+
 	if err != nil {
 		return err
 	}
@@ -33,6 +35,13 @@ func (mr *moduleRepository) CreateModule(module dto.ModuleTransaction) error {
 		}
 	}
 	err = mr.db.Model(&model.Module{}).Create(&moduleModel).Error
+	var mediaModuleModel model.MediaModule = model.MediaModule{
+		ID:       module.MediaModuleID,
+		Url:      module.Url,
+		ModuleID: module.ID,
+	}
+	mr.db.Create(&mediaModuleModel)
+
 	if err != nil {
 		return err
 	}
