@@ -36,13 +36,13 @@ func (u *InstructorController) Register(c echo.Context) error {
 	err = u.InstructorService.CreateInstructor(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail create user",
+			"message": "fail create instructor",
 			"error":   err.Error(),
 		})
 	}
 
 	return c.JSON(200, echo.Map{
-		"message": "success create user",
+		"message": "success create instructor",
 	})
 }
 
