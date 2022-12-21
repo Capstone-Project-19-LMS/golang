@@ -98,6 +98,10 @@ func (cs *courseService) GetAllCourse(user dto.User) ([]dto.GetCourse, error) {
 		numberOfModule := len(course.Modules)
 		courses[i].NumberOfModules = numberOfModule
 
+		// get sum of customer course
+		sumCustomer := len(course.CustomerCourses)
+		courses[i].AmountCustomer = sumCustomer
+
 		if user.Role == "customer" {
 			// get favorite of all courses
 			favorite := helper.GetFavoriteCourse(course, user.ID)

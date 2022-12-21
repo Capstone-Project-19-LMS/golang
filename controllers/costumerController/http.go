@@ -41,7 +41,7 @@ func (u *CostumerController) Register(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(200, echo.Map{
+	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success create user",
 	})
 }
