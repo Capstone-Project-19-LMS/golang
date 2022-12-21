@@ -22,7 +22,9 @@ type moduleService struct {
 // CreateModule implements ModuleService
 func (ms *moduleService) CreateModule(module dto.ModuleTransaction) error {
 	id := helper.GenerateUUID()
+	mediamoduleID := helper.GenerateUUID()
 	module.ID = id
+	module.MediaModuleID = mediamoduleID
 	err := ms.moduleRepo.CreateModule(module)
 	if err != nil {
 		return err
