@@ -2,10 +2,12 @@ package categoryController
 
 import (
 	"golang/constant/constantError"
+	"golang/helper"
 	"golang/models/dto"
 	"golang/service/categoryService"
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -48,29 +50,29 @@ func (cc *CategoryController) CreateCategory(c echo.Context) error {
 	})
 }
 
-// DeleteCategory is a function to delete account
+// DeleteCategory is a function to delete category
 func (cc *CategoryController) DeleteCategory(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
 
-	// Call service to delete account
+	// Call service to delete category
 	err := cc.CategoryService.DeleteCategory(id)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
-				"message": "fail delete account",
+				"message": "fail delete category",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail delete account",
+			"message": "fail delete category",
 			"error":   err.Error(),
 		})
 	}
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success delete account",
+		"message": "success delete category",
 	})
 }
 
@@ -97,8 +99,11 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
 
+	// Get user id from jwt
+	user := helper.GetUser(c)
+	
 	// Call service to get category by id
-	category, err := cc.CategoryService.GetCategoryByID(id)
+	getCategory, err := cc.CategoryService.GetCategoryByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -112,10 +117,20 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error {
 		})
 	}
 
+	if user.Role == "instructor" {
+		var categoryInstructor dto.GetCategoryInstructor
+		_ = copier.Copy(&categoryInstructor, &getCategory)
+		// Return response if success
+		return c.JSON(http.StatusOK, echo.Map{
+			"message":   "success get category by id",
+			"category": categoryInstructor,
+		})
+	}
+
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success get category by id",
-		"category": category,
+		"category": getCategory,
 	})
 }
 

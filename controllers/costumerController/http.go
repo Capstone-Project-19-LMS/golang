@@ -46,6 +46,29 @@ func (u *CostumerController) Register(c echo.Context) error {
 	})
 }
 
+func (u *CostumerController) Verifikasi(c echo.Context) error {
+	var customerVerif dto.CustomerVerif
+	err := c.Bind(&customerVerif)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
+	err = u.CostumerService.VerifikasiCustomer(customerVerif)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail verif user",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(200, echo.Map{
+		"message": "success verif user",
+	})
+}
+
 func (u *CostumerController) Login(c echo.Context) error {
 	var costumerLogin dto.CostumerLogin
 	err := c.Bind(&costumerLogin)
@@ -61,6 +84,11 @@ func (u *CostumerController) Login(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail login",
 			"error":   err.Error(),
+		})
+	}
+	if !user.IsActive {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "account non active",
 		})
 	}
 

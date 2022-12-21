@@ -10,8 +10,8 @@ type ModuleService interface {
 	CreateModule(dto.ModuleTransaction) error
 	DeleteModule(id string) error
 	GetAllModule() ([]dto.Module, error)
-	GetModuleByID(id string) (dto.Module, error)
-	GetModuleByCourseID(courseID string) ([]dto.Module, error)
+	GetModuleByID(id, customerID string) (dto.ModuleAcc, error)
+	GetModuleByCourseID(courseID, customerID string) ([]dto.Module, error)
 	UpdateModule(dto.ModuleTransaction) error
 }
 
@@ -50,16 +50,16 @@ func (ms *moduleService) GetAllModule() ([]dto.Module, error) {
 }
 
 // GetModuleByID implements ModuleService
-func (ms *moduleService) GetModuleByID(id string) (dto.Module, error) {
-	module, err := ms.moduleRepo.GetModuleByID(id)
+func (ms *moduleService) GetModuleByID(id, customerID string) (dto.ModuleAcc, error) {
+	module, err := ms.moduleRepo.GetModuleByID(id, customerID)
 	if err != nil {
-		return dto.Module{}, err
+		return dto.ModuleAcc{}, err
 	}
 	return module, nil
 }
 
-func (ms *moduleService) GetModuleByCourseID(courseID string) ([]dto.Module, error) {
-	modules, err := ms.moduleRepo.GetModuleByCourseID(courseID)
+func (ms *moduleService) GetModuleByCourseID(courseID, customerID string) ([]dto.Module, error) {
+	modules, err := ms.moduleRepo.GetModuleByCourseID(courseID, customerID)
 	if err != nil {
 		return nil, err
 	}

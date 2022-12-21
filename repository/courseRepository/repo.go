@@ -4,8 +4,9 @@ import "golang/models/dto"
 
 type CourseRepository interface {
 	CreateCourse(dto.CourseTransaction) error
-	DeleteCourse(id string) error
-	GetCourseByID(id, instructorId string) (dto.Course, error)
-	GetAllCourse(instructorId string) ([]dto.Course, error)
+	DeleteCourse(string) error
+	GetCourseByID(string) (dto.Course, error)
+	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
+	GetAllCourse(dto.User) ([]dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
 }

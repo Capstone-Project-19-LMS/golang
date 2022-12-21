@@ -3,10 +3,12 @@ package courseController
 import (
 	middlewares "golang/app/middlewares/instructor"
 	"golang/constant/constantError"
+	"golang/helper"
 	"golang/models/dto"
 	"golang/service/courseService"
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,11 +37,10 @@ func (cc *CourseController) CreateCourse(c echo.Context) error {
 	}
 
 	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	course.InstructorID = claims.ID
+	user := helper.GetUser(c)
 
 	// Call service to create course
-	err = cc.CourseService.CreateCourse(course)
+	err = cc.CourseService.CreateCourse(course, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -92,22 +93,46 @@ func (cc *CourseController) DeleteCourse(c echo.Context) error {
 // GetAllCourse is a function to get all course
 func (cc *CourseController) GetAllCourse(c echo.Context) error {
 	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	instructorId := claims.ID
+	user := helper.GetUser(c)
 
-	// Call service to get all category
-	categories, err := cc.CourseService.GetAllCourse(instructorId)
+	// Call service to get all courses
+	getCourses, err := cc.CourseService.GetAllCourse(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail get all category",
+			"message": "fail get all courses",
 			"error":   err.Error(),
+		})
+	}
+
+	if user.Role == "instructor" {
+		var coursesInstructor []dto.GetCourseInstructor
+		err = copier.Copy(&coursesInstructor, &getCourses)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail get all courses",
+				"error":   err.Error(),
+			})
+		}
+		var amountModule int
+		var amountCustomer int
+		for _, course := range coursesInstructor {
+			amountModule += course.NumberOfModules
+			amountCustomer += course.AmountCustomer
+		}
+		// Return response if success
+		return c.JSON(http.StatusOK, echo.Map{
+			"message":   "success get all courses",
+			"courses": coursesInstructor,
+			"amount_course":len(coursesInstructor),
+			"amount_materi" : amountModule,
+			"amount_customer_course" : amountCustomer,
 		})
 	}
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":   "success get all category",
-		"categories": categories,
+		"message":   "success get all courses",
+		"courses": getCourses,
 	})
 }
 
@@ -117,11 +142,10 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 	id := c.Param("id")
 
 	// Get user id from jwt
-	claims := middlewares.GetUserInstructor(c)
-	instructorId := claims.ID
+	user := helper.GetUser(c)
 
 	// get course by id from service
-	course, err := cc.CourseService.GetCourseByID(id, instructorId)
+	getCourses, err := cc.CourseService.GetCourseByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -135,10 +159,56 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 		})
 	}
 
+	if user.Role == "instructor" {
+		var courseInstructor dto.GetCourseInstructorByID
+		err = copier.Copy(&courseInstructor, &getCourses)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail get all courses",
+				"error":   err.Error(),
+			})
+		}
+		// Return response if success
+		return c.JSON(http.StatusOK, echo.Map{
+			"message":   "success get course by id",
+			"course": courseInstructor,
+		})
+	}
+
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get course by id",
-		"course": course,
+		"course": getCourses,
+	})
+}
+
+// GetCourseEnrollByID is a function to get course by id
+func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
+	// get id from url param
+	id := c.Param("id")
+
+	// Get user id from jwt
+	user := helper.GetUser(c)
+
+	// get course by id from service
+	customerEnroll, err := cc.CourseService.GetCourseEnrollByID(id, user)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get course with customer enrolled",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get course with customer enrolled",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get course with customer enrolled",
+		"customer_enroll": customerEnroll,
 	})
 }
 

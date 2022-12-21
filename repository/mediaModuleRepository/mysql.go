@@ -13,19 +13,22 @@ type mediaModuleRepository struct {
 	db *gorm.DB
 }
 
-// CreateModule implements MediaModuleRepository
+// CreateMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) CreateMediaModule(mediaModule dto.MediaModuleTransaction) error {
 	var mediaModuleModel model.MediaModule
-	copier.Copy(&mediaModuleModel, &mediaModule)
+	err := copier.Copy(&mediaModuleModel, &mediaModule)
+	if err != nil {
+		return err
+	}
 
-	err := mmr.db.Model(&model.MediaModule{}).Create(&mediaModuleModel).Error
+	err = mmr.db.Model(&model.MediaModule{}).Create(&mediaModuleModel).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// DeleteModule implements MediaModuleRepository
+// DeleteMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) DeleteMediaModule(id string) error {
 	// delete data Module from database by id
 	err := mmr.db.Where("id = ?", id).Unscoped().Delete(&model.MediaModule{})
@@ -39,7 +42,7 @@ func (mmr *mediaModuleRepository) DeleteMediaModule(id string) error {
 	return nil
 }
 
-// GetAllModule implements MediaModuleRepository
+// GetAllMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) GetAllMediaModule() ([]dto.MediaModule, error) {
 	var mediaModuleModels []model.MediaModule
 	// get data sub category from database by user
@@ -49,12 +52,14 @@ func (mmr *mediaModuleRepository) GetAllMediaModule() ([]dto.MediaModule, error)
 	}
 	// copy data from model to dto
 	var mediaModules []dto.MediaModule
-	copier.Copy(&mediaModules, &mediaModuleModels)
-
+	err = copier.Copy(&mediaModules, &mediaModuleModels)
+	if err != nil {
+		return nil, err
+	}
 	return mediaModules, nil
 }
 
-// GetModuleByID implements MediaModuleRepository
+// GetMediaModuleByID implements MediaModuleRepository
 func (mmr *mediaModuleRepository) GetMediaModuleByID(id string) (dto.MediaModule, error) {
 	var mediaModuleModel model.MediaModule
 	err := mmr.db.Model(&model.MediaModule{}).Where("id = ?", id).Find(&mediaModuleModel)
@@ -67,16 +72,20 @@ func (mmr *mediaModuleRepository) GetMediaModuleByID(id string) (dto.MediaModule
 
 	// copy data from model to dto
 	var Module dto.MediaModule
-	copier.Copy(&Module, &mediaModuleModel)
-
+	errCopy := copier.Copy(&Module, &mediaModuleModel)
+	if errCopy != nil {
+		return dto.MediaModule{}, errCopy
+	}
 	return Module, nil
 }
 
-// UpdateModule implements MediaModuleRepository
+// UpdateMediaModule implements MediaModuleRepository
 func (mmr *mediaModuleRepository) UpdateMediaModule(mediaModule dto.MediaModuleTransaction) error {
 	var mediaModuleModel model.MediaModule
-	copier.Copy(&mediaModuleModel, &mediaModule)
-
+	errCopy := copier.Copy(&mediaModuleModel, &mediaModule)
+	if errCopy != nil {
+		return errCopy
+	}
 	// update account with new data
 	err := mmr.db.Model(&model.MediaModule{}).Where("id = ?", mediaModule.ID).Updates(&mediaModuleModel)
 	if err.Error != nil {

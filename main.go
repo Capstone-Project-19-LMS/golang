@@ -18,9 +18,12 @@ func main() {
 
 	db := configDB.InitDB()
 
-	_dbDriver.DBMigrate(db)
-
+	err := _dbDriver.DBMigrate(db)
+	if err != nil {
+		panic(err)
+	}
 	app := routes.New(db)
 
 	log.Fatal(app.Start(util.GetConfig("APP_PORT")))
+	// app.Logger.Fatal(app.StartAutoTLS(":443"))
 }

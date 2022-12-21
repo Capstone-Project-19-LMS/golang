@@ -3,6 +3,7 @@ package moduleController
 import (
 	"golang/constant/constantError"
 	"golang/models/dto"
+	"golang/models/model"
 	moduleservice "golang/service/moduleService"
 	"net/http"
 
@@ -48,29 +49,29 @@ func (mc *ModuleController) CreateModule(c echo.Context) error {
 	})
 }
 
-// DeleteModule is a function to delete account
+// DeleteModule is a function to delete module
 func (mc *ModuleController) DeleteModule(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
 
-	// Call service to delete account
+	// Call service to delete module
 	err := mc.ModuleService.DeleteModule(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
-				"message": "fail delete account",
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail delete module",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail delete account",
+			"message": "fail delete module",
 			"error":   err.Error(),
 		})
 	}
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success delete account",
+		"message": "success delete module",
 	})
 }
 
@@ -96,12 +97,19 @@ func (mc *ModuleController) GetAllModule(c echo.Context) error {
 func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 	// Get id from url
 	id := c.Param("id")
-
-	// Call service to get module by id
-	module, err := mc.ModuleService.GetModuleByID(id)
+	input := new(model.CustomerCourse)
+	err := c.Bind(input)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
+	// Call service to get module by id
+	module, err := mc.ModuleService.GetModuleByID(id, input.CustomerID)
+	if err != nil {
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail get module by id",
 				"error":   err.Error(),
 			})
@@ -122,10 +130,17 @@ func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 // GetModuleByCourseID is a function to get module by id
 func (mc *ModuleController) GetModuleByCourseID(c echo.Context) error {
 	// Get id from url
-	courseid := c.Param("course_id")
+	input := new(model.CustomerCourse)
 
+	err := c.Bind(input)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
 	// Call service to get module by id
-	modules, err := mc.ModuleService.GetModuleByCourseID(courseid)
+	modules, err := mc.ModuleService.GetModuleByCourseID(input.CourseID, input.CustomerID)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -165,8 +180,8 @@ func (mc *ModuleController) UpdateModule(c echo.Context) error {
 	// Call service to update module
 	err = mc.ModuleService.UpdateModule(module)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail update module",
 				"error":   err.Error(),
 			})

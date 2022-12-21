@@ -14,7 +14,7 @@ type categoryRepository struct {
 // CreateCategory implements CategoryRepository
 func (cr *categoryRepository) CreateCategory(category dto.CategoryTransaction) error {
 	err := cr.db.Model(&model.Category{}).Create(&model.Category{
-		ID: 		category.ID,
+		ID:          category.ID,
 		Name:        category.Name,
 		Description: category.Description,
 	}).Error
@@ -50,9 +50,14 @@ func (cr *categoryRepository) GetAllCategory() ([]dto.CategoryTransaction, error
 }
 
 // GetCategoryByID implements CategoryRepository
-func (cr *categoryRepository) GetCategoryByID(id string) (dto.Category, error) {
+func (cr *categoryRepository) GetCategoryByID(id string, user dto.User) (dto.Category, error) {
 	var category dto.Category
-	err := cr.db.Model(&model.Category{}).Preload("Courses").Where("id = ?", id).Find(&category)
+	var err *gorm.DB
+	if user.Role == "instructor" {
+		err = cr.db.Model(&model.Category{}).Preload("Courses", "instructor_id = ?", user.ID).Preload("Courses.CustomerCourses").Preload("Courses.Favorites").Preload("Courses.Ratings").Preload("Courses.Modules").Where("id = ?", id).Find(&category)
+	} else if user.Role == "customer" {
+		err = cr.db.Model(&model.Category{}).Preload("Courses.CustomerCourses", "customer_id = ?", user.ID).Preload("Courses.Favorites").Preload("Courses.Ratings").Preload("Courses.Modules").Where("id = ?", id).Find(&category)
+	}
 	if err.Error != nil {
 		return dto.Category{}, err.Error
 	}
@@ -66,7 +71,7 @@ func (cr *categoryRepository) GetCategoryByID(id string) (dto.Category, error) {
 func (cr *categoryRepository) UpdateCategory(category dto.CategoryTransaction) error {
 	// update account with new data
 	err := cr.db.Model(&model.Category{}).Where("id = ?", category.ID).Updates(&model.Category{
-		Name: category.Name,
+		Name:        category.Name,
 		Description: category.Description,
 	})
 	if err.Error != nil {
