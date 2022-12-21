@@ -154,9 +154,6 @@ func (s *suiteModule) TestGetModuleByID() {
 			"abcde",
 			dto.ModuleCourseAcc{
 				ID:        "abcde",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 				Name:      "tes",
 				Content:   "tes",
 				CourseID:  "abcde",
@@ -166,11 +163,8 @@ func (s *suiteModule) TestGetModuleByID() {
 					Objective   string "json:\"objective\""
 				}{},
 				MediaModules: []dto.MediaModule{
-					dto.MediaModule{
+					{
 						ID:        "abcde",
-						CreatedAt: time.Now(),
-						UpdatedAt: time.Now(),
-						DeletedAt: gorm.DeletedAt{},
 						Url:       "tes",
 						ModuleID:  "abcde",
 					},
@@ -180,9 +174,6 @@ func (s *suiteModule) TestGetModuleByID() {
 			true,
 			dto.ModuleCourseAcc{
 				ID:        "abcde",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 				Name:      "tes",
 				Content:   "tes",
 				CourseID:  "abcde",
@@ -192,11 +183,8 @@ func (s *suiteModule) TestGetModuleByID() {
 					Objective   string "json:\"objective\""
 				}{},
 				MediaModules: []dto.MediaModule{
-					dto.MediaModule{
+					{
 						ID:        "abcde",
-						CreatedAt: time.Now(),
-						UpdatedAt: time.Now(),
-						DeletedAt: gorm.DeletedAt{},
 						Url:       "tes",
 						ModuleID:  "abcde",
 					},
@@ -252,18 +240,12 @@ func (s *suiteModule) TestGetAllModule() {
 			[]dto.Module{
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Name:      "tes",
 					Content:   "tes",
 					CourseID:  "abcde",
 				},
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Name:      "tes",
 					Content:   "tes",
 					CourseID:  "abcde",
@@ -274,18 +256,12 @@ func (s *suiteModule) TestGetAllModule() {
 			[]dto.Module{
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Name:      "tes",
 					Content:   "tes",
 					CourseID:  "abcde",
 				},
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Name:      "tes",
 					Content:   "tes",
 					CourseID:  "abcde",
