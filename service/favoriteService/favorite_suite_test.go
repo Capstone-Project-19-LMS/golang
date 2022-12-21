@@ -126,14 +126,14 @@ func (s *suiteFavorite) TestAddFavorite() {
 
 func (s *suiteFavorite) TestDeleteFavorite() {
 	testCase := []struct {
-		Name                       string
-		User                       dto.User
-		CourseID                   string
-		MockReturnGetFavorite      dto.Favorite
-		MockReturnGetFavoriteError error
-		MockReturnDeleteFavoriteError      error
-		HasReturnError             bool
-		ExpectedError              error
+		Name                          string
+		User                          dto.User
+		CourseID                      string
+		MockReturnGetFavorite         dto.Favorite
+		MockReturnGetFavoriteError    error
+		MockReturnDeleteFavoriteError error
+		HasReturnError                bool
+		ExpectedError                 error
 	}{
 		{
 			"success delete course",
