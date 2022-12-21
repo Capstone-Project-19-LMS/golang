@@ -115,7 +115,7 @@ func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleCour
 func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error) {
 
 	var moduleModels []model.Module
-	err := mr.db.Model(&model.Module{}).Where("course_id = ?", courseID).Find(&moduleModels).Error
+	err := mr.db.Model(&model.Module{}).Where("course_id = ?", courseID).Preload("Course").Find(&moduleModels).Error
 	if err != nil {
 		return nil, err
 	}
