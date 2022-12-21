@@ -127,10 +127,14 @@ func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]
 	if !CustomerCourses.Status {
 		return nil, err
 	}
+
 	// copy data from model to dto
 	var modules []dto.Module
 	err = copier.Copy(&modules, &moduleModels)
 	if err != nil {
+		return nil, err
+	}
+	if len(modules) == 0 {
 		return nil, err
 	}
 	return modules, nil
