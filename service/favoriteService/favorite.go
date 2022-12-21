@@ -94,9 +94,19 @@ func (fs *favoriteService) GetFavoriteByCustomerID(customerID string) ([]dto.Get
 		numberOfModule := len(course.Modules)
 		courses[i].NumberOfModules = numberOfModule
 
+		// get sum of customer course
+		sumCustomer := len(course.CustomerCourses)
+		courses[i].AmountCustomer = sumCustomer
+
 		// get enrolled of all courses
 		helper.GetEnrolledCourse(&course, customerID)
 		courses[i].StatusEnroll = course.StatusEnroll
+		courses[i].ProgressModule = course.ProgressModule
+		courses[i].IsFinish = course.IsFinish
+
+		// get progress of all courses
+		ProgressPercentage := helper.GetProgressCourse(&courses[i])
+		courses[i].ProgressPercentage = ProgressPercentage
 	}
 
 	// copy courses from dto.course to dto.GetCustomerCourse

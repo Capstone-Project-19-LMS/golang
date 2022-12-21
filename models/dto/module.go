@@ -31,8 +31,8 @@ type ModuleAcc struct {
 
 type ModuleTransaction struct {
 	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Content  string `json:"content"`
-	CourseID string `json:"course_id"`
-	NoModule int    `json:"no_module"`
+	Name     string `json:"name" validate:"required"`
+	Content  string `json:"content" validate:"required"`
+	CourseID string `json:"course_id" validate:"required"`
+	NoModule int    `json:"no_module" validate:"required"`
 }

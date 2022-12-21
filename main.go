@@ -25,4 +25,5 @@ func main() {
 	app := routes.New(db)
 
 	log.Fatal(app.Start(util.GetConfig("APP_PORT")))
+	// app.Logger.Fatal(app.StartAutoTLS(":443"))
 }

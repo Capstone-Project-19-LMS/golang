@@ -16,7 +16,7 @@ type MediaModule struct {
 }
 
 type MediaModuleTransaction struct {
-	ID       string `json:"id"`
-	Url      string `json:"url"`
-	ModuleID string `json:"module_id"`
+	ID       string `json:"id" `
+	Url      string `json:"url" validate:"required"`
+	ModuleID string `json:"module_id" validate:"required"`
 }
