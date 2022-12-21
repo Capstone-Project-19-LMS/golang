@@ -71,3 +71,16 @@ jobs:
             sudo docker container rm app
             sudo docker pull rafliferdian/capstone-lms:latest
             sudo docker run -d -v $PWD/.env:/.env -p 80:6969 --name app rafliferdian/capstone-lms:latest
+      - name: update aws instance SSL 
+        if: github.ref != 'refs/heads/main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_AWS_SSL }}
+          username: ubuntu
+          key: ${{ secrets.KEY_AWS_SSL }}
+          port: 22
+          script: |
+            sudo docker stop app
+            sudo docker container rm app
+            sudo docker pull rafliferdian/capstone-lms:latest
+            sudo docker run -d -v $PWD/.env:/.env -p 3000:3000 --name app rafliferdian/capstone-lms:latest
