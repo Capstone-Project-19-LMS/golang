@@ -1,4 +1,4 @@
-package moduleController
+package mediamodulecontroller
 
 import (
 	"bytes"
@@ -6,8 +6,7 @@ import (
 	"errors"
 	"golang/helper"
 	"golang/models/dto"
-	"golang/models/model"
-	modulemockservice "golang/service/moduleService/moduleMockService"
+	mediamodulemockservice "golang/service/mediaModuleService/mediaModuleMockService"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,52 +18,46 @@ import (
 	"gorm.io/gorm"
 )
 
-type suiteModule struct {
+type suiteMediaModule struct {
 	suite.Suite
-	moduleController *ModuleController
-	mock             *modulemockservice.ModuleMock
+	mediaModuleController *MediaModuleController
+	mock                  *mediamodulemockservice.MediaModuleMock
 }
 
-func (s *suiteModule) SetupTest() {
-	mock := &modulemockservice.ModuleMock{}
+func (s *suiteMediaModule) SetupTest() {
+	mock := &mediamodulemockservice.MediaModuleMock{}
 	s.mock = mock
-	s.moduleController = &ModuleController{
-		ModuleService: s.mock,
+	s.mediaModuleController = &MediaModuleController{
+		MediaModuleService: s.mock,
 	}
 }
 
-func (s *suiteModule) TestCreateModule() {
+func (s *suiteMediaModule) TestCreateMediaModule() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		Body               dto.ModuleTransaction
+		Body               dto.MediaModuleTransaction
 		MockReturnError    error
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
-			"success create module",
+			"success create media module",
 			"POST",
-			dto.ModuleTransaction{
-				Name:     "tes",
-				Content:  "tes",
-				CourseID: "tes",
-				NoModule: 1,
+			dto.MediaModuleTransaction{
 				Url:      "tes",
+				ModuleID: "tes",
 			},
 			nil,
 			http.StatusOK,
-			"success create module",
+			"success create media module",
 		},
 		{
 			"fail bind data",
 			"POST",
-			dto.ModuleTransaction{
-				Name:     "tes",
-				Content:  "tes",
-				CourseID: "tes",
-				NoModule: 1,
+			dto.MediaModuleTransaction{
 				Url:      "tes",
+				ModuleID: "tes",
 			},
 			nil,
 			http.StatusInternalServerError,
@@ -73,36 +66,32 @@ func (s *suiteModule) TestCreateModule() {
 		{
 			"There is an empty field",
 			"POST",
-			dto.ModuleTransaction{
-				Name:    "tes",
-				Content: "tes",
+			dto.MediaModuleTransaction{
+				Url: "tes",
 			},
 			nil,
 			http.StatusBadRequest,
 			"There is an empty field",
 		},
 		{
-			"fail create module",
+			"fail create media module",
 			"POST",
-			dto.ModuleTransaction{
-				Name:     "tes",
-				Content:  "tes",
-				CourseID: "tes",
-				NoModule: 1,
+			dto.MediaModuleTransaction{
 				Url:      "tes",
+				ModuleID: "tes",
 			},
 
-			errors.New("fail create module"),
+			errors.New("fail create media module"),
 			http.StatusInternalServerError,
-			"fail create module",
+			"fail create media module",
 		},
 	}
 	for i, v := range testCase {
-		mockCall := s.mock.On("CreateModule", v.Body).Return(v.MockReturnError)
+		mockCall := s.mock.On("CreateMediaModule", v.Body).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			res, _ := json.Marshal(v.Body)
 			// Create request
-			r := httptest.NewRequest(v.Method, "/module/", bytes.NewBuffer(res))
+			r := httptest.NewRequest(v.Method, "/media_module/", bytes.NewBuffer(res))
 			if i != 1 {
 				r.Header.Set("Content-Type", "application/json")
 			}
@@ -115,9 +104,9 @@ func (s *suiteModule) TestCreateModule() {
 				Validator: validator.New(),
 			}
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/module/create")
+			ctx.SetPath("/media_module/create")
 
-			err := s.moduleController.CreateModule(ctx)
+			err := s.mediaModuleController.CreateMediaModule(ctx)
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
 
@@ -132,7 +121,7 @@ func (s *suiteModule) TestCreateModule() {
 	}
 }
 
-func (s *suiteModule) TestDeleteModule() {
+func (s *suiteMediaModule) TestDeleteMediaModule() {
 	testCase := []struct {
 		Name               string
 		Method             string
@@ -142,36 +131,35 @@ func (s *suiteModule) TestDeleteModule() {
 		ExpectedMesaage    string
 	}{
 		{
-			"success delete module",
+			"success delete media module",
 			"DELETE",
 			"abcde",
 			nil,
 			http.StatusOK,
-			"success delete module",
+			"success delete media module",
 		},
 		{
-			"fail delete module",
+			"fail delete media module",
 			"DELETE",
 			"abcde",
 			gorm.ErrRecordNotFound,
 			http.StatusInternalServerError,
-			"fail delete module",
+			"fail delete media module",
 		},
 		{
-			"fail delete module",
+			"fail delete media module",
 			"DELETE",
 			"abcde",
-
-			errors.New("fail delete module"),
+			errors.New("fail delete media module"),
 			http.StatusInternalServerError,
-			"fail delete module",
+			"fail delete media module",
 		},
 	}
 	for _, v := range testCase {
-		mockCall := s.mock.On("DeleteModule", v.ParamID).Return(v.MockReturnError)
+		mockCall := s.mock.On("DeleteMediaModule", v.ParamID).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			// Create request
-			r := httptest.NewRequest(v.Method, "/module/"+v.ParamID, nil)
+			r := httptest.NewRequest(v.Method, "/media_module/delete/"+v.ParamID, nil)
 			// Create response recorder
 			w := httptest.NewRecorder()
 
@@ -181,11 +169,11 @@ func (s *suiteModule) TestDeleteModule() {
 				Validator: validator.New(),
 			}
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/module/:id")
+			ctx.SetPath("/media_module/delete/:id")
 			ctx.SetParamNames("id")
 			ctx.SetParamValues(v.ParamID)
 
-			err := s.moduleController.DeleteModule(ctx)
+			err := s.mediaModuleController.DeleteMediaModule(ctx)
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
 
@@ -200,146 +188,87 @@ func (s *suiteModule) TestDeleteModule() {
 	}
 }
 
-func (s *suiteModule) TestGetModuleByID() {
+func (s *suiteMediaModule) TestGetMediaModuleByID() {
 	testCase := []struct {
 		Name               string
 		Method             string
 		ParamID            string
-		CustomerCourseID   model.CustomerCourse
-		MockReturnBody     dto.ModuleAcc
+		MockReturnBody     dto.MediaModule
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       dto.ModuleAcc
+		ExpectedBody       dto.MediaModule
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
-			"success get module by id",
+			"success get media module by id",
 			"GET",
 			"abcde",
-			model.CustomerCourse{
-				ID: "abcde",
-			},
-			dto.ModuleAcc{
+
+			dto.MediaModule{
 				ID:        "abcde",
-				Name:      "tes",
-				Content:   "tes",
-				CourseID:  "tes",
-				NoModule:  1,
+				Url:       "tes",
+				ModuleID:  "abcde",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 				DeletedAt: gorm.DeletedAt{},
-				MediaModules: []dto.MediaModule{
-					{
-						ID:       "abcde",
-						Url:      "tes",
-						ModuleID: "abcde",
-					},
-				},
-				Assignment: dto.Assignment{
-					ID:                  "abcde",
-					Title:               "tes",
-					ModuleID:            "abcde",
-					CustomerAssignments: []dto.CustomerAssignment{},
-				},
 			},
 			nil,
 			true,
-			dto.ModuleAcc{
+			dto.MediaModule{
 				ID:        "abcde",
-				Name:      "tes",
-				Content:   "tes",
-				CourseID:  "tes",
-				NoModule:  1,
+				Url:       "tes",
+				ModuleID:  "abcde",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 				DeletedAt: gorm.DeletedAt{},
-				MediaModules: []dto.MediaModule{
-					{
-						ID:       "abcde",
-						Url:      "tes",
-						ModuleID: "abcde",
-					},
-				},
-				Assignment: dto.Assignment{
-					ID:                  "abcde",
-					Title:               "tes",
-					ModuleID:            "abcde",
-					CustomerAssignments: []dto.CustomerAssignment{},
-				},
 			},
 			http.StatusOK,
-			"success get module by id",
+			"success get media module by id",
 		},
 		{
-			"fail get module by id",
+			"fail get media module by id",
 			"GET",
 			"abcde",
-			model.CustomerCourse{
-				ID: "abcde",
-			},
-			dto.ModuleAcc{},
+
+			dto.MediaModule{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.ModuleAcc{},
+			dto.MediaModule{},
 			http.StatusInternalServerError,
-			"fail get module by id",
+			"fail get media module by id",
 		},
 		{
-			"fail get module by id",
+			"fail get media module by id",
 			"GET",
 			"abcde",
-			model.CustomerCourse{
-				ID: "abcde",
-			},
-			dto.ModuleAcc{},
+
+			dto.MediaModule{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.ModuleAcc{},
+			dto.MediaModule{},
 			http.StatusInternalServerError,
-			"fail get module by id",
+			"fail get media module by id",
 		},
-		// {
-		// 	"fail bind data",
-		// 	"GET",
-		// 	"abcde",
-		// 	model.CustomerCourse{
-		// 		ID:         "abcde",
-		// 		CustomerID: "abcde",
-		// 		CourseID:   "abcde",
-		// 		NoModule:   1,
-		// 		IsFinish:   true,
-		// 		Status:     true,
-		// 		CreatedAt:  time.Now(),
-		// 		UpdatedAt:  time.Now(),
-		// 		DeletedAt:  gorm.DeletedAt{},
-		// 	},
-		// 	dto.ModuleAcc{},
-		// 	nil,
-		// 	false,
-		// 	dto.ModuleAcc{},
-		// 	http.StatusInternalServerError,
-		// 	"fail bind data",
-		// },
 	}
 
 	for _, v := range testCase {
-		mockCall := s.mock.On("GetModuleByID", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
+		mockCall := s.mock.On("GetMediaModuleByID", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 
 			// Create request
-			r := httptest.NewRequest(v.Method, "/module/"+v.ParamID, nil)
+			r := httptest.NewRequest(v.Method, "/media_module/get_by_id/"+v.ParamID, nil)
 			// Create response recorder
 			w := httptest.NewRecorder()
 
 			// handler echo
 			e := echo.New()
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/module/get_by_id/:id")
+			ctx.SetPath("/media_module/get_by_id/:id")
 			ctx.SetParamNames("id")
 			ctx.SetParamValues(v.ParamID)
 
-			err := s.moduleController.GetModuleByID(ctx)
+			err := s.mediaModuleController.GetMediaModuleByID(ctx)
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
 			var resp map[string]interface{}
@@ -354,96 +283,88 @@ func (s *suiteModule) TestGetModuleByID() {
 	}
 }
 
-func (s *suiteModule) TestGetAllModule() {
+func (s *suiteMediaModule) TestGetAllMediaModule() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		MockReturnBody     []dto.Module
+		MockReturnBody     []dto.MediaModule
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []dto.Module
+		ExpectedBody       []dto.MediaModule
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
-			"success get all module",
+			"success get all media module",
 			"GET",
 
-			[]dto.Module{
+			[]dto.MediaModule{
 				{
 					ID:        "abcde",
+					Url:       "tes",
+					ModuleID:  "abcde",
 					CreatedAt: time.Now(),
 					UpdatedAt: time.Now(),
 					DeletedAt: gorm.DeletedAt{},
-					Name:      "tes",
-					Content:   "tes",
-					CourseID:  "abcde",
-					NoModule:  1,
 				},
 				{
-					ID:        "abcdef",
+					ID:        "abcde",
+					Url:       "tes",
+					ModuleID:  "abcde",
 					CreatedAt: time.Now(),
 					UpdatedAt: time.Now(),
 					DeletedAt: gorm.DeletedAt{},
-					Name:      "tes 2",
-					Content:   "tes 2",
-					CourseID:  "abcdef",
-					NoModule:  2,
 				},
 			},
 			nil,
 			true,
-			[]dto.Module{
+			[]dto.MediaModule{
 				{
 					ID:        "abcde",
+					Url:       "tes",
+					ModuleID:  "abcde",
 					CreatedAt: time.Now(),
 					UpdatedAt: time.Now(),
 					DeletedAt: gorm.DeletedAt{},
-					Name:      "tes",
-					Content:   "tes",
-					CourseID:  "abcde",
-					NoModule:  1,
 				},
 				{
-					ID:        "abcdef",
+					ID:        "abcde",
+					Url:       "tes",
+					ModuleID:  "abcde",
 					CreatedAt: time.Now(),
 					UpdatedAt: time.Now(),
 					DeletedAt: gorm.DeletedAt{},
-					Name:      "tes 2",
-					Content:   "tes 2",
-					CourseID:  "abcdef",
-					NoModule:  2,
 				},
 			},
 			http.StatusOK,
-			"success get all module",
+			"success get all media module",
 		},
 		{
-			"fail get all module",
+			"fail get all media module",
 			"GET",
 
-			[]dto.Module{},
+			[]dto.MediaModule{},
 			errors.New("error"),
 			false,
-			[]dto.Module{},
+			[]dto.MediaModule{},
 			http.StatusInternalServerError,
-			"fail get all module",
+			"fail get all media module",
 		},
 	}
 	for _, v := range testCase {
-		mockCall := s.mock.On("GetAllModule").Return(v.MockReturnBody, v.MockReturnError)
+		mockCall := s.mock.On("GetAllMediaModule").Return(v.MockReturnBody, v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			// Create request
-			r := httptest.NewRequest(v.Method, "/module", nil)
+			r := httptest.NewRequest(v.Method, "/media_module/get_all", nil)
 			// Create response recorder
 			w := httptest.NewRecorder()
 
 			// handler echo
 			e := echo.New()
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/module")
+			ctx.SetPath("/media_module/get_all")
 
-			err := s.moduleController.GetAllModule(ctx)
+			err := s.mediaModuleController.GetAllMediaModule(ctx)
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
 
@@ -459,37 +380,36 @@ func (s *suiteModule) TestGetAllModule() {
 	}
 }
 
-func (s *suiteModule) TestUpdateModule() {
+func (s *suiteMediaModule) TestUpdateMediaModule() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		Body               dto.ModuleTransaction
+		Body               dto.MediaModuleTransaction
 		ParamID            string
 		MockReturnError    error
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
-			"success update module",
+			"success update media module",
 			"POST",
-			dto.ModuleTransaction{
+			dto.MediaModuleTransaction{
 				ID:       "abcde",
-				Name:     "tes",
-				Content:  "tes",
-				CourseID: "abcde",
-				NoModule: 1,
+				Url:      "tes",
+				ModuleID: "abcde",
 			},
 			"abcde",
 			nil,
 			http.StatusOK,
-			"success update module",
+			"success update media module",
 		},
 		{
 			"fail bind data",
 			"POST",
-			dto.ModuleTransaction{
-				Name:    "tes",
-				Content: "tes",
+			dto.MediaModuleTransaction{
+				ID:       "abcde",
+				Url:      "tes",
+				ModuleID: "abcde",
 			},
 			"abcde",
 			nil,
@@ -497,42 +417,38 @@ func (s *suiteModule) TestUpdateModule() {
 			"fail bind data",
 		},
 		{
-			"fail update module",
+			"fail update media module",
 			"POST",
-			dto.ModuleTransaction{
+			dto.MediaModuleTransaction{
 				ID:       "abcde",
-				Name:     "tes",
-				Content:  "tes",
-				CourseID: "abcde",
-				NoModule: 1,
+				Url:      "tes",
+				ModuleID: "abcde",
 			},
 			"abcde",
 			gorm.ErrRecordNotFound,
 			http.StatusInternalServerError,
-			"fail update module",
+			"fail update media module",
 		},
 		{
-			"fail update module",
+			"fail update media module",
 			"POST",
-			dto.ModuleTransaction{
+			dto.MediaModuleTransaction{
 				ID:       "abcde",
-				Name:     "tes",
-				Content:  "tes",
-				CourseID: "abcde",
-				NoModule: 1,
+				Url:      "tes",
+				ModuleID: "abcde",
 			},
 			"abcde",
-			errors.New("fail update module"),
+			errors.New("fail update media module"),
 			http.StatusInternalServerError,
-			"fail update module",
+			"fail update media module",
 		},
 	}
 	for i, v := range testCase {
-		mockCall := s.mock.On("UpdateModule", v.Body).Return(v.MockReturnError)
+		mockCall := s.mock.On("UpdateMediaModule", v.Body).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			res, _ := json.Marshal(v.Body)
 			// Create request
-			r := httptest.NewRequest(v.Method, "/module/update/"+v.ParamID, bytes.NewBuffer(res))
+			r := httptest.NewRequest(v.Method, "/media_module/update/"+v.ParamID, bytes.NewBuffer(res))
 			if i != 1 {
 				r.Header.Set("Content-Type", "application/json")
 			}
@@ -545,11 +461,11 @@ func (s *suiteModule) TestUpdateModule() {
 				Validator: validator.New(),
 			}
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/module/update/:id")
+			ctx.SetPath("/media_module/update/:id")
 			ctx.SetParamNames("id")
 			ctx.SetParamValues(v.ParamID)
 
-			err := s.moduleController.UpdateModule(ctx)
+			err := s.mediaModuleController.UpdateMediaModule(ctx)
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
 
@@ -564,6 +480,6 @@ func (s *suiteModule) TestUpdateModule() {
 	}
 }
 
-func TestSuiteModule(t *testing.T) {
-	suite.Run(t, new(suiteModule))
+func TestSuiteMediaModule(t *testing.T) {
+	suite.Run(t, new(suiteMediaModule))
 }

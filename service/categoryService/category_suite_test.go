@@ -83,7 +83,7 @@ func (s *suiteCategory) TestDeleteCategory() {
 	testCase := []struct {
 		Name            string
 		User            dto.User
-		ParamID            string
+		ParamID         string
 		MockReturnError error
 		HasReturnError  bool
 		ExpectedError   error
@@ -131,7 +131,7 @@ func (s *suiteCategory) TestDeleteCategory() {
 func (s *suiteCategory) TestGetAllCategory() {
 	testCase := []struct {
 		Name            string
-		User       dto.User
+		User            dto.User
 		MockReturnBody  []dto.CategoryTransaction
 		MockReturnError error
 		HasReturnBody   bool
@@ -340,7 +340,7 @@ func (s *suiteCategory) TestUpdateCategory() {
 	testCase := []struct {
 		Name            string
 		User            dto.User
-		ParamID            string
+		ParamID         string
 		Body            dto.CategoryTransaction
 		MockReturnError error
 		HasReturnError  bool

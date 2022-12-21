@@ -56,8 +56,8 @@ func (mmc *MediaModuleController) DeleteMediaModule(c echo.Context) error {
 	// Call service to delete media module
 	err := mmc.MediaModuleService.DeleteMediaModule(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail delete media module",
 				"error":   err.Error(),
 			})
@@ -100,8 +100,8 @@ func (mmc *MediaModuleController) GetMediaModuleByID(c echo.Context) error {
 	// Call service to get module by id
 	mediaModule, err := mmc.MediaModuleService.GetMediaModuleByID(id)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail get media module by id",
 				"error":   err.Error(),
 			})
@@ -138,8 +138,8 @@ func (mmc *MediaModuleController) UpdateMediaModule(c echo.Context) error {
 	// Call service to update module
 	err = mmc.MediaModuleService.UpdateMediaModule(mediaModule)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail update media module",
 				"error":   err.Error(),
 			})
