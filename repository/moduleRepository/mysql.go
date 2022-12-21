@@ -81,14 +81,14 @@ func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 }
 
 // GetModuleByID implements ModuleRepository
-func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleAcc, error) {
+func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleCourseAcc, error) {
 	var moduleModel model.Module
 	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Where("id = ?", id).Find(&moduleModel)
 	if err.Error != nil {
-		return dto.ModuleAcc{}, err.Error
+		return dto.ModuleCourseAcc{}, err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return dto.ModuleAcc{}, gorm.ErrRecordNotFound
+		return dto.ModuleCourseAcc{}, gorm.ErrRecordNotFound
 	}
 
 	var CustomerCourses model.CustomerCourse
@@ -96,23 +96,23 @@ func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleAcc,
 	mr.db.Where("course_id=?", moduleModel.CourseID).Where("customer_id=?", customerID).Find(&CustomerCourses)
 
 	if !CustomerCourses.Status {
-		return dto.ModuleAcc{}, gorm.ErrRecordNotFound
+		return dto.ModuleCourseAcc{}, gorm.ErrRecordNotFound
 	}
 
 	if moduleModel.NoModule > int(CustomerCourses.NoModule) {
-		return dto.ModuleAcc{}, gorm.ErrRecordNotFound
+		return dto.ModuleCourseAcc{}, gorm.ErrRecordNotFound
 	}
 
 	// copy data from model to dto
-	var Module dto.ModuleAcc
+	var Module dto.ModuleCourseAcc
 	errCopy := copier.Copy(&Module, &moduleModel)
 	if errCopy != nil {
-		return dto.ModuleAcc{}, errCopy
+		return dto.ModuleCourseAcc{}, errCopy
 	}
 	return Module, nil
 }
 
-func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]dto.Module, error) {
+func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error) {
 
 	var moduleModels []model.Module
 	err := mr.db.Model(&model.Module{}).Where("course_id = ?", courseID).Find(&moduleModels).Error
@@ -127,10 +127,14 @@ func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]
 	if !CustomerCourses.Status {
 		return nil, err
 	}
+
 	// copy data from model to dto
-	var modules []dto.Module
+	var modules []dto.ModuleCourse
 	err = copier.Copy(&modules, &moduleModels)
 	if err != nil {
+		return nil, err
+	}
+	if len(modules) == 0 {
 		return nil, err
 	}
 	return modules, nil
