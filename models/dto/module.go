@@ -14,16 +14,26 @@ type Module struct {
 	Name      string `json:"name"`
 	Content   string `json:"content"`
 	CourseID  string `json:"course_id"`
-	NoModule  int    `json:"no_module"`
+	Course    struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Objective   string `json:"objective"`
+	} `json:"course"`
+	NoModule int `json:"no_module"`
 }
 type ModuleAcc struct {
-	ID           string `json:"id"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt
-	Name         string `json:"name"`
-	Content      string `json:"content"`
-	CourseID     string `json:"course_id"`
+	ID        string `json:"id"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt
+	Name      string `json:"name"`
+	Content   string `json:"content"`
+	CourseID  string `json:"course_id"`
+	Course    struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Objective   string `json:"objective"`
+	} `json:"course"`
 	MediaModules []MediaModule
 	Assignment   Assignment
 	NoModule     int `json:"no_module"`

@@ -50,6 +50,7 @@ func (s *suiteModule) TestCreateModule() {
 				Content:  "tes",
 				CourseID: "tes",
 				NoModule: 1,
+				Url:      "tes",
 			},
 			nil,
 			http.StatusOK,
@@ -63,6 +64,7 @@ func (s *suiteModule) TestCreateModule() {
 				Content:  "tes",
 				CourseID: "tes",
 				NoModule: 1,
+				Url:      "tes",
 			},
 			nil,
 			http.StatusInternalServerError,
@@ -87,6 +89,7 @@ func (s *suiteModule) TestCreateModule() {
 				Content:  "tes",
 				CourseID: "tes",
 				NoModule: 1,
+				Url:      "tes",
 			},
 
 			errors.New("fail create module"),

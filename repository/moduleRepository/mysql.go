@@ -67,7 +67,7 @@ func (mr *moduleRepository) DeleteModule(id string) error {
 func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 	var moduleModels []model.Module
 	// get data sub category from database by user
-	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Assignment").Find(&moduleModels).Error
+	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Find(&moduleModels).Error
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 // GetModuleByID implements ModuleRepository
 func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleAcc, error) {
 	var moduleModel model.Module
-	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Assignment").Where("id = ?", id).Find(&moduleModel)
+	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Where("id = ?", id).Find(&moduleModel)
 	if err.Error != nil {
 		return dto.ModuleAcc{}, err.Error
 	}
