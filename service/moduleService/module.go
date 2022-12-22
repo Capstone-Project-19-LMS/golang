@@ -9,7 +9,7 @@ import (
 type ModuleService interface {
 	CreateModule(dto.ModuleTransaction) error
 	DeleteModule(id string) error
-	GetAllModule() ([]dto.Module, error)
+	GetAllModule() ([]dto.ModuleCourse, error)
 	GetModuleByID(id, customerID string) (dto.ModuleCourseAcc, error)
 	GetModuleByIDifInstructor(id string) (dto.ModuleCourseAcc, error)
 	GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error)
@@ -45,7 +45,7 @@ func (ms *moduleService) DeleteModule(id string) error {
 }
 
 // GetAllModule implements ModuleService
-func (ms *moduleService) GetAllModule() ([]dto.Module, error) {
+func (ms *moduleService) GetAllModule() ([]dto.ModuleCourse, error) {
 	modules, err := ms.moduleRepo.GetAllModule()
 	if err != nil {
 		return nil, err

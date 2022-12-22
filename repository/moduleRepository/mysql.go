@@ -64,7 +64,7 @@ func (mr *moduleRepository) DeleteModule(id string) error {
 }
 
 // GetAllModule implements ModuleRepository
-func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
+func (mr *moduleRepository) GetAllModule() ([]dto.ModuleCourse, error) {
 	var moduleModels []model.Module
 	// get data sub category from database by user
 	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Find(&moduleModels).Error
@@ -72,7 +72,7 @@ func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 		return nil, err
 	}
 	// copy data from model to dto
-	var modules []dto.Module
+	var modules []dto.ModuleCourse
 	err = copier.Copy(&modules, &moduleModels)
 	if err != nil {
 		return nil, err
