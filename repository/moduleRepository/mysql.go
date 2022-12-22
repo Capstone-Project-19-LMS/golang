@@ -80,6 +80,25 @@ func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 	return modules, nil
 }
 
+func (mr *moduleRepository) GetModuleByIDifInstructor(id string) (dto.ModuleCourseAcc, error) {
+	var moduleModel model.Module
+	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Where("id = ?", id).Find(&moduleModel)
+
+	if err.Error != nil {
+		return dto.ModuleCourseAcc{}, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return dto.ModuleCourseAcc{}, gorm.ErrRecordNotFound
+	}
+
+	var Module dto.ModuleCourseAcc
+	errCopy := copier.Copy(&Module, &moduleModel)
+	if errCopy != nil {
+		return dto.ModuleCourseAcc{}, errCopy
+	}
+	return Module, nil
+}
+
 // GetModuleByID implements ModuleRepository
 func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleCourseAcc, error) {
 	var moduleModel model.Module

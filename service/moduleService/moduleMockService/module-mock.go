@@ -27,6 +27,11 @@ func (c *ModuleMock) GetModuleByID(id, customerID string) (dto.ModuleCourseAcc, 
 
 	return args.Get(0).(dto.ModuleCourseAcc), args.Error(1)
 }
+func (c *ModuleMock) GetModuleByIDifInstructor(id string) (dto.ModuleCourseAcc, error) {
+	args := c.Called(id)
+
+	return args.Get(0).(dto.ModuleCourseAcc), args.Error(1)
+}
 
 func (c *ModuleMock) GetAllModule() ([]dto.Module, error) {
 	args := c.Called()

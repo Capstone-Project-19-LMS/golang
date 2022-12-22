@@ -127,6 +127,32 @@ func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 		"module":  module,
 	})
 }
+func (mc *ModuleController) GetModuleByIDifInstructor(c echo.Context) error {
+	// Get id from url
+	id := c.Param("id")
+
+	// Call service to get module by id
+	module, err := mc.ModuleService.GetModuleByIDifInstructor(id)
+
+	if err != nil {
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail get module by id",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get module by id",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get module by id",
+		"module":  module,
+	})
+}
 
 // GetModuleByCourseID is a function to get module by id
 func (mc *ModuleController) GetModuleByCourseID(c echo.Context) error {
