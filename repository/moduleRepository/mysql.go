@@ -131,6 +131,23 @@ func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleCour
 	return Module, nil
 }
 
+func (mr *moduleRepository) GetModuleByCourseIDifInstructror(courseID string) ([]dto.ModuleCourse, error) {
+	var moduleModels []model.Module
+	err := mr.db.Model(&model.Module{}).Where("course_id = ?", courseID).Preload("Course").Find(&moduleModels).Error
+	if err != nil {
+		return nil, err
+	}
+	var modules []dto.ModuleCourse
+	err = copier.Copy(&modules, &moduleModels)
+	if err != nil {
+		return nil, err
+	}
+	if len(modules) == 0 {
+		return nil, err
+	}
+	return modules, nil
+}
+
 func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error) {
 
 	var moduleModels []model.Module
