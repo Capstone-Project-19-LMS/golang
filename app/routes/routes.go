@@ -233,7 +233,6 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.DELETE("/module/delete/:id", moduleController.DeleteModule)
 	privateInstructor.GET("/module/get_all", moduleController.GetAllModule)
 	privateInstructor.GET("/module/get_by_id/:id", moduleController.GetModuleByIDifInstructor)
-
 	privateInstructor.PUT("/module/update/:id", moduleController.UpdateModule)
 	//costumer access
 	privateCostumer.GET("/module/get_all", moduleController.GetAllModule)
