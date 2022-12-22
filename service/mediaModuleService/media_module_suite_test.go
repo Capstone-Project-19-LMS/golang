@@ -5,7 +5,6 @@ import (
 	"golang/models/dto"
 	mediamodulemockrepository "golang/repository/mediaModuleRepository/mediaModuleMockRepository"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -146,9 +145,6 @@ func (s *suiteMediaModule) TestGetMediaModuleByID() {
 			"abcde",
 			dto.MediaModule{
 				ID:        "abcde",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 				Url:       "tes",
 				ModuleID:  "abcde",
 			},
@@ -156,9 +152,6 @@ func (s *suiteMediaModule) TestGetMediaModuleByID() {
 			true,
 			dto.MediaModule{
 				ID:        "abcde",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 				Url:       "tes",
 				ModuleID:  "abcde",
 			},
@@ -204,7 +197,7 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 		ExpectedError   error
 	}{
 		{
-			"success get all assignment",
+			"success get all media module",
 			dto.User{
 				ID:   "abcde",
 				Role: "customer",
@@ -212,17 +205,11 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 			[]dto.MediaModule{
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes",
 					ModuleID:  "abcde",
 				},
 				{
 					ID:        "abcde2",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes2",
 					ModuleID:  "abcde2",
 				},
@@ -232,17 +219,11 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 			[]dto.MediaModule{
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes",
 					ModuleID:  "abcde",
 				},
 				{
 					ID:        "abcde2",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes2",
 					ModuleID:  "abcde2",
 				},
@@ -250,7 +231,7 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 			nil,
 		},
 		{
-			"failed get all assignment",
+			"failed get all media module",
 			dto.User{
 				ID:   "abcde",
 				Role: "customer",
@@ -291,7 +272,7 @@ func (s *suiteMediaModule) TestUpdateMediaModule() {
 		ExpectedError   error
 	}{
 		{
-			"success update assignment",
+			"success update media module",
 			dto.User{
 				ID:   "1",
 				Role: "user",
@@ -307,7 +288,7 @@ func (s *suiteMediaModule) TestUpdateMediaModule() {
 			nil,
 		},
 		{
-			"fail update assignment",
+			"fail update media module",
 			dto.User{
 				ID:   "1",
 				Role: "user",

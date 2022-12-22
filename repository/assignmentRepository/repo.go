@@ -8,4 +8,5 @@ type AssignmentRepository interface {
 	GetAllAssignment() ([]dto.Assignment, error)
 	GetAssignmentByID(id string) (dto.Assignment, error)
 	UpdateAssignment(dto.AssignmentTransaction) error
+	GetAssignmentByCourse(id string) ([]dto.AssignmentCourse, error)
 }
