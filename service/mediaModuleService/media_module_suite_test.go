@@ -204,7 +204,7 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 		ExpectedError   error
 	}{
 		{
-			"success get all assignment",
+			"success get all media module",
 			dto.User{
 				ID:   "abcde",
 				Role: "customer",
@@ -250,7 +250,7 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 			nil,
 		},
 		{
-			"failed get all assignment",
+			"failed get all media module",
 			dto.User{
 				ID:   "abcde",
 				Role: "customer",
@@ -291,7 +291,7 @@ func (s *suiteMediaModule) TestUpdateMediaModule() {
 		ExpectedError   error
 	}{
 		{
-			"success update assignment",
+			"success update media module",
 			dto.User{
 				ID:   "1",
 				Role: "user",
@@ -307,7 +307,7 @@ func (s *suiteMediaModule) TestUpdateMediaModule() {
 			nil,
 		},
 		{
-			"fail update assignment",
+			"fail update media module",
 			dto.User{
 				ID:   "1",
 				Role: "user",
