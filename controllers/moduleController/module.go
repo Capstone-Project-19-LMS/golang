@@ -201,14 +201,14 @@ func (mc *ModuleController) GetModuleByCourseIDifInstructror(c echo.Context) err
 	modules, err := mc.ModuleService.GetModuleByCourseIDifInstructror(id)
 
 	if len(modules) == 0 {
-		return c.JSON(http.StatusNotFound, echo.Map{
+		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get module by course id",
 		})
 	}
 
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"message": "fail get module by course id",
 				"error":   err.Error(),
 			})
@@ -221,7 +221,7 @@ func (mc *ModuleController) GetModuleByCourseIDifInstructror(c echo.Context) err
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success get module by id",
+		"message": "success get module by course id",
 		"modules": modules,
 	})
 }

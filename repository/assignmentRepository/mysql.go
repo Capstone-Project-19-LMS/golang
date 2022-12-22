@@ -1,6 +1,7 @@
 package assignmentrepository
 
 import (
+	"fmt"
 	"golang/models/dto"
 	"golang/models/model"
 
@@ -95,6 +96,30 @@ func (ar *assignmentRepository) UpdateAssignment(assignment dto.AssignmentTransa
 	}
 
 	return nil
+}
+
+func (ar *assignmentRepository) GetAssignmentByCourse(id string) ([]dto.AssignmentCourse, error) {
+	var course model.Course
+	var assignmentModel []model.Assignment
+	var assignment []dto.AssignmentCourse
+	err := ar.db.Where("id=?", id).Preload("Modules.Assignment").Find(&course)
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+	fmt.Println(len(course.Modules))
+	for _, dm := range course.Modules {
+
+		assignmentModel = append(assignmentModel, dm.Assignment)
+	}
+	errCopy := copier.Copy(&assignment, assignmentModel)
+	if errCopy != nil {
+		return nil, errCopy
+	}
+	return assignment, nil
+
 }
 
 func NewAssignmentRepository(db *gorm.DB) AssignmentRepository {
