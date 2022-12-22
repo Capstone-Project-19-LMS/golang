@@ -220,6 +220,171 @@ func (s *suiteModule) TestGetModuleByID() {
 		mockCall.Unset()
 	}
 }
+func (s *suiteModule) TestGetModuleByCourseIDifInstructror() {
+	testCase := []struct {
+		Name            string
+		ParamID         string
+		MockReturnBody  []dto.ModuleCourse
+		MockReturnError error
+		HasReturnBody   bool
+		ExpectedBody    []dto.ModuleCourse
+		ExpectedError   error
+	}{
+		{
+			"success get module by id ",
+			"abcde",
+			[]dto.ModuleCourse{
+				{
+					ID:       "abcde",
+					Name:     "tes",
+					Content:  "tes",
+					CourseID: "abcde",
+					Course: struct {
+						Name        string "json:\"name\""
+						Description string "json:\"description\""
+						Objective   string "json:\"objective\""
+					}{},
+					MediaModules: []dto.MediaModule{
+						{
+							ID:       "abcde",
+							Url:      "tes",
+							ModuleID: "abcde",
+						},
+					},
+				},
+			},
+			nil,
+			true,
+			[]dto.ModuleCourse{
+				{
+					ID:       "abcde",
+					Name:     "tes",
+					Content:  "tes",
+					CourseID: "abcde",
+					Course: struct {
+						Name        string "json:\"name\""
+						Description string "json:\"description\""
+						Objective   string "json:\"objective\""
+					}{},
+					MediaModules: []dto.MediaModule{
+						{
+							ID:       "abcde",
+							Url:      "tes",
+							ModuleID: "abcde",
+						},
+					},
+				},
+			},
+			nil,
+		},
+		{
+			"failed get module by course id",
+			"abcde",
+			[]dto.ModuleCourse{},
+			gorm.ErrRecordNotFound,
+			false,
+			nil,
+			gorm.ErrRecordNotFound,
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetModuleByCourseIDifInstructror", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			module, err := s.moduleService.GetModuleByCourseIDifInstructror(v.ParamID)
+			if v.HasReturnBody {
+				s.NoError(err)
+				s.Equal(v.ExpectedBody, module)
+			} else {
+				s.Error(err)
+				s.EqualError(err, v.ExpectedError.Error())
+				s.Equal(v.ExpectedBody, module)
+			}
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+func (s *suiteModule) TestGetModuleByIDifInstructor() {
+	testCase := []struct {
+		Name    string
+		ParamID string
+
+		MockReturnBody  dto.ModuleCourseAcc
+		MockReturnError error
+		HasReturnBody   bool
+		ExpectedBody    dto.ModuleCourseAcc
+		ExpectedError   error
+	}{
+		{
+			"success get module by course id ",
+			"abcde",
+			dto.ModuleCourseAcc{
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
+				Course: struct {
+					Name        string "json:\"name\""
+					Description string "json:\"description\""
+					Objective   string "json:\"objective\""
+				}{},
+				MediaModules: []dto.MediaModule{
+					{
+						ID:       "abcde",
+						Url:      "tes",
+						ModuleID: "abcde",
+					},
+				},
+			},
+			nil,
+			true,
+			dto.ModuleCourseAcc{
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
+				Course: struct {
+					Name        string "json:\"name\""
+					Description string "json:\"description\""
+					Objective   string "json:\"objective\""
+				}{},
+				MediaModules: []dto.MediaModule{
+					{
+						ID:       "abcde",
+						Url:      "tes",
+						ModuleID: "abcde",
+					},
+				},
+			},
+			nil,
+		},
+		{
+			"failed get module by course id",
+			"abcde",
+			dto.ModuleCourseAcc{},
+			gorm.ErrRecordNotFound,
+			false,
+			dto.ModuleCourseAcc{},
+			gorm.ErrRecordNotFound,
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetModuleByIDifInstructor", v.ParamID).Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			module, err := s.moduleService.GetModuleByIDifInstructor(v.ParamID)
+			if v.HasReturnBody {
+				s.NoError(err)
+				s.Equal(v.ExpectedBody, module)
+			} else {
+				s.Error(err)
+				s.EqualError(err, v.ExpectedError.Error())
+				s.Equal(v.ExpectedBody, module)
+			}
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
 
 func (s *suiteModule) TestGetAllModule() {
 	testCase := []struct {
