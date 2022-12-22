@@ -677,10 +677,10 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 		ParamID                          string
 		MockReturnGetCourse              dto.Course
 		MockReturnGetCourseError         error
-		MockReturnGetCourseEnrolled      []dto.CustomerEnroll
+		MockReturnGetCourseEnrolled      []dto.CustomerCourseEnroll
 		MockReturnGetCourseEnrolledError error
 		HasReturnBody                    bool
-		ExpectedBody                     []dto.CustomerEnroll
+		ExpectedBody                     []dto.CustomerCourseEnroll
 		ExpectedError                    error
 	}{
 		{
@@ -739,7 +739,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 				},
 			},
 			nil,
-			[]dto.CustomerEnroll{
+			[]dto.CustomerCourseEnroll{
 				{
 					ID:           "test1",
 					Name:         "test1",
@@ -757,7 +757,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 			},
 			nil,
 			true,
-			[]dto.CustomerEnroll{
+			[]dto.CustomerCourseEnroll{
 				{
 					ID:           "test1",
 					Name:         "test1",
@@ -784,7 +784,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 			"abcde",
 			dto.Course{},
 			gorm.ErrRecordNotFound,
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			nil,
 			false,
 			nil,
@@ -799,7 +799,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 			"abcde",
 			dto.Course{},
 			errors.New("fail get course"),
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			nil,
 			false,
 			nil,
@@ -861,7 +861,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 				},
 			},
 			nil,
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			nil,
 			false,
 			nil,
@@ -923,7 +923,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 				},
 			},
 			nil,
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			errors.New("fail get customer enroll"),
 			false,
 			nil,
