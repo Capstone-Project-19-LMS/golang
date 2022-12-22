@@ -11,7 +11,9 @@ type ModuleService interface {
 	DeleteModule(id string) error
 	GetAllModule() ([]dto.Module, error)
 	GetModuleByID(id, customerID string) (dto.ModuleCourseAcc, error)
+	GetModuleByIDifInstructor(id string) (dto.ModuleCourseAcc, error)
 	GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error)
+	GetModuleByCourseIDifInstructror(courseID string) ([]dto.ModuleCourse, error)
 	UpdateModule(dto.ModuleTransaction) error
 }
 
@@ -59,9 +61,23 @@ func (ms *moduleService) GetModuleByID(id, customerID string) (dto.ModuleCourseA
 	}
 	return module, nil
 }
+func (ms *moduleService) GetModuleByIDifInstructor(id string) (dto.ModuleCourseAcc, error) {
+	module, err := ms.moduleRepo.GetModuleByIDifInstructor(id)
+	if err != nil {
+		return dto.ModuleCourseAcc{}, err
+	}
+	return module, nil
+}
 
 func (ms *moduleService) GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error) {
 	modules, err := ms.moduleRepo.GetModuleByCourseID(courseID, customerID)
+	if err != nil {
+		return nil, err
+	}
+	return modules, nil
+}
+func (ms *moduleService) GetModuleByCourseIDifInstructror(courseID string) ([]dto.ModuleCourse, error) {
+	modules, err := ms.moduleRepo.GetModuleByCourseIDifInstructror(courseID)
 	if err != nil {
 		return nil, err
 	}
