@@ -5,7 +5,6 @@ import (
 	"golang/models/dto"
 	mediamodulemockrepository "golang/repository/mediaModuleRepository/mediaModuleMockRepository"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -146,9 +145,6 @@ func (s *suiteMediaModule) TestGetMediaModuleByID() {
 			"abcde",
 			dto.MediaModule{
 				ID:        "abcde",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 				Url:       "tes",
 				ModuleID:  "abcde",
 			},
@@ -156,9 +152,6 @@ func (s *suiteMediaModule) TestGetMediaModuleByID() {
 			true,
 			dto.MediaModule{
 				ID:        "abcde",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 				Url:       "tes",
 				ModuleID:  "abcde",
 			},
@@ -212,17 +205,11 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 			[]dto.MediaModule{
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes",
 					ModuleID:  "abcde",
 				},
 				{
 					ID:        "abcde2",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes2",
 					ModuleID:  "abcde2",
 				},
@@ -232,17 +219,11 @@ func (s *suiteMediaModule) TestGetAllMediaModule() {
 			[]dto.MediaModule{
 				{
 					ID:        "abcde",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes",
 					ModuleID:  "abcde",
 				},
 				{
 					ID:        "abcde2",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-					DeletedAt: gorm.DeletedAt{},
 					Url:       "tes2",
 					ModuleID:  "abcde2",
 				},
