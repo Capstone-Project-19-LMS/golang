@@ -232,7 +232,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.POST("/module/create", moduleController.CreateModule)
 	privateInstructor.DELETE("/module/delete/:id", moduleController.DeleteModule)
 	privateInstructor.GET("/module/get_all", moduleController.GetAllModule)
-	privateInstructor.GET("/module/get_by_id/:id", moduleController.GetModuleByID)
+	privateInstructor.GET("/module/get_by_id/:id", moduleController.GetModuleByIDifInstructor)
 	privateInstructor.GET("/module/get_by_course_id", moduleController.GetModuleByCourseID)
 	privateInstructor.PUT("/module/update/:id", moduleController.UpdateModule)
 	//costumer access

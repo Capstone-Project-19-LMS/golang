@@ -153,10 +153,10 @@ func (s *suiteModule) TestGetModuleByID() {
 			"abcde",
 			"abcde",
 			dto.ModuleCourseAcc{
-				ID:        "abcde",
-				Name:      "tes",
-				Content:   "tes",
-				CourseID:  "abcde",
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
 				Course: struct {
 					Name        string "json:\"name\""
 					Description string "json:\"description\""
@@ -164,19 +164,19 @@ func (s *suiteModule) TestGetModuleByID() {
 				}{},
 				MediaModules: []dto.MediaModule{
 					{
-						ID:        "abcde",
-						Url:       "tes",
-						ModuleID:  "abcde",
+						ID:       "abcde",
+						Url:      "tes",
+						ModuleID: "abcde",
 					},
 				},
 			},
 			nil,
 			true,
 			dto.ModuleCourseAcc{
-				ID:        "abcde",
-				Name:      "tes",
-				Content:   "tes",
-				CourseID:  "abcde",
+				ID:       "abcde",
+				Name:     "tes",
+				Content:  "tes",
+				CourseID: "abcde",
 				Course: struct {
 					Name        string "json:\"name\""
 					Description string "json:\"description\""
@@ -184,9 +184,9 @@ func (s *suiteModule) TestGetModuleByID() {
 				}{},
 				MediaModules: []dto.MediaModule{
 					{
-						ID:        "abcde",
-						Url:       "tes",
-						ModuleID:  "abcde",
+						ID:       "abcde",
+						Url:      "tes",
+						ModuleID: "abcde",
 					},
 				},
 			},
@@ -239,32 +239,32 @@ func (s *suiteModule) TestGetAllModule() {
 			},
 			[]dto.Module{
 				{
-					ID:        "abcde",
-					Name:      "tes",
-					Content:   "tes",
-					CourseID:  "abcde",
+					ID:       "abcde",
+					Name:     "tes",
+					Content:  "tes",
+					CourseID: "abcde",
 				},
 				{
-					ID:        "abcde",
-					Name:      "tes",
-					Content:   "tes",
-					CourseID:  "abcde",
+					ID:       "abcde",
+					Name:     "tes",
+					Content:  "tes",
+					CourseID: "abcde",
 				},
 			},
 			nil,
 			true,
 			[]dto.Module{
 				{
-					ID:        "abcde",
-					Name:      "tes",
-					Content:   "tes",
-					CourseID:  "abcde",
+					ID:       "abcde",
+					Name:     "tes",
+					Content:  "tes",
+					CourseID: "abcde",
 				},
 				{
-					ID:        "abcde",
-					Name:      "tes",
-					Content:   "tes",
-					CourseID:  "abcde",
+					ID:       "abcde",
+					Name:     "tes",
+					Content:  "tes",
+					CourseID: "abcde",
 				},
 			},
 			nil,
