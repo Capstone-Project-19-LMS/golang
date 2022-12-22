@@ -12,6 +12,7 @@ type AssignmentService interface {
 	GetAllAssignment() ([]dto.Assignment, error)
 	GetAssignmentByID(id string) (dto.Assignment, error)
 	UpdateAssignment(dto.AssignmentTransaction) error
+	GetAssignmentByCourse(id string) ([]dto.AssignmentCourse, error)
 }
 
 type assignmentService struct {
@@ -55,6 +56,13 @@ func (as *assignmentService) GetAssignmentByID(id string) (dto.Assignment, error
 		return dto.Assignment{}, err
 	}
 	return assignment, nil
+}
+func (as *assignmentService) GetAssignmentByCourse(id string) ([]dto.AssignmentCourse, error) {
+	assignments, err := as.assignmentRepo.GetAssignmentByCourse(id)
+	if err != nil {
+		return []dto.AssignmentCourse{}, err
+	}
+	return assignments, nil
 }
 
 // UpdateModule implements ModuleService
