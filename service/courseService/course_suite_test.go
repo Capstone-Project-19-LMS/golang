@@ -475,7 +475,7 @@ func (s *suiteCourse) TestGetCourseByID() {
 						Rating:     5,
 					},
 				},
-				Modules: []dto.ModuleTransaction{
+				Modules: []dto.Module{
 					{
 						ID:       "efgh",
 						Name:     "test",
@@ -568,7 +568,7 @@ func (s *suiteCourse) TestGetCourseByID() {
 						Rating:     5,
 					},
 				},
-				Modules: []dto.ModuleTransaction{
+				Modules: []dto.Module{
 					{
 						ID:       "efgh",
 						Name:     "test",

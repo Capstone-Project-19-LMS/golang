@@ -128,7 +128,7 @@ type GetCourseByID struct {
 	ProgressPercentage float64             `json:"progress_percentage"`
 	IsFinish           bool             `json:"is_finish"`
 	Ratings            []Rating            `json:"ratings" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
-	Modules            []ModuleTransaction `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
+	Modules            []Module `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 }
 
 type GetCourseInstructor struct {
@@ -174,7 +174,7 @@ type GetCourseInstructorByID struct {
 	Category        Category            `json:"category" gorm:"references:CategoryID"`
 	Rating          float64             `json:"rating"`
 	NumberOfModules int                 `json:"number_of_modules"`
-	Modules         []ModuleTransaction `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
+	Modules         []Module `json:"modules" gorm:"foreignKey:CourseID"` // foreignKey:CourseID is not needed
 }
 
 type CourseCustomerEnroll struct {
