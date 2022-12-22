@@ -38,6 +38,11 @@ func (c *ModuleMock) GetAllModule() ([]dto.Module, error) {
 
 	return args.Get(0).([]dto.Module), args.Error(1)
 }
+func (c *ModuleMock) GetModuleByCourseIDifInstructror(courseID string) ([]dto.ModuleCourse, error) {
+	args := c.Called(courseID)
+
+	return args.Get(0).([]dto.ModuleCourse), args.Error(1)
+}
 func (c *ModuleMock) GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error) {
 	args := c.Called(courseID, customerID)
 
