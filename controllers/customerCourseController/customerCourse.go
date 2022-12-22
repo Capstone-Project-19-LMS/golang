@@ -128,21 +128,13 @@ func (ccc *CustomerCourseController) TakeCourse(c echo.Context) error {
 func (ccc *CustomerCourseController) UpdateEnrollmentStatus(c echo.Context) error {
 	var customerCourse dto.CustomerCourseTransaction
 	// get course id from url
-	courseID := c.Param("courseId")
-	customerCourse.CourseID = courseID
+	id := c.Param("id")
+	customerCourse.ID = id
 
 	// get bind data from request body
 	if err := c.Bind(&customerCourse); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "fail bind request body",
-			"error":   err.Error(),
-		})
-	}
-
-	// validate request body
-	if err := c.Validate(customerCourse); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "There is an empty field",
 			"error":   err.Error(),
 		})
 	}

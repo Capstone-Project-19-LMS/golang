@@ -22,6 +22,12 @@ func (c *CustomerCourseMock) GetCustomerCourse(courseID, customerID string) (dto
 	return args.Get(0).(dto.CustomerCourse), args.Error(1)
 }
 
+func (c *CustomerCourseMock) GetCustomerCourseByID(id string) (dto.CustomerCourse, error) {
+	args := c.Called(id)
+
+	return args.Get(0).(dto.CustomerCourse), args.Error(1)
+}
+
 func (c *CustomerCourseMock) GetHistoryCourseByCustomerID(customerID string) ([]dto.Course, error) {
 	args := c.Called(customerID)
 
