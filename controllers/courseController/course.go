@@ -113,10 +113,19 @@ func (cc *CourseController) GetAllCourse(c echo.Context) error {
 				"error":   err.Error(),
 			})
 		}
+		var amountModule int
+		var amountCustomer int
+		for _, course := range coursesInstructor {
+			amountModule += course.NumberOfModules
+			amountCustomer += course.AmountCustomer
+		}
 		// Return response if success
 		return c.JSON(http.StatusOK, echo.Map{
 			"message":   "success get all courses",
 			"courses": coursesInstructor,
+			"amount_course":len(coursesInstructor),
+			"amount_materi" : amountModule,
+			"amount_customer_course" : amountCustomer,
 		})
 	}
 
@@ -162,7 +171,7 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 		// Return response if success
 		return c.JSON(http.StatusOK, echo.Map{
 			"message":   "success get course by id",
-			"courses": courseInstructor,
+			"course": courseInstructor,
 		})
 	}
 
@@ -182,7 +191,7 @@ func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	user := helper.GetUser(c)
 
 	// get course by id from service
-	course, err := cc.CourseService.GetCourseEnrollByID(id, user)
+	customerEnroll, err := cc.CourseService.GetCourseEnrollByID(id, user)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -199,7 +208,7 @@ func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success get course with customer enrolled",
-		"customer_enroll": course,
+		"customer_enroll": customerEnroll,
 	})
 }
 

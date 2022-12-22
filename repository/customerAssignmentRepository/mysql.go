@@ -2,7 +2,6 @@ package customerassignmentrepository
 
 import (
 	"errors"
-	"fmt"
 	"golang/constant/constantError"
 	"golang/models/dto"
 	"golang/models/model"
@@ -55,14 +54,18 @@ func (ctr *customerAssignmentRepository) CreateCustomerAssignment(customerAssign
 	var getAllModule []model.Module
 	ctr.db.Where("course_id=?", getModule.CourseID).Find(&getAllModule)
 
+	// check if customer course is finished
+	if updateCustomerCourse.NoModule >  len(getAllModule) {
+		updateCustomerCourse.IsFinish = true
+	}
 	for _, gam := range getAllModule {
-		if updateCustomerCourse.NoModule == gam.NoModule {
+		if updateCustomerCourse.NoModule >= gam.NoModule {
 			ctr.db.Save(&updateCustomerCourse)
 		}
-
 	}
 
-	fmt.Println(updateCustomerCourse)
+
+	// fmt.Println(updateCustomerCourse)
 
 	return nil
 }

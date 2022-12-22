@@ -14,6 +14,7 @@ type Module struct {
 	Name         string         `json:"name" gorm:"notNull;size:255"`
 	Content      string         `json:"content"`
 	CourseID     string         `json:"course_id" gorm:"notNull;size:255"`
+	Course       Course         `json:"course"`
 	MediaModules []MediaModule
 	Assignment   Assignment
 	NoModule     int `json:"no_module"`

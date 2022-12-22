@@ -41,7 +41,7 @@ func (u *CostumerController) Register(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(200, echo.Map{
+	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success create user",
 	})
 }
@@ -102,6 +102,7 @@ func (u *CostumerController) Login(c echo.Context) error {
 	}
 
 	costumerResponse := dto.CostumerResponse{
+		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Token: token,
