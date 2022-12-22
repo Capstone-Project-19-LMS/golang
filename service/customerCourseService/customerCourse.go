@@ -15,6 +15,7 @@ import (
 type CustomerCourseService interface {
 	DeleteCustomerCourse(courseID, customerID string) error
 	GetHistoryCourseByCustomerID(string) ([]dto.GetCourse, error)
+	GetCustomerCourseEnrollByID(id string) (dto.CustomerCourseEnroll, error)
 	TakeCourse(dto.CustomerCourseTransaction) error
 	UpdateEnrollmentStatus(customerCourse dto.CustomerCourseTransaction, instructorID string) error
 }
@@ -90,6 +91,14 @@ func (ccs *customerCourseService) GetHistoryCourseByCustomerID(customerID string
 
 		sumCustomer := len(course.CustomerCourses)
 		courses[i].AmountCustomer = sumCustomer
+
+		helper.GetEnrolledCourse(&course, customerID)
+		courses[i].ProgressModule = course.ProgressModule
+		courses[i].IsFinish = course.IsFinish
+
+		// get progress of all courses
+		ProgressPercentage := helper.GetProgressCourse(&courses[i])
+		courses[i].ProgressPercentage = ProgressPercentage
 	}
 
 	// copy courses from dto.course to dto.GetCustomerCourse
@@ -147,6 +156,15 @@ func (ccs *customerCourseService) TakeCourse(customerCourse dto.CustomerCourseTr
 	return nil
 }
 
+// GetCustomerCourseEnrollByID implements CustomerCourseService
+func (ccs *customerCourseService) GetCustomerCourseEnrollByID(id string) (dto.CustomerCourseEnroll, error) {
+	customerEnroll, err := ccs.customerCourseRepo.GetCustomerCourseEnrollByID(id)
+	if err != nil {
+		return dto.CustomerCourseEnroll{}, err
+	}
+	return customerEnroll, nil
+}
+
 // UpdateEnrollmentStatus implements CustomerCourseService
 func (ccs *customerCourseService) UpdateEnrollmentStatus(customerCourse dto.CustomerCourseTransaction, instructorID string) error {
 	// check if course is not belong to instructor
@@ -158,7 +176,7 @@ func (ccs *customerCourseService) UpdateEnrollmentStatus(customerCourse dto.Cust
 	if course.InstructorID != instructorID {
 		return errors.New(constantError.ErrorNotAuthorized)
 	}
-	
+
 	// get data enrollment course
 	_, err = ccs.customerCourseRepo.GetCustomerCourse(customerCourse.CourseID, customerCourse.CustomerID)
 	// check if enrollment course is not found
@@ -168,7 +186,7 @@ func (ccs *customerCourseService) UpdateEnrollmentStatus(customerCourse dto.Cust
 		}
 		return err
 	}
-	
+
 	// update enrollment status
 	err = ccs.customerCourseRepo.UpdateEnrollmentStatus(customerCourse)
 	if err != nil {
