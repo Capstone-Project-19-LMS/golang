@@ -107,6 +107,7 @@ func (mc *ModuleController) GetModuleByID(c echo.Context) error {
 	}
 	// Call service to get module by id
 	module, err := mc.ModuleService.GetModuleByID(id, input.CustomerID)
+
 	if err != nil {
 		if _, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(http.StatusInternalServerError, echo.Map{
@@ -141,6 +142,13 @@ func (mc *ModuleController) GetModuleByCourseID(c echo.Context) error {
 	}
 	// Call service to get module by id
 	modules, err := mc.ModuleService.GetModuleByCourseID(input.CourseID, input.CustomerID)
+
+	if len(modules) == 0 {
+		return c.JSON(http.StatusNotFound, echo.Map{
+			"message": "fail get module by course id",
+		})
+	}
+
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{

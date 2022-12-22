@@ -50,6 +50,7 @@ func (s *suiteModule) TestCreateModule() {
 				Content:  "tes",
 				CourseID: "tes",
 				NoModule: 1,
+				Url:      "tes",
 			},
 			nil,
 			http.StatusOK,
@@ -63,6 +64,7 @@ func (s *suiteModule) TestCreateModule() {
 				Content:  "tes",
 				CourseID: "tes",
 				NoModule: 1,
+				Url:      "tes",
 			},
 			nil,
 			http.StatusInternalServerError,
@@ -87,6 +89,7 @@ func (s *suiteModule) TestCreateModule() {
 				Content:  "tes",
 				CourseID: "tes",
 				NoModule: 1,
+				Url:      "tes",
 			},
 
 			errors.New("fail create module"),
@@ -203,10 +206,10 @@ func (s *suiteModule) TestGetModuleByID() {
 		Method             string
 		ParamID            string
 		CustomerCourseID   model.CustomerCourse
-		MockReturnBody     dto.ModuleAcc
+		MockReturnBody     dto.ModuleCourseAcc
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       dto.ModuleAcc
+		ExpectedBody       dto.ModuleCourseAcc
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -217,7 +220,7 @@ func (s *suiteModule) TestGetModuleByID() {
 			model.CustomerCourse{
 				ID: "abcde",
 			},
-			dto.ModuleAcc{
+			dto.ModuleCourseAcc{
 				ID:        "abcde",
 				Name:      "tes",
 				Content:   "tes",
@@ -242,7 +245,7 @@ func (s *suiteModule) TestGetModuleByID() {
 			},
 			nil,
 			true,
-			dto.ModuleAcc{
+			dto.ModuleCourseAcc{
 				ID:        "abcde",
 				Name:      "tes",
 				Content:   "tes",
@@ -275,10 +278,10 @@ func (s *suiteModule) TestGetModuleByID() {
 			model.CustomerCourse{
 				ID: "abcde",
 			},
-			dto.ModuleAcc{},
+			dto.ModuleCourseAcc{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.ModuleAcc{},
+			dto.ModuleCourseAcc{},
 			http.StatusInternalServerError,
 			"fail get module by id",
 		},
@@ -289,10 +292,10 @@ func (s *suiteModule) TestGetModuleByID() {
 			model.CustomerCourse{
 				ID: "abcde",
 			},
-			dto.ModuleAcc{},
+			dto.ModuleCourseAcc{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.ModuleAcc{},
+			dto.ModuleCourseAcc{},
 			http.StatusInternalServerError,
 			"fail get module by id",
 		},
@@ -311,10 +314,10 @@ func (s *suiteModule) TestGetModuleByID() {
 		// 		UpdatedAt:  time.Now(),
 		// 		DeletedAt:  gorm.DeletedAt{},
 		// 	},
-		// 	dto.ModuleAcc{},
+		// 	dto.ModuleCourseAcc{},
 		// 	nil,
 		// 	false,
-		// 	dto.ModuleAcc{},
+		// 	dto.ModuleCourseAcc{},
 		// 	http.StatusInternalServerError,
 		// 	"fail bind data",
 		// },
