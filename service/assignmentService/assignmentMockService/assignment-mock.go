@@ -27,6 +27,11 @@ func (c *AssignmentMock) GetAssignmentByID(id string) (dto.Assignment, error) {
 
 	return args.Get(0).(dto.Assignment), args.Error(1)
 }
+func (c *AssignmentMock) GetAssignmentByCourse(id string) ([]dto.AssignmentCourse, error) {
+	args := c.Called(id)
+
+	return args.Get(0).([]dto.AssignmentCourse), args.Error(1)
+}
 func (c *AssignmentMock) GetAllAssignment() ([]dto.Assignment, error) {
 	args := c.Called()
 

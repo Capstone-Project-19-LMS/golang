@@ -257,6 +257,7 @@ func New(db *gorm.DB) *echo.Echo {
 	privateInstructor.DELETE("/assignment/delete/:id", assignmentController.DeleteAssignment)
 	privateInstructor.GET("/assignment/get_all", assignmentController.GetAllAssignment)
 	privateInstructor.GET("/assignment/get_by_id/:id", assignmentController.GetAssignmentByID)
+	privateInstructor.GET("/assignment/get_by_course/:id", assignmentController.GetAssignmentByCourse)
 	privateInstructor.PUT("/assignment/update/:id", assignmentController.UpdateAssignment)
 	//costumer access
 	privateCostumer.GET("/assignment/get_all", assignmentController.GetAllAssignment)
