@@ -64,7 +64,7 @@ func (mr *moduleRepository) DeleteModule(id string) error {
 }
 
 // GetAllModule implements ModuleRepository
-func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
+func (mr *moduleRepository) GetAllModule() ([]dto.ModuleCourse, error) {
 	var moduleModels []model.Module
 	// get data sub category from database by user
 	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Find(&moduleModels).Error
@@ -72,12 +72,31 @@ func (mr *moduleRepository) GetAllModule() ([]dto.Module, error) {
 		return nil, err
 	}
 	// copy data from model to dto
-	var modules []dto.Module
+	var modules []dto.ModuleCourse
 	err = copier.Copy(&modules, &moduleModels)
 	if err != nil {
 		return nil, err
 	}
 	return modules, nil
+}
+
+func (mr *moduleRepository) GetModuleByIDifInstructor(id string) (dto.ModuleCourseAcc, error) {
+	var moduleModel model.Module
+	err := mr.db.Model(&model.Module{}).Preload("MediaModules").Preload("Course").Preload("Assignment").Where("id = ?", id).Find(&moduleModel)
+
+	if err.Error != nil {
+		return dto.ModuleCourseAcc{}, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return dto.ModuleCourseAcc{}, gorm.ErrRecordNotFound
+	}
+
+	var Module dto.ModuleCourseAcc
+	errCopy := copier.Copy(&Module, &moduleModel)
+	if errCopy != nil {
+		return dto.ModuleCourseAcc{}, errCopy
+	}
+	return Module, nil
 }
 
 // GetModuleByID implements ModuleRepository
@@ -110,6 +129,23 @@ func (mr *moduleRepository) GetModuleByID(id, customerID string) (dto.ModuleCour
 		return dto.ModuleCourseAcc{}, errCopy
 	}
 	return Module, nil
+}
+
+func (mr *moduleRepository) GetModuleByCourseIDifInstructror(courseID string) ([]dto.ModuleCourse, error) {
+	var moduleModels []model.Module
+	err := mr.db.Model(&model.Module{}).Where("course_id = ?", courseID).Preload("Course").Find(&moduleModels).Error
+	if err != nil {
+		return nil, err
+	}
+	var modules []dto.ModuleCourse
+	err = copier.Copy(&modules, &moduleModels)
+	if err != nil {
+		return nil, err
+	}
+	if len(modules) == 0 {
+		return nil, err
+	}
+	return modules, nil
 }
 
 func (mr *moduleRepository) GetModuleByCourseID(courseID, customerID string) ([]dto.ModuleCourse, error) {

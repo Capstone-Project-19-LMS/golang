@@ -119,6 +119,32 @@ func (ac *AssignmentController) GetAssignmentByID(c echo.Context) error {
 	})
 }
 
+func (ac *AssignmentController) GetAssignmentByCourse(c echo.Context) error {
+	// Get id from url
+	id := c.Param("id")
+
+	// Call service to get assignment by id
+	assignment, err := ac.AssignmentService.GetAssignmentByCourse(id)
+	if err != nil {
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "failed get assignment by course",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "failed get assignment by course",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":    "success get assignment by id",
+		"assignment": assignment,
+	})
+}
+
 // UpdateAssignment is a function to update assignment
 func (ac *AssignmentController) UpdateAssignment(c echo.Context) error {
 	var assignment dto.AssignmentTransaction
