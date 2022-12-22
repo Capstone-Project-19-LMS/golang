@@ -390,10 +390,10 @@ func (s *suiteModule) TestGetAllModule() {
 	testCase := []struct {
 		Name            string
 		User            dto.User
-		MockReturnBody  []dto.Module
+		MockReturnBody  []dto.ModuleCourse
 		MockReturnError error
 		HasReturnBody   bool
-		ExpectedBody    []dto.Module
+		ExpectedBody    []dto.ModuleCourse
 		ExpectedError   error
 	}{
 		{
@@ -402,7 +402,7 @@ func (s *suiteModule) TestGetAllModule() {
 				ID:   "abcde",
 				Role: "customer",
 			},
-			[]dto.Module{
+			[]dto.ModuleCourse{
 				{
 					ID:       "abcde",
 					Name:     "tes",
@@ -418,7 +418,7 @@ func (s *suiteModule) TestGetAllModule() {
 			},
 			nil,
 			true,
-			[]dto.Module{
+			[]dto.ModuleCourse{
 				{
 					ID:       "abcde",
 					Name:     "tes",
@@ -440,7 +440,7 @@ func (s *suiteModule) TestGetAllModule() {
 				ID:   "abcde",
 				Role: "customer",
 			},
-			[]dto.Module{},
+			[]dto.ModuleCourse{},
 			gorm.ErrRecordNotFound,
 			false,
 			nil,

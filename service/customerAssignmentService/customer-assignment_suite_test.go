@@ -5,7 +5,6 @@ import (
 	"golang/models/dto"
 	customerAssignmentMockrepository "golang/repository/customerAssignmentRepository/customerAssignmentMockRepository"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -150,9 +149,6 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			"abcde",
 			dto.CustomerAssignment{
 				ID:           "abcde",
-				CreatedAt:    time.Now(),
-				UpdatedAt:    time.Now(),
-				DeletedAt:    gorm.DeletedAt{},
 				File:         "tes",
 				Grade:        1,
 				AssignmentID: "abcde",
@@ -162,9 +158,6 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			true,
 			dto.CustomerAssignment{
 				ID:           "abcde",
-				CreatedAt:    time.Now(),
-				UpdatedAt:    time.Now(),
-				DeletedAt:    gorm.DeletedAt{},
 				File:         "tes",
 				Grade:        1,
 				AssignmentID: "abcde",
@@ -220,9 +213,6 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 			[]dto.CustomerAssignment{
 				{
 					ID:           "abcde",
-					CreatedAt:    time.Now(),
-					UpdatedAt:    time.Now(),
-					DeletedAt:    gorm.DeletedAt{},
 					File:         "tes",
 					Grade:        1,
 					AssignmentID: "abcde",
@@ -230,9 +220,6 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 				},
 				{
 					ID:           "abcde",
-					CreatedAt:    time.Now(),
-					UpdatedAt:    time.Now(),
-					DeletedAt:    gorm.DeletedAt{},
 					File:         "tes",
 					Grade:        1,
 					AssignmentID: "abcde",
@@ -244,9 +231,6 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 			[]dto.CustomerAssignment{
 				{
 					ID:           "abcde",
-					CreatedAt:    time.Now(),
-					UpdatedAt:    time.Now(),
-					DeletedAt:    gorm.DeletedAt{},
 					File:         "tes",
 					Grade:        1,
 					AssignmentID: "abcde",
@@ -254,9 +238,6 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 				},
 				{
 					ID:           "abcde",
-					CreatedAt:    time.Now(),
-					UpdatedAt:    time.Now(),
-					DeletedAt:    gorm.DeletedAt{},
 					File:         "tes",
 					Grade:        1,
 					AssignmentID: "abcde",

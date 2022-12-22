@@ -625,10 +625,10 @@ func (s *suiteModule) TestGetAllModule() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		MockReturnBody     []dto.Module
+		MockReturnBody     []dto.ModuleCourse
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []dto.Module
+		ExpectedBody       []dto.ModuleCourse
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -636,7 +636,7 @@ func (s *suiteModule) TestGetAllModule() {
 			"success get all module",
 			"GET",
 
-			[]dto.Module{
+			[]dto.ModuleCourse{
 				{
 					ID:        "abcde",
 					CreatedAt: time.Now(),
@@ -660,7 +660,7 @@ func (s *suiteModule) TestGetAllModule() {
 			},
 			nil,
 			true,
-			[]dto.Module{
+			[]dto.ModuleCourse{
 				{
 					ID:        "abcde",
 					CreatedAt: time.Now(),
@@ -689,10 +689,10 @@ func (s *suiteModule) TestGetAllModule() {
 			"fail get all module",
 			"GET",
 
-			[]dto.Module{},
+			[]dto.ModuleCourse{},
 			errors.New("error"),
 			false,
-			[]dto.Module{},
+			[]dto.ModuleCourse{},
 			http.StatusInternalServerError,
 			"fail get all module",
 		},
