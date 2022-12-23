@@ -9,6 +9,8 @@ import (
 type QuizService interface {
 	CreateQuiz(dto.QuizTransaction) error
 	TakeQuiz(dto.TakeQuizTransaction) (dto.Quiz, error)
+	GetAllQuiz() ([]dto.Quiz, error)
+	DeleteQuiz(id string) error
 }
 
 type quizService struct {
@@ -24,6 +26,22 @@ func (cas *quizService) CreateQuiz(input dto.QuizTransaction) error {
 		return err
 	}
 	return nil
+}
+
+func (cas *quizService) DeleteQuiz(id string) error {
+	err := cas.quizRepo.DeleteQuiz(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cas *quizService) GetAllQuiz() ([]dto.Quiz, error) {
+	quizs, err := cas.quizRepo.GetAllQuiz()
+	if err != nil {
+		return nil, err
+	}
+	return quizs, nil
 }
 
 func (cas *quizService) TakeQuiz(input dto.TakeQuizTransaction) (dto.Quiz, error) {

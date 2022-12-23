@@ -47,6 +47,47 @@ func (qc *QuizController) CreateQuiz(c echo.Context) error {
 	})
 }
 
+func (qc *QuizController) GetAllQuiz(c echo.Context) error {
+	quizs, err := qc.QuizService.GetAllQuiz()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get all quiz",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get all quiz",
+		"quizs":   quizs,
+	})
+}
+
+func (qc *QuizController) DeleteQuiz(c echo.Context) error {
+	// Get id from url
+	id := c.Param("id")
+
+	// Call service to delete quiz
+	err := qc.QuizService.DeleteQuiz(id)
+	if err != nil {
+		if _, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"message": "fail delete quiz",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete quiz",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success delete quiz",
+	})
+}
+
 func (qc *QuizController) TakeQuiz(c echo.Context) error {
 	// Get id from url
 	var input dto.TakeQuizTransaction
@@ -58,7 +99,7 @@ func (qc *QuizController) TakeQuiz(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
-	// Call service to get module by id
+	// Call service to get quiz by id
 	quiz, err := qc.QuizService.TakeQuiz(input)
 
 	if err != nil {
@@ -77,6 +118,6 @@ func (qc *QuizController) TakeQuiz(c echo.Context) error {
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success get quiz by course id",
-		"modules": quiz,
+		"quizs":   quiz,
 	})
 }

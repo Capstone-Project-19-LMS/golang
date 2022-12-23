@@ -29,6 +29,21 @@ func (ctr *quizRepository) CreateQuiz(input dto.QuizTransaction) error {
 	return nil
 
 }
+
+func (ctr *quizRepository) GetAllQuiz() ([]dto.Quiz, error) {
+	var quizModel []model.Quiz
+	var quiz []dto.Quiz
+	err := ctr.db.Find(&quizModel).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = copier.Copy(&quiz, quizModel)
+
+	return quiz, nil
+
+}
+
 func (ctr *quizRepository) TakeQuiz(input dto.TakeQuizTransaction) (dto.Quiz, error) {
 	var quizModel model.Quiz
 	var customerCourse model.CustomerCourse
@@ -45,6 +60,20 @@ func (ctr *quizRepository) TakeQuiz(input dto.TakeQuizTransaction) (dto.Quiz, er
 	ctr.db.Where("course_id=?", input.CourseID).Find(&quizModel)
 	copier.Copy(&quiz, quizModel)
 	return quiz, nil
+}
+
+func (ctr *quizRepository) DeleteQuiz(id string) error {
+
+	err := ctr.db.Where("id = ?", id).Unscoped().Delete(&model.Quiz{})
+	if err.Error != nil {
+		return err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
+
 }
 
 func NewQuizRepository(db *gorm.DB) QuizRepository {

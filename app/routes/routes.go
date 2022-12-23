@@ -195,6 +195,8 @@ func New(db *gorm.DB) *echo.Echo {
 
 	//instructor access
 	privateInstructor.POST("/quiz/create", quizController.CreateQuiz)
+	privateInstructor.GET("/quiz/get_all", quizController.GetAllQuiz)
+	privateInstructor.DELETE("/quiz/delete/:id", quizController.DeleteQuiz)
 	// customer access
 	privateCostumer.GET("/quiz/take_quiz", quizController.TakeQuiz)
 
