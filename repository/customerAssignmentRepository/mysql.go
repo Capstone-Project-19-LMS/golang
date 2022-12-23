@@ -101,7 +101,7 @@ func (ctr *customerAssignmentRepository) GetAllCustomerAssignment() ([]dto.Custo
 	if err != nil {
 		return nil, err
 	}
-	var tes []dto.CustomerAssignmentAcc
+	var result []dto.CustomerAssignmentAcc
 	for _, cam := range customerAssignments {
 		ctr.db.Where("id", cam.CustomerID).Find(&customer)
 
@@ -110,10 +110,10 @@ func (ctr *customerAssignmentRepository) GetAllCustomerAssignment() ([]dto.Custo
 			fmt.Println(cam)
 
 		}
-		tes = append(tes, cam)
+		result = append(result, cam)
 	}
 
-	return tes, nil
+	return result, nil
 }
 
 // GetcustomerAssignmentByID implements customerAssignmentRepository
