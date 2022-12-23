@@ -369,6 +369,76 @@ func (s *suiteCustomerCourse) TestGetHistoryCourseByCustomerID() {
 	}
 }
 
+func (s *suiteCustomerCourse) TestGetCustomerCourseEnrollByID() {
+	testCase := []struct {
+		Name            string
+		User            dto.User
+		ID string
+		MockReturnBody  dto.CustomerCourseEnroll
+		MockReturnError error
+		HasReturnBody   bool
+		ExpectedBody    dto.CustomerCourseEnroll
+		ExpectedError   error
+	}{
+		{
+			"success history course",
+			dto.User{
+				ID:   "abcde",
+				Role: "customer",
+			},
+			"abcde",
+			dto.CustomerCourseEnroll{
+				ID:         "abcde",
+				CustomerID: "abcde",
+				Name: 	 "test",
+				Email: 	 "test@gmail.com",
+				ProfileImage: "test",
+				StatusEnroll: true,
+			},
+			nil,
+			true,
+			dto.CustomerCourseEnroll{
+				ID:         "abcde",
+				CustomerID: "abcde",
+				Name: 	 "test",
+				Email: 	 "test@gmail.com",
+				ProfileImage: "test",
+				StatusEnroll: true,
+			},
+			nil,
+		},
+		{
+			"failed get customer enroll by id",
+			dto.User{
+				ID:   "abcde",
+				Role: "customer",
+			},
+			"abcde",
+			dto.CustomerCourseEnroll{},
+			errors.New("error"),
+			false,
+			dto.CustomerCourseEnroll{},
+			errors.New("error"),
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mockCustomerCourse.On("GetCustomerCourseEnrollByID", v.ID).Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			course, err := s.customerCourseService.GetCustomerCourseEnrollByID(v.ID)
+			if v.HasReturnBody {
+				s.NoError(err)
+				s.Equal(v.ExpectedBody, course)
+			} else {
+				s.Error(err)
+				s.EqualError(err, v.ExpectedError.Error())
+				s.Equal(v.ExpectedBody, course)
+			}
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
 func (s *suiteCustomerCourse) TestTakeCourse() {
 	testCase := []struct {
 		Name                    string
@@ -607,8 +677,6 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 		Name                     string
 		User                     dto.User
 		Body                     dto.CustomerCourseTransaction
-		MockReturnGetCourse      dto.Course
-		MockReturnGetCourseError error
 		MockReturnCustomerCourseError    error
 		MockReturnUpdateError    error
 		HasReturnError           bool
@@ -627,213 +695,10 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 				NoModule: 0,
 				IsFinish:           false,
 			},
-			dto.Course{
-				ID:                 "abcde",
-				Name:               "test",
-				Description:        "test",
-				Objective:          "test",
-				Price:              10000,
-				Discount:           0,
-				Thumbnail:          "test",
-				Capacity:           100,
-				InstructorID:       "abcde",
-				CategoryID:         "abcde",
-				ProgressModule:     2,
-				ProgressPercentage: 100,
-				IsFinish:           false,
-				CustomerCourses: []dto.CustomerCourse{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Status:     true,
-						NoModule:   2,
-						IsFinish:   false,
-					},
-				},
-				Favorites: []dto.Favorite{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-					},
-				},
-				Ratings: []dto.Rating{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Rating:     5,
-					},
-				},
-				Modules: []dto.Module{
-					{
-						ID:       "efgh",
-						Name:     "test",
-						Content:  "test",
-						CourseID: "abcde",
-					},
-				},
-			},
-			nil,
 			nil,
 			nil,
 			false,
 			nil,
-		},
-		{
-			"fail get course",
-			dto.User{
-				ID:   "abcde",
-				Role: "intructor",
-			},
-			dto.CustomerCourseTransaction{
-				CustomerID: "abcde",
-				CourseID:   "abcde",
-				Status:    true,
-				NoModule: 0,
-				IsFinish:           false,
-			},
-			dto.Course{},
-			gorm.ErrRecordNotFound,
-			nil,
-			nil,
-			true,
-			gorm.ErrRecordNotFound,
-		},
-		{
-			"fail not authorized",
-			dto.User{
-				ID:   "abcdefg",
-				Role: "intructor",
-			},
-			dto.CustomerCourseTransaction{
-				CustomerID: "abcde",
-				CourseID:   "abcde",
-				Status:    true,
-				NoModule: 0,
-				IsFinish:           false,
-			},
-			dto.Course{
-				ID:                 "abcde",
-				Name:               "test",
-				Description:        "test",
-				Objective:          "test",
-				Price:              10000,
-				Discount:           0,
-				Thumbnail:          "test",
-				Capacity:           100,
-				InstructorID:       "abcde",
-				CategoryID:         "abcde",
-				ProgressModule:     2,
-				ProgressPercentage: 100,
-				IsFinish:           false,
-				CustomerCourses: []dto.CustomerCourse{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Status:     true,
-						NoModule:   2,
-						IsFinish:   false,
-					},
-				},
-				Favorites: []dto.Favorite{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-					},
-				},
-				Ratings: []dto.Rating{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Rating:     5,
-					},
-				},
-				Modules: []dto.Module{
-					{
-						ID:       "efgh",
-						Name:     "test",
-						Content:  "test",
-						CourseID: "abcde",
-					},
-				},
-			},
-			nil,
-			nil,
-			nil,
-			true,
-			errors.New(constantError.ErrorNotAuthorized),
-		},
-		{
-			"fail customer not enroll",
-			dto.User{
-				ID:   "abcde",
-				Role: "intructor",
-			},
-			dto.CustomerCourseTransaction{
-				CustomerID: "abcde",
-				CourseID:   "abcde",
-				Status:    true,
-				NoModule: 0,
-				IsFinish:           false,
-			},
-			dto.Course{
-				ID:                 "abcde",
-				Name:               "test",
-				Description:        "test",
-				Objective:          "test",
-				Price:              10000,
-				Discount:           0,
-				Thumbnail:          "test",
-				Capacity:           100,
-				InstructorID:       "abcde",
-				CategoryID:         "abcde",
-				ProgressModule:     2,
-				ProgressPercentage: 100,
-				IsFinish:           false,
-				CustomerCourses: []dto.CustomerCourse{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Status:     true,
-						NoModule:   2,
-						IsFinish:   false,
-					},
-				},
-				Favorites: []dto.Favorite{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-					},
-				},
-				Ratings: []dto.Rating{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Rating:     5,
-					},
-				},
-				Modules: []dto.Module{
-					{
-						ID:       "efgh",
-						Name:     "test",
-						Content:  "test",
-						CourseID: "abcde",
-					},
-				},
-			},
-			nil,
-			gorm.ErrRecordNotFound,
-			nil,
-			true,
-			errors.New(constantError.ErrorCustomerNotEnrolled),
 		},
 		{
 			"fail error get customer course",
@@ -848,55 +713,6 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 				NoModule: 0,
 				IsFinish:           false,
 			},
-			dto.Course{
-				ID:                 "abcde",
-				Name:               "test",
-				Description:        "test",
-				Objective:          "test",
-				Price:              10000,
-				Discount:           0,
-				Thumbnail:          "test",
-				Capacity:           100,
-				InstructorID:       "abcde",
-				CategoryID:         "abcde",
-				ProgressModule:     2,
-				ProgressPercentage: 100,
-				IsFinish:           false,
-				CustomerCourses: []dto.CustomerCourse{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Status:     true,
-						NoModule:   2,
-						IsFinish:   false,
-					},
-				},
-				Favorites: []dto.Favorite{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-					},
-				},
-				Ratings: []dto.Rating{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Rating:     5,
-					},
-				},
-				Modules: []dto.Module{
-					{
-						ID:       "efgh",
-						Name:     "test",
-						Content:  "test",
-						CourseID: "abcde",
-					},
-				},
-			},
-			nil,
 			errors.New("error"),
 			nil,
 			true,
@@ -915,55 +731,6 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 				NoModule: 0,
 				IsFinish:           false,
 			},
-			dto.Course{
-				ID:                 "abcde",
-				Name:               "test",
-				Description:        "test",
-				Objective:          "test",
-				Price:              10000,
-				Discount:           0,
-				Thumbnail:          "test",
-				Capacity:           100,
-				InstructorID:       "abcde",
-				CategoryID:         "abcde",
-				ProgressModule:     2,
-				ProgressPercentage: 100,
-				IsFinish:           false,
-				CustomerCourses: []dto.CustomerCourse{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Status:     true,
-						NoModule:   2,
-						IsFinish:   false,
-					},
-				},
-				Favorites: []dto.Favorite{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-					},
-				},
-				Ratings: []dto.Rating{
-					{
-						ID:         "abcde",
-						CustomerID: "abcde",
-						CourseID:   "abcde",
-						Rating:     5,
-					},
-				},
-				Modules: []dto.Module{
-					{
-						ID:       "efgh",
-						Name:     "test",
-						Content:  "test",
-						CourseID: "abcde",
-					},
-				},
-			},
-			nil,
 			nil,
 			errors.New("error"),
 			true,
@@ -971,8 +738,7 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 		},
 	}
 	for _, v := range testCase {
-		mockCallGetCourse := s.mockCourse.On("GetCourseByID", v.Body.CourseID).Return(v.MockReturnGetCourse, v.MockReturnGetCourseError)
-		mockCallGetCustomerCourse := s.mockCustomerCourse.On("GetCustomerCourse", v.Body.CourseID, v.Body.CustomerID).Return(dto.CustomerCourse{}, v.MockReturnCustomerCourseError)
+		mockCallGetCustomerCourse := s.mockCustomerCourse.On("GetCustomerCourseByID", v.Body.ID).Return(dto.CustomerCourse{}, v.MockReturnCustomerCourseError)
 		mockCallUpdateEnrollmentStatus := s.mockCustomerCourse.On("UpdateEnrollmentStatus", v.Body).Return(v.MockReturnUpdateError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			err := s.customerCourseService.UpdateEnrollmentStatus(v.Body, v.User.ID)
@@ -985,7 +751,6 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 			}
 		})
 		// remove mock
-		mockCallGetCourse.Unset()
 		mockCallGetCustomerCourse.Unset()
 		mockCallUpdateEnrollmentStatus.Unset()
 	}

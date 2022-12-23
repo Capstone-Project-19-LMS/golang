@@ -17,7 +17,7 @@ type CourseService interface {
 	DeleteCourse(id, instructorId string) error
 	GetAllCourse(dto.User) ([]dto.GetCourse, error)
 	GetCourseByID(id string, user dto.User) (dto.GetCourseByID, error)
-	GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error)
+	GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerCourseEnroll, error)
 	UpdateCourse(dto.CourseTransaction) error
 }
 
@@ -169,7 +169,7 @@ func (cs *courseService) GetCourseByID(id string, user dto.User) (dto.GetCourseB
 }
 
 // GetCourseEnrollByID implements CourseService
-func (cs *courseService) GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error) {
+func (cs *courseService) GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerCourseEnroll, error) {
 	// check if the course is exists
 	course, err := cs.courseRepo.GetCourseByID(id)
 	if err != nil {

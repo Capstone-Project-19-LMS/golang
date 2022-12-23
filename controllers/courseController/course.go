@@ -185,7 +185,7 @@ func (cc *CourseController) GetCourseByID(c echo.Context) error {
 // GetCourseEnrollByID is a function to get course by id
 func (cc *CourseController) GetCourseEnrollByID(c echo.Context) error {
 	// get id from url param
-	id := c.Param("id")
+	id := c.Param("courseId")
 
 	// Get user id from jwt
 	user := helper.GetUser(c)

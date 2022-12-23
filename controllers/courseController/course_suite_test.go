@@ -742,10 +742,10 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 		Method             string
 		ParamID            string
 		ParamUser          dto.User
-		MockReturnBody     []dto.CustomerEnroll
+		MockReturnBody     []dto.CustomerCourseEnroll
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []dto.CustomerEnroll
+		ExpectedBody       []dto.CustomerCourseEnroll
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -757,7 +757,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 				ID:   "abcde",
 				Role: "instructor",
 			},
-			[]dto.CustomerEnroll{
+			[]dto.CustomerCourseEnroll{
 				{
 					ID:           "test1",
 					Name:         "test1",
@@ -775,7 +775,7 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 			},
 			nil,
 			true,
-			[]dto.CustomerEnroll{
+			[]dto.CustomerCourseEnroll{
 				{
 					ID:           "test1",
 					Name:         "test1",
@@ -802,10 +802,10 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 				ID:   "abcde",
 				Role: "instructor",
 			},
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			errors.New("fail get course with customer enrolled"),
 			false,
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			http.StatusInternalServerError,
 			"fail get course with customer enrolled",
 		},
@@ -817,10 +817,10 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 				ID:   "abcde",
 				Role: "instructor",
 			},
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			errors.New(constantError.ErrorCourseNotFound),
 			false,
-			[]dto.CustomerEnroll{},
+			[]dto.CustomerCourseEnroll{},
 			http.StatusNotFound,
 			"fail get course with customer enrolled",
 		},
@@ -836,8 +836,8 @@ func (s *suiteCourse) TestGetCourseEnrollByID() {
 			// handler echo
 			e := echo.New()
 			ctx := e.NewContext(r, w)
-			ctx.SetPath("/courses/:id")
-			ctx.SetParamNames("id")
+			ctx.SetPath("/courses/:courseId")
+			ctx.SetParamNames("courseId")
 			ctx.SetParamValues(v.ParamID)
 			if v.ParamUser.Role == "customer" {
 				ctx.Set("user", &jwt.Token{Claims: &middlewareCustomer.JwtCostumerClaims{ID: v.ParamUser.ID, Role: v.ParamUser.Role}})

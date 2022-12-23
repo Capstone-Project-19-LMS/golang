@@ -87,14 +87,14 @@ func (cr *courseRepository) GetCourseByID(id string) (dto.Course, error) {
 }
 
 // GetCourseEnrollByID implements CourseRepository
-func (cr *courseRepository) GetCourseEnrollByID(id string) ([]dto.CustomerEnroll, error) {
-	var customers []dto.CustomerEnroll
-	err := cr.db.Model(&model.Customer{}).Select("*", "customer_courses.id AS customer_course_id", "customers.id AS id" , "customer_courses.status AS status_enroll").Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.course_id = ? ", id).Find(&customers)
+func (cr *courseRepository) GetCourseEnrollByID(id string) ([]dto.CustomerCourseEnroll, error) {
+	var customers []dto.CustomerCourseEnroll
+	err := cr.db.Model(&model.Customer{}).Select("*", "customer_courses.id AS id", "customers.id AS customer_id" , "customer_courses.status AS status_enroll").Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.course_id = ? ", id).Find(&customers)
 	if err.Error != nil {
 		return nil, err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return []dto.CustomerEnroll{}, nil
+		return []dto.CustomerCourseEnroll{}, nil
 	}
 	return customers, nil
 }
