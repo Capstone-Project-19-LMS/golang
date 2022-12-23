@@ -373,6 +373,7 @@ func (s *suiteCustomerCourse) TestGetCustomerCourseEnrollByID() {
 	testCase := []struct {
 		Name            string
 		User            dto.User
+		ID string
 		MockReturnBody  dto.CustomerCourseEnroll
 		MockReturnError error
 		HasReturnBody   bool
@@ -385,6 +386,7 @@ func (s *suiteCustomerCourse) TestGetCustomerCourseEnrollByID() {
 				ID:   "abcde",
 				Role: "customer",
 			},
+			"abcde",
 			dto.CustomerCourseEnroll{
 				ID:         "abcde",
 				CustomerID: "abcde",
@@ -411,6 +413,7 @@ func (s *suiteCustomerCourse) TestGetCustomerCourseEnrollByID() {
 				ID:   "abcde",
 				Role: "customer",
 			},
+			"abcde",
 			dto.CustomerCourseEnroll{},
 			errors.New("error"),
 			false,
@@ -419,9 +422,9 @@ func (s *suiteCustomerCourse) TestGetCustomerCourseEnrollByID() {
 		},
 	}
 	for _, v := range testCase {
-		mockCall := s.mockCustomerCourse.On("GetCustomerCourseEnrollByID", v.User.ID).Return(v.MockReturnBody, v.MockReturnError)
+		mockCall := s.mockCustomerCourse.On("GetCustomerCourseEnrollByID", v.ID).Return(v.MockReturnBody, v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
-			course, err := s.customerCourseService.GetCustomerCourseEnrollByID(v.User.ID)
+			course, err := s.customerCourseService.GetCustomerCourseEnrollByID(v.ID)
 			if v.HasReturnBody {
 				s.NoError(err)
 				s.Equal(v.ExpectedBody, course)
