@@ -2,6 +2,7 @@ package customerassignmentrepository
 
 import (
 	"errors"
+	"fmt"
 	"golang/constant/constantError"
 	"golang/models/dto"
 	"golang/models/model"
@@ -38,6 +39,7 @@ func (ctr *customerAssignmentRepository) CreateCustomerAssignment(customerAssign
 	result := ctr.db.Model(&model.CustomerAssignment{}).Create(&customerAssignmentModel)
 	var storage dto.CustomerAssignment = dto.CustomerAssignment{}
 	result.Last(&storage)
+	fmt.Println(storage)
 
 	var getAssignment model.Assignment
 	ctr.db.Where("id=?", storage.AssignmentID).Find(&getAssignment)
@@ -55,7 +57,7 @@ func (ctr *customerAssignmentRepository) CreateCustomerAssignment(customerAssign
 	ctr.db.Where("course_id=?", getModule.CourseID).Find(&getAllModule)
 
 	// check if customer course is finished
-	if updateCustomerCourse.NoModule >  len(getAllModule) {
+	if updateCustomerCourse.NoModule > len(getAllModule) {
 		updateCustomerCourse.IsFinish = true
 	}
 	for _, gam := range getAllModule {
@@ -63,7 +65,6 @@ func (ctr *customerAssignmentRepository) CreateCustomerAssignment(customerAssign
 			ctr.db.Save(&updateCustomerCourse)
 		}
 	}
-
 
 	// fmt.Println(updateCustomerCourse)
 
@@ -85,39 +86,58 @@ func (ctr *customerAssignmentRepository) DeleteCustomerAssignment(id string) err
 }
 
 // GetAllcustomerAssignment implements customerAssignmentRepository
-func (ctr *customerAssignmentRepository) GetAllCustomerAssignment() ([]dto.CustomerAssignment, error) {
+func (ctr *customerAssignmentRepository) GetAllCustomerAssignment() ([]dto.CustomerAssignmentAcc, error) {
 	var customerAssignmentModels []model.CustomerAssignment
 	// get data sub category from database by user
 	err := ctr.db.Model(&model.CustomerAssignment{}).Find(&customerAssignmentModels).Error
 	if err != nil {
 		return nil, err
 	}
+
 	// copy data from model to dto
-	var customerAssignments []dto.CustomerAssignment
+	var customerAssignments []dto.CustomerAssignmentAcc
+	var customer []model.Customer
 	err = copier.Copy(&customerAssignments, &customerAssignmentModels)
 	if err != nil {
 		return nil, err
 	}
-	return customerAssignments, nil
+	var tes []dto.CustomerAssignmentAcc
+	for _, cam := range customerAssignments {
+		ctr.db.Where("id", cam.CustomerID).Find(&customer)
+
+		for _, cs := range customer {
+			cam.Customer.Name = cs.Name
+			fmt.Println(cam)
+
+		}
+		tes = append(tes, cam)
+	}
+
+	return tes, nil
 }
 
 // GetcustomerAssignmentByID implements customerAssignmentRepository
-func (ctr *customerAssignmentRepository) GetCustomerAssignmentByID(id string) (dto.CustomerAssignment, error) {
+func (ctr *customerAssignmentRepository) GetCustomerAssignmentByID(id string) (dto.CustomerAssignmentAcc, error) {
 	var customerAssignmentModel model.CustomerAssignment
 	err := ctr.db.Model(&model.CustomerAssignment{}).Where("id = ?", id).Find(&customerAssignmentModel)
 	if err.Error != nil {
-		return dto.CustomerAssignment{}, err.Error
+		return dto.CustomerAssignmentAcc{}, err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return dto.CustomerAssignment{}, gorm.ErrRecordNotFound
+		return dto.CustomerAssignmentAcc{}, gorm.ErrRecordNotFound
 	}
 
 	// copy data from model to dto
-	var customerAssignment dto.CustomerAssignment
+	var customerAssignment dto.CustomerAssignmentAcc
+
+	var customer model.Customer
+	ctr.db.Where("id=?", customerAssignmentModel.CustomerID).Find(&customer)
+	customerAssignment.Customer.Name = customer.Name
 	errCopy := copier.Copy(&customerAssignment, &customerAssignmentModel)
 	if errCopy != nil {
-		return dto.CustomerAssignment{}, errCopy
+		return dto.CustomerAssignmentAcc{}, errCopy
 	}
+
 	return customerAssignment, nil
 }
 

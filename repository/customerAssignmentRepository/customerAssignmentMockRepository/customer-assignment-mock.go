@@ -22,16 +22,16 @@ func (c *CustomerAssignmentMock) DeleteCustomerAssignment(id string) error {
 	return args.Error(0)
 }
 
-func (c *CustomerAssignmentMock) GetAllCustomerAssignment() ([]dto.CustomerAssignment, error) {
+func (c *CustomerAssignmentMock) GetAllCustomerAssignment() ([]dto.CustomerAssignmentAcc, error) {
 	args := c.Called()
 
-	return args.Get(0).([]dto.CustomerAssignment), args.Error(1)
+	return args.Get(0).([]dto.CustomerAssignmentAcc), args.Error(1)
 }
 
-func (c *CustomerAssignmentMock) GetCustomerAssignmentByID(id string) (dto.CustomerAssignment, error) {
+func (c *CustomerAssignmentMock) GetCustomerAssignmentByID(id string) (dto.CustomerAssignmentAcc, error) {
 	args := c.Called(id)
 
-	return args.Get(0).(dto.CustomerAssignment), args.Error(1)
+	return args.Get(0).(dto.CustomerAssignmentAcc), args.Error(1)
 }
 
 func (c *CustomerAssignmentMock) UpdateCustomerAssignment(customerAssignment dto.CustomerAssignmentTransaction) error {

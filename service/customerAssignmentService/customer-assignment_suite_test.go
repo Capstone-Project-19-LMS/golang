@@ -138,30 +138,40 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 	testCase := []struct {
 		Name            string
 		ParamID         string
-		MockReturnBody  dto.CustomerAssignment
+		MockReturnBody  dto.CustomerAssignmentAcc
 		MockReturnError error
 		HasReturnBody   bool
-		ExpectedBody    dto.CustomerAssignment
+		ExpectedBody    dto.CustomerAssignmentAcc
 		ExpectedError   error
 	}{
 		{
 			"success get customer assignment by id ",
 			"abcde",
-			dto.CustomerAssignment{
+			dto.CustomerAssignmentAcc{
 				ID:           "abcde",
 				File:         "tes",
 				Grade:        1,
 				AssignmentID: "abcde",
 				CustomerID:   "avcde",
+				Customer: struct {
+					Name string "json:\"name\" gorm:\"notNull;size:255\""
+				}{
+					Name: "tes",
+				},
 			},
 			nil,
 			true,
-			dto.CustomerAssignment{
+			dto.CustomerAssignmentAcc{
 				ID:           "abcde",
 				File:         "tes",
 				Grade:        1,
 				AssignmentID: "abcde",
 				CustomerID:   "avcde",
+				Customer: struct {
+					Name string "json:\"name\" gorm:\"notNull;size:255\""
+				}{
+					Name: "tes",
+				},
 			},
 			nil,
 		},
@@ -169,10 +179,10 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			"failed get customer assignment by id",
 			"abcde",
 
-			dto.CustomerAssignment{},
+			dto.CustomerAssignmentAcc{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.CustomerAssignment{},
+			dto.CustomerAssignmentAcc{},
 			gorm.ErrRecordNotFound,
 		},
 	}
@@ -198,10 +208,10 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 	testCase := []struct {
 		Name            string
 		User            dto.User
-		MockReturnBody  []dto.CustomerAssignment
+		MockReturnBody  []dto.CustomerAssignmentAcc
 		MockReturnError error
 		HasReturnBody   bool
-		ExpectedBody    []dto.CustomerAssignment
+		ExpectedBody    []dto.CustomerAssignmentAcc
 		ExpectedError   error
 	}{
 		{
@@ -210,7 +220,7 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 				ID:   "abcde",
 				Role: "customer",
 			},
-			[]dto.CustomerAssignment{
+			[]dto.CustomerAssignmentAcc{
 				{
 					ID:           "abcde",
 					File:         "tes",
@@ -228,7 +238,7 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 			},
 			nil,
 			true,
-			[]dto.CustomerAssignment{
+			[]dto.CustomerAssignmentAcc{
 				{
 					ID:           "abcde",
 					File:         "tes",
@@ -252,7 +262,7 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 				ID:   "abcde",
 				Role: "customer",
 			},
-			[]dto.CustomerAssignment{},
+			[]dto.CustomerAssignmentAcc{},
 			gorm.ErrRecordNotFound,
 			false,
 			nil,
