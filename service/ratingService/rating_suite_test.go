@@ -503,6 +503,65 @@ func (s *suiteRating) TestGetRatingByCourseIDCustomerID() {
 	}
 }
 
+func (s *suiteRating) TestUpdateRating() {
+	testCase := []struct {
+		Name                     string
+		User                     dto.User
+		Body                     dto.RatingTransaction
+		MockReturnUpdateError    error
+		HasReturnError           bool
+		ExpectedError            error
+	}{
+		{
+			"success update course",
+			dto.User{
+				ID:   "abcde",
+				Role: "intructor",
+			},
+			dto.RatingTransaction{
+				CustomerID: "abcde",
+				CourseID:   "abcde",
+				Rating: 5,
+				IsPublish: false,
+			},
+			nil,
+			false,
+			nil,
+		},
+		{
+			"fail update enrollment status",
+			dto.User{
+				ID:   "abcde",
+				Role: "intructor",
+			},
+			dto.RatingTransaction{
+				CustomerID: "abcde",
+				CourseID:   "abcde",
+				Rating: 5,
+				IsPublish: false,
+			},
+			errors.New("error"),
+			true,
+			errors.New("error"),
+		},
+	}
+	for _, v := range testCase {
+		mockCallUpdateRating := s.mockRating.On("UpdateRating", v.Body).Return(v.MockReturnUpdateError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			err := s.ratingService.UpdateRating(v.Body)
+			if v.HasReturnError {
+				s.Error(err)
+				s.Equal(v.ExpectedError, err)
+				s.EqualError(err, v.ExpectedError.Error())
+			} else {
+				s.NoError(err)
+			}
+		})
+		// remove mock
+		mockCallUpdateRating.Unset()
+	}
+}
+
 func TestSuiteRating(t *testing.T) {
 	suite.Run(t, new(suiteRating))
 }
