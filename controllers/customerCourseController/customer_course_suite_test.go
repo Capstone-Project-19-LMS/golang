@@ -262,6 +262,96 @@ func (s *suiteCustomerCourse) TestGetHistoryCourseByCustomerID() {
 	}
 }
 
+func (s *suiteCustomerCourse) TestGetCustomerCourseEnrollByID() {
+	testCase := []struct {
+		Name               string
+		Method             string
+		ID               string
+		MockReturnBody     dto.CustomerCourseEnroll
+		MockReturnError    error
+		HasReturnBody      bool
+		ExpectedBody       dto.CustomerCourseEnroll
+		ExpectedStatusCode int
+		ExpectedMesaage    string
+	}{
+		{
+			"success get customer course",
+			"GET",
+			"abcde",
+			dto.CustomerCourseEnroll{
+				
+					ID:                 "test1",
+					CustomerID: 	   "abcde1",
+					Email: 			"test1@gmail.com",
+					ProfileImage: 	"test1.jpg",
+					Name:               "test1",
+					StatusEnroll:       true,
+				
+			},
+			nil,
+			true,
+			dto.CustomerCourseEnroll{
+				
+					ID:                 "test1",
+					CustomerID: 	   "abcde1",
+					Email: 			"test1@gmail.com",
+					ProfileImage: 	"test1.jpg",
+					Name:               "test1",
+					StatusEnroll:       true,
+				
+			},
+			http.StatusOK,
+			"success get customer course",
+		},
+		{
+			"fail get customer course",
+			"GET",
+			"abcde",
+			dto.CustomerCourseEnroll{},
+			errors.New("error"),
+			false,
+			dto.CustomerCourseEnroll{},
+			http.StatusInternalServerError,
+			"fail get customer course",
+		},
+	}
+	for _, v := range testCase {
+		mockCall := s.mock.On("GetCustomerCourseEnrollByID", v.ID).Return(v.MockReturnBody, v.MockReturnError)
+		s.T().Run(v.Name, func(t *testing.T) {
+			// Create request
+			r := httptest.NewRequest(v.Method, "/courses", nil)
+			// Create response recorder
+			w := httptest.NewRecorder()
+
+			// handler echo
+			e := echo.New()
+			ctx := e.NewContext(r, w)
+			ctx.SetPath("/courses/enroll/:id")
+			ctx.SetParamNames("id")
+			ctx.SetParamValues(v.ID)
+
+			err := s.customerCourseController.GetCustomerCourseEnrollByID(ctx)
+			s.NoError(err)
+			s.Equal(v.ExpectedStatusCode, w.Code)
+
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+
+			s.Equal(v.ExpectedMesaage, resp["message"])
+
+			if v.HasReturnBody {
+				s.Equal(v.ExpectedBody.Name, resp["customer_enroll"].(map[string]interface{})["name"])
+				s.Equal(v.ExpectedBody.Email, resp["customer_enroll"].(map[string]interface{})["email"])
+				s.Equal(v.ExpectedBody.ProfileImage, resp["customer_enroll"].(map[string]interface{})["profile_image"])
+				s.Equal(v.ExpectedBody.StatusEnroll, resp["customer_enroll"].(map[string]interface{})["status_enroll"])
+			}
+		})
+		// remove mock
+		mockCall.Unset()
+	}
+}
+
 func (s *suiteCustomerCourse) TestTakeCourse() {
 	testCase := []struct {
 		Name               string
@@ -435,25 +525,6 @@ func (s *suiteCustomerCourse) TestUpdateEnrollmentStatus() {
 			nil,
 			http.StatusBadRequest,
 			"fail bind request body",
-		},
-		{
-			"There is an empty field",
-			"POST",
-			dto.CustomerCourseTransaction{
-				ID:         "abcde",
-				CustomerID: "abcde",
-				Status:     true,
-				NoModule:   0,
-				IsFinish:   false,
-			},
-			"abcde",
-			dto.User{
-				ID:   "abcde",
-				Role: "instructor",
-			},
-			nil,
-			http.StatusBadRequest,
-			"There is an empty field",
 		},
 		{
 			"fail update enrollment status",

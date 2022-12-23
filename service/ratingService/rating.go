@@ -98,7 +98,7 @@ func (rs *ratingService) GetRatingByCourseID(courseID, instructorID string) ([]d
 
 	var ratings []dto.Rating
 	ratings, errRating := rs.ratingRepo.GetRatingByCourseID(courseID)
-	if err != nil {
+	if errRating != nil {
 		return ratings, errRating
 	}
 

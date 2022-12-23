@@ -30,10 +30,10 @@ func (c *CourseMock)GetCourseByID(id string, user dto.User) (dto.GetCourseByID, 
 
 	return args.Get(0).(dto.GetCourseByID), args.Error(1)
 }
-func (c *CourseMock)GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerEnroll, error) {
+func (c *CourseMock)GetCourseEnrollByID(id string, user dto.User) ([]dto.CustomerCourseEnroll, error) {
 	args := c.Called(id, user)
 
-	return args.Get(0).([]dto.CustomerEnroll), args.Error(1)
+	return args.Get(0).([]dto.CustomerCourseEnroll), args.Error(1)
 }
 func (c *CourseMock)UpdateCourse(course dto.CourseTransaction) error {
 	args := c.Called(course)

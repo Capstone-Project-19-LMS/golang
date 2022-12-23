@@ -52,3 +52,12 @@ type CustomerEnroll struct {
 	ProfileImage string `json:"profile_image"`
 	StatusEnroll bool   `json:"status_enroll"`
 }
+
+type CustomerCourseEnroll struct {
+	ID           string `json:"id"`
+	CustomerID   string `json:"customer_id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	ProfileImage string `json:"profile_image"`
+	StatusEnroll bool   `json:"status_enroll"`
+}
