@@ -9,8 +9,8 @@ import (
 type CustomerAssignmentService interface {
 	CreateCustomerAssignment(dto.CustomerAssignmentTransaction) error
 	DeleteCustomerAssignment(id string) error
-	GetAllCustomerAssignment() ([]dto.CustomerAssignment, error)
-	GetCustomerAssignmentByID(id string) (dto.CustomerAssignment, error)
+	GetAllCustomerAssignment() ([]dto.CustomerAssignmentAcc, error)
+	GetCustomerAssignmentByID(id string) (dto.CustomerAssignmentAcc, error)
 	UpdateCustomerAssignment(dto.CustomerAssignmentTransaction) error
 }
 
@@ -40,7 +40,7 @@ func (cas *customerAssignmentService) DeleteCustomerAssignment(id string) error 
 }
 
 // GetAllCustomerAssignment implements CustomerAssignmentService
-func (cas *customerAssignmentService) GetAllCustomerAssignment() ([]dto.CustomerAssignment, error) {
+func (cas *customerAssignmentService) GetAllCustomerAssignment() ([]dto.CustomerAssignmentAcc, error) {
 	customerAssignments, err := cas.customerAssignmentRepo.GetAllCustomerAssignment()
 	if err != nil {
 		return nil, err
@@ -49,10 +49,10 @@ func (cas *customerAssignmentService) GetAllCustomerAssignment() ([]dto.Customer
 }
 
 // GetCustomerAssignmentByID implements CustomerAssignmentService
-func (cas *customerAssignmentService) GetCustomerAssignmentByID(id string) (dto.CustomerAssignment, error) {
+func (cas *customerAssignmentService) GetCustomerAssignmentByID(id string) (dto.CustomerAssignmentAcc, error) {
 	customerAssignment, err := cas.customerAssignmentRepo.GetCustomerAssignmentByID(id)
 	if err != nil {
-		return dto.CustomerAssignment{}, err
+		return dto.CustomerAssignmentAcc{}, err
 	}
 	return customerAssignment, nil
 }
