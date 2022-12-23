@@ -39,7 +39,9 @@ func (ctr *quizRepository) GetAllQuiz() ([]dto.Quiz, error) {
 	}
 
 	err = copier.Copy(&quiz, quizModel)
-
+	if err != nil {
+		return nil, err
+	}
 	return quiz, nil
 
 }
@@ -58,7 +60,10 @@ func (ctr *quizRepository) TakeQuiz(input dto.TakeQuizTransaction) (dto.Quiz, er
 	}
 	fmt.Println(customerCourse.Status)
 	ctr.db.Where("course_id=?", input.CourseID).Find(&quizModel)
-	copier.Copy(&quiz, quizModel)
+	err := copier.Copy(&quiz, quizModel)
+	if err != nil {
+		return dto.Quiz{}, err
+	}
 	return quiz, nil
 }
 
