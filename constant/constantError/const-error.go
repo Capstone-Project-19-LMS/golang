@@ -23,8 +23,8 @@ const (
 	ErrorCapacityLowerThanZero         = "capacity lower than zero"
 	ErrorCustomerNotFinishedCourse     = "the customer is not finished the course"
 	ErrorDuplicateAssignmentCustomer   = "there is duplicate data in the customer assignment"
-
-	ErrorNoActive = "email not verifikasi"
+	ErrorAssignmentNotFoud             = "assignment not found"
+	ErrorNoActive                      = "email not verifikasi"
 )
 
 var ErrorCode = map[string]int{

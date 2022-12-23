@@ -51,12 +51,12 @@ func (ccr *customerCourseRepository) GetCustomerCourseByID(id string) (dto.Custo
 // GetCustomerEnrollByID implements CustomerCourseRepository
 func (ccr *customerCourseRepository) GetCustomerCourseEnrollByID(id string) (dto.CustomerCourseEnroll, error) {
 	var customer dto.CustomerCourseEnroll
-	err := ccr.db.Model(&model.Customer{}).Select("*", "customer_courses.id AS id", "customers.id AS customer_id", "customer_courses.status AS status_enroll").Joins("JOIN customer_courses ON customer_courses.customer_id = customers.id").Where("customer_courses.id = ?", id).Find(&customer)
+	err := ccr.db.Model(&model.CustomerCourse{}).Select("*", "customer_courses.id AS id", "customers.id AS customer_id", "customer_courses.status AS status_enroll").Joins("JOIN customers ON customer_courses.customer_id = customers.id").Where("customer_courses.id = ?", id).Find(&customer)
 	if err.Error != nil {
 		return dto.CustomerCourseEnroll{}, err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return dto.CustomerCourseEnroll{}, nil
+		return dto.CustomerCourseEnroll{}, gorm.ErrRecordNotFound
 	}
 	return customer, nil
 }

@@ -199,10 +199,10 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 		Name               string
 		Method             string
 		ParamID            string
-		MockReturnBody     dto.CustomerAssignment
+		MockReturnBody     dto.CustomerAssignmentAcc
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       dto.CustomerAssignment
+		ExpectedBody       dto.CustomerAssignmentAcc
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -211,7 +211,7 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			"GET",
 			"abcde",
 
-			dto.CustomerAssignment{
+			dto.CustomerAssignmentAcc{
 				ID:           "abcde",
 				File:         "tes",
 				Grade:        1,
@@ -223,7 +223,7 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			},
 			nil,
 			true,
-			dto.CustomerAssignment{
+			dto.CustomerAssignmentAcc{
 				ID:           "abcde",
 				File:         "tes",
 				Grade:        1,
@@ -241,10 +241,10 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			"GET",
 			"abcde",
 
-			dto.CustomerAssignment{},
+			dto.CustomerAssignmentAcc{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.CustomerAssignment{},
+			dto.CustomerAssignmentAcc{},
 			http.StatusInternalServerError,
 			"fail get customer assignment by id",
 		},
@@ -253,10 +253,10 @@ func (s *suiteCustomerAssignment) TestGetCustomerAssignmentByID() {
 			"GET",
 			"abcde",
 
-			dto.CustomerAssignment{},
+			dto.CustomerAssignmentAcc{},
 			gorm.ErrRecordNotFound,
 			false,
-			dto.CustomerAssignment{},
+			dto.CustomerAssignmentAcc{},
 			http.StatusInternalServerError,
 			"fail get customer assignment by id",
 		},
@@ -297,10 +297,10 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		MockReturnBody     []dto.CustomerAssignment
+		MockReturnBody     []dto.CustomerAssignmentAcc
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []dto.CustomerAssignment
+		ExpectedBody       []dto.CustomerAssignmentAcc
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -308,7 +308,7 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 			"success get all customer assignment",
 			"GET",
 
-			[]dto.CustomerAssignment{
+			[]dto.CustomerAssignmentAcc{
 				{
 					ID:           "abcde",
 					File:         "tes",
@@ -332,7 +332,7 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 			},
 			nil,
 			true,
-			[]dto.CustomerAssignment{
+			[]dto.CustomerAssignmentAcc{
 				{
 					ID:           "abcde",
 					File:         "tes",
@@ -361,10 +361,10 @@ func (s *suiteCustomerAssignment) TestGetAllCustomerAssignment() {
 			"fail get all customer assignment",
 			"GET",
 
-			[]dto.CustomerAssignment{},
+			[]dto.CustomerAssignmentAcc{},
 			errors.New("error"),
 			false,
-			[]dto.CustomerAssignment{},
+			[]dto.CustomerAssignmentAcc{},
 			http.StatusInternalServerError,
 			"fail get all customer assignment",
 		},
