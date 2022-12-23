@@ -14,6 +14,7 @@ import (
 	instructorController "golang/controllers/instructorController"
 	mediamodulecontroller "golang/controllers/mediaModuleController"
 	"golang/controllers/moduleController"
+	quizcontroller "golang/controllers/quizController"
 	"golang/controllers/ratingController"
 	"golang/helper"
 	assignmentrepository "golang/repository/assignmentRepository"
@@ -26,6 +27,7 @@ import (
 	instructorrepository "golang/repository/instructorRepository"
 	mediamodulerepository "golang/repository/mediaModuleRepository"
 	modulerepository "golang/repository/moduleRepository"
+	quizrepository "golang/repository/quizRepository"
 	"golang/repository/ratingRepository"
 	assignmentservice "golang/service/assignmentService"
 	"golang/service/categoryService"
@@ -37,6 +39,7 @@ import (
 	instructorservice "golang/service/instructorService"
 	mediamoduleservice "golang/service/mediaModuleService"
 	moduleservice "golang/service/moduleService"
+	quizservice "golang/service/quizService"
 	"golang/service/ratingService"
 	"golang/util"
 
@@ -51,6 +54,7 @@ func New(db *gorm.DB) *echo.Echo {
 	/*
 		Repositories
 	*/
+	quizRepository := quizrepository.NewQuizRepository(db)
 	customerRepository := customerRepository.NewCustomerRepository(db)
 	instructorRepository := instructorrepository.Newinstructorrepository(db)
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
@@ -67,6 +71,7 @@ func New(db *gorm.DB) *echo.Echo {
 	/*
 		Services
 	*/
+	quizService := quizservice.NewQuizService(quizRepository)
 	costumerService := costumerService.NewcostumerService(customerRepository)
 	instructorService := instructorservice.NewinstructorService(instructorRepository)
 	categoryService := categoryService.NewCategoryService(categoryRepository)
@@ -82,6 +87,10 @@ func New(db *gorm.DB) *echo.Echo {
 	/*
 		Controllers
 	*/
+	quizController := quizcontroller.QuizController{
+		QuizService: quizService,
+	}
+
 	costumerController := costumerController.CostumerController{
 		CostumerService: costumerService,
 	}
@@ -181,6 +190,13 @@ func New(db *gorm.DB) *echo.Echo {
 		private instructor access
 	*/
 	privateInstructor.POST("/logout", instructorController.Logout)
+
+	//quiz
+
+	//instructor access
+	privateInstructor.POST("/quiz/create", quizController.CreateQuiz)
+	// customer access
+	privateCostumer.GET("/quiz/take_quiz", quizController.TakeQuiz)
 
 	// category
 
