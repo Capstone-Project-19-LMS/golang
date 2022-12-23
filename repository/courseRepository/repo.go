@@ -6,7 +6,7 @@ type CourseRepository interface {
 	CreateCourse(dto.CourseTransaction) error
 	DeleteCourse(string) error
 	GetCourseByID(string) (dto.Course, error)
-	GetCourseEnrollByID(string) ([]dto.CustomerEnroll, error)
+	GetCourseEnrollByID(string) ([]dto.CustomerCourseEnroll, error)
 	GetAllCourse(dto.User) ([]dto.Course, error)
 	UpdateCourse(dto.CourseTransaction) error
 }

@@ -63,6 +63,27 @@ func (ccc *CustomerCourseController) GetHistoryCourseByCustomerID(c echo.Context
 	})
 }
 
+// GetCourseEnrollByID is a function to get course by id
+func (ccc *CustomerCourseController) GetCustomerCourseEnrollByID(c echo.Context) error {
+	// get id from url param
+	id := c.Param("id")
+
+	// get course by id from service
+	customerEnroll, err := ccc.CustomerCourseService.GetCustomerCourseEnrollByID(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get customer course",
+			"error":   err.Error(),
+		})
+	}
+
+	// return response success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success get customer course",
+		"customer_enroll": customerEnroll,
+	})
+}
+
 func (ccc *CustomerCourseController) TakeCourse(c echo.Context) error {
 	var customerCourse dto.CustomerCourseTransaction
 	// get course id from url
@@ -107,21 +128,13 @@ func (ccc *CustomerCourseController) TakeCourse(c echo.Context) error {
 func (ccc *CustomerCourseController) UpdateEnrollmentStatus(c echo.Context) error {
 	var customerCourse dto.CustomerCourseTransaction
 	// get course id from url
-	courseID := c.Param("courseId")
-	customerCourse.CourseID = courseID
+	id := c.Param("id")
+	customerCourse.ID = id
 
 	// get bind data from request body
 	if err := c.Bind(&customerCourse); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "fail bind request body",
-			"error":   err.Error(),
-		})
-	}
-
-	// validate request body
-	if err := c.Validate(customerCourse); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "There is an empty field",
 			"error":   err.Error(),
 		})
 	}
