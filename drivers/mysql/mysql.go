@@ -52,6 +52,7 @@ func DBMigrate(db *gorm.DB) error {
 		model.MediaModule{},
 		model.Assignment{},
 		model.CustomerAssignment{},
+		model.Quiz{},
 	)
 
 	if err != nil {
